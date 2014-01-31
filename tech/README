@@ -1,0 +1,35 @@
+                            ORSON TECHNICAL REPORTS
+
+                                 James B. Moen
+                               January 14, 2014
+
+This  directory includes  the ‘‘Revised⁻¹  Report on  the  Algorithmic Language
+Orson,’’ which is  a draft of the defining document for  the Orson language. It
+also includes  other technical  reports. Some discuss  implementation dependent
+features  of Orson  that  are not  mentioned  in the  Revised⁻¹ Report.  Others
+discuss parts of the Orson library. These files contain the technical reports.
+
+    args.html       Methods with variable numbers of arguments in Orson.
+    binary.html     Automatically building search trees from if clauses.
+    cees.html       Orson’s interface to GNU C.
+    dynamic.html    Dynamic memory in Orson.
+    faqs.html       FAQ’s about Orson.
+    file.html       Input and output in Orson.
+    generic.html    An introduction to generic forms.
+    logo.html       An Orson logo.
+    loops.html      Writing loops in Orson.
+    prime.html      A Tutorial: Computing prime numbers in Orson.
+    unrevised.html  Revised⁻¹ report on the algorithmic language Orson.
+
+These files contain supporting material.
+
+    README          What you're reading now.
+    Readme.html     Long HTML version of README.
+    Readme.by       Bracy source for Readme.html.
+
+All reports are in HTML, and  were created by Bracy, a simple document compiler
+written in Orson. Bracy source files  for the reports are included, but are not
+mentioned here.  Both the Bracy and  HTML versions of the reports are available
+for free under  the terms of the GNU Free  Documentation License (GFDL) version
+1.3.  Bracy and Orson are available for free under the terms of the GNU General
+Public License (GPL) version 3.

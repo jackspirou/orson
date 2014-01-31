@@ -1,0 +1,30 @@
+                                      OX
+
+                                 James B. Moen
+                               January 14, 2014
+
+This directory contains  source code for Ox, a  cross-reference generator (also
+called a  concordance generator) for Orson  source files. Ox reads  a series of
+source files, recording  the names in those files. It then  writes a table that
+lists the names in lexicographic order, and the numbers of the lines where they
+appear. Ox is written in Orson, and is intended to run under Unix-like systems,
+such as GNU/Linux. These files contain Orson source code for Ox.
+
+    char.os      Read characters from a source file.
+    main.os      Main program.
+    ox.os        Print a cross-referenced list of names in an Orson program.
+    parse.os     Recursive descent parser for Orson.
+    record.os    Record a name and its line numbers.
+    report.os    Write names and their line numbers.
+    token.os     Group characters into tokens.
+
+These files contain documentation and other supporting material.
+
+    README       What you're reading now.
+    Readme.by    Bracy source for Readme.html.
+    Readme.html  Long HTML version of README.
+    Makefile     Compile, install, uninstall Ox.
+    ox.1         Manual page for Ox.
+
+Ox is available under the terms of the GNU General Public License (GPL) version
+3. An Orson compiler is also available from the author under the same terms.

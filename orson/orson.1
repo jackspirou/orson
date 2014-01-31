@@ -1,0 +1,437 @@
+.TH ORSON 1 "January 28, 2014"
+.DD January 28, 2014
+
+.SH NAME
+orson \- Orson to GNU C translator
+
+.SH SYNOPSIS
+.B orson\c
+ [\c
+.B -a\c
+] [\c
+.B -c\c
+] [\c
+.BI -d \ count\c
+] [\c
+.BI -h \ count\c
+] [\c
+.BI -o \ cFile\c
+] [\c
+.B -r\c
+] [\c
+.BI -s \ count\c
+] [\c
+.B -t\c
+]
+.RS 6
+[\c
+.B -v\c
+] [\c
+.I file\c
+\&...]
+.RE
+
+.SH DESCRIPTION
+.B Orson
+is a translator for the programming language Orson.
+
+.PP
+By default,
+.B orson
+translates files named on the command line to GNU C, in order of their
+appearance.
+The resulting GNU C code is left on a scratch file in the current directory.
+.B Orson
+then calls
+.B gcc
+to compile the scratch file.
+If errors are detected while translating the files, then
+.B orson
+does not call
+.B gcc\c
+, but writes error messages to stdout (not stderr!).
+In either case, the scratch file is deleted.
+
+Each file's suffix tells
+.B orson
+what it contains, and how to translate it to GNU C.
+.B Orson
+recognizes the following file suffixes.
+
+.PP
+.TP
+.B .c
+The file contains GNU C source code.
+It's appended verbatim to the scratch file.
+
+.TP
+.B .h
+The file contains GNU C source code.
+It's appended verbatim to the scratch file.
+
+.TP
+.B .op
+The file is an Orson prelude file.
+It contains Orson source code that may use implementation-dependent operations
+(called "hooks").
+The Orson source code is translated to GNU C.
+The resulting GNU C code is appended to the scratch file.
+
+.TP
+.B .os
+The file is an Orson source file.
+It contains Orson source code that must not use hooks.
+The Orson source code is translated to GNU C.
+The resulting GNU C code is appended to the scratch file.
+
+.PP
+You should write your programs as
+.B .os
+files.
+The other suffixes are intended for implementers of the Orson library.
+
+.PP
+.B Orson
+reads and writes a 31-bit character set using the UTF-8 encoding.
+This includes the 21-bit Unicode character set and the 7-bit ASCII character
+set as subsets.
+If you use Unicode or ASCII characters on a Unix-like system, then you need not
+care about this (but see the
+.B -a
+option below).
+An
+.B .op
+or
+.B .os
+Orson source file may contain any characters that are not control characters,
+except that a line may be terminated by a linefeed (U+000A), by a return
+(U+000D), by a linefeed and a return, or by a return and a linefeed.
+The last line in a file need not be terminated.
+Tabs (U+0009) are not allowed.
+Lines may be at most 1024 characters long.
+
+.PP
+If
+.B orson
+finds errors while transforming an
+.B .op
+or
+.B .os
+file, then it records the positions in the file where those errors occurred.
+Later,
+.B orson
+reads the file again to display the errors at each position.
+To record error positions efficiently,
+.B orson
+requires that each file have no more than 2097151 (2 to the 21st) UTF-8
+encoded characters, and that each program have no more than 1024
+(2 to the 10th) files, including the prelude (see below).
+
+.PP
+.B Orson
+recognizes the following options.
+Arguments to any option may be separated from it by blanks.
+If an option doesn't appear on the command line, then the option's default
+takes effect.
+If no file names appear on the command line, then
+.B orson
+does nothing (except for the
+.B -v
+option, described below).
+
+.TP
+.B -a
+ASCII.
+Use only 7-bit ASCII characters when displaying Orson source lines in error
+messages.
+When this option is in effect, characters not between blank '\ ' (U+0020) and
+tilde '~' (U+007E) inclusive will be written as underlines '_' (U+005F).
+This option may be useful on systems that do not support UTF-8 characters.
+The default is to use UTF-8 characters in error messages.
+
+.TP
+.B -c
+Compile.
+Transform the Orson source files and translate them to GNU C, leaving the
+result in the scratch file
+.I cFile\c
+\&. (See
+.B -o
+below.)
+Then issue the command
+.B gcc\ -g\ -w
+to compile
+.I cFile\c
+\&, leaving the resulting object code in
+.B a.out\c
+\&.
+Finally delete
+.I cFile\c
+\&.
+This is the default.
+
+.TP
+.BI -d \ count
+Debug.
+Print a trace on stdout of everything
+.B orson\c
+\&'s transformer does, to a depth of
+.I count
+recursive calls.
+The trace uses only 7-bit ASCII characters.
+This option may produce megabytes of output for even simple Orson programs.
+It's meaningful only to those who know how
+.B orson
+works internally.
+The option
+.B -d0
+doesn't print a trace, but does print messages about memory utilization that
+may be helpful in setting the
+.B -h
+option (see below).
+The default produces no debugging output.
+
+.TP
+.BI -h \ count
+Heap.
+Establish a heap of
+.I count
+heap segments for use by
+.B orson\c
+\&'s transformer.
+Each heap segment is approximately one megabyte.
+Exceeding the total amount of memory in all heap segments will terminate
+translation with an error.
+The default is a heap of one segment.
+
+.TP
+.BI -o \ cFile
+Output.
+After translation, leave the resulting GNU C code on a scratch file called
+.I cFile
+in the current directory.
+This file contains only 7-bit ASCII characters.
+The default is
+.B Out.c\c
+\&.
+
+.TP
+.BI -r
+Raw.
+Run
+.B orson\c
+\& "raw," without initializing from a prelude file.
+This may be useful for debugging preludes, or for compiling programs with
+non-standard preludes.
+For example, a command like
+.B orson\ -r\ myPrelude.op\ program.os
+compiles
+.B program.os
+with the prelude
+.B myPrelude.op\c
+\&.
+The default is to use a prelude file (see below).
+
+.TP
+.BI -s \ count
+Stack.
+Terminate compilation with an error if
+.B orson\c
+\&'s transformer exceeds a depth of
+.I count
+recursive calls.
+The default is 1024.
+
+.TP
+.B -t
+Translate.
+Transform Orson source files and translate them to GNU C, leaving the result in
+.I cFile\c
+\&.
+Don't compile
+.I cFile\c
+\&, and don't delete it.
+This may be useful if
+.I cFile
+should be compiled using different
+.B gcc
+options than
+.B orson
+normally uses.
+The default is to compile
+.I cFile
+and then delete it.
+
+.TP
+.B -v
+Version.
+Print
+.B orson\c
+\&'s version and other identifying information on stdout.
+It works even if no files appear on the command line.
+The default is not to print version information.
+
+.PP
+You shouldn't reset the
+.B -h
+and
+.B -s
+options unless you know what you're doing.
+If
+.B orson
+runs out of heap or stack space, it's probably because you wrote a recursive
+form that doesn't terminate.
+
+.PP
+.SH ENVIRONMENT
+.B Orson
+reads the environment variable
+.B HOME
+to determine your home directory.
+It also reads the environment variable
+.B ORSONLIBPATHS\c
+\&, which may hold a colon-delimited series of directory pathnames.
+The named directories contain the files of the Orson library (see below).
+
+.PP
+.SH FILES
+The Orson library is a set of
+.B .op
+and
+.B .os
+files that may reside in many different directories.
+If a file is requested from the library,
+.B orson
+searches for it in the directories of
+.B ORSONLIBPATHS\c
+\&, in order of their appearance.
+If
+.B ORSONLIBPATHS
+isn't set, or is set to the empty string, then
+.B orson
+searches the following directories instead, also in order of appearance:
+
+.IP
+\&./orson/lib
+.br
+\&./lib/orson
+.br
+\&~/orson/lib
+.br
+\&~/lib/orson
+.br
+\&/usr/lib/orson
+.br
+\&/usr/orson/lib
+.br
+\&/usr/local/lib/orson
+.br
+\&/usr/local/orson/lib
+.PP
+
+Before
+.B orson
+translates your program, it initializes itself by loading the standard prelude
+file
+.B prelude.op
+from the library (unless the
+.B -r
+option is in effect).
+.B Orson
+halts with an error if it can't find this file in any library directory.
+
+.SH BUGS
+.B Orson
+was developed on an Intel i686 running Debian GNU/Linux, so it should work on
+similar systems.
+However,
+.B orson
+does not follow the usual standards for portable GNU C code, so it may not work
+on your system.
+Sorry.
+
+.PP
+.B Orson
+produces bizarre GNU C code, nothing like what would be written by a Human
+programmer.
+It requires features of GNU C that may not be supported by other dialects of C.
+These include arbitrary length identifiers, statements as expressions,
+nested functions, zero length arrays, auto arrays whose lengths are computed
+at execution time, and the
+.B ?:
+operator.
+This may not be a complete list.
+
+.PP
+The algorithm
+.B orson
+uses to determine the alignment and size of a type (analogous to GNU C's
+.B alignof
+and
+.B sizeof\c
+) was developed experimentally to match the one used by
+.B gcc
+on an Intel i686.
+It may be different from the algorithm really used by 
+.B gcc,
+and it may also be different from what some other C compiler uses.
+
+.PP
+.B Orson
+doesn't type-check a form's body until the form is applied, as specified by the
+Unrevised Report (see below).
+It's not clear if this is a bug or a feature.
+
+.PP
+Form calls are not properly tail-recursive.
+
+.SH COPYING
+Copyright (C) 2014 by James B. Moen.
+Permission is granted to copy, distribute, and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.3 or any later
+version published by the Free Software Foundation; with no Invariant
+Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license may be obtained at <http://fsf.org/>.
+
+.SH VERSION
+Version "Burbot".
+The Orson project uses version names instead of numbers: they increase
+alphabetically with time.
+If you must have a GNU-style version number, it's 0.14.1.
+Orson (the language) and 
+.B orson
+(the translator) are still experimental.
+Beware.
+
+.SH REFERENCES
+James B. Moen.
+"The Unrevised Report on the Algorithmic Language Orson."
+Unpublished technical report.
+2013.
+
+Richard Stallman and the GCC Developer Community.
+.I Using and Porting the GNU Compiler Collection.
+Free Software Foundation.
+Boston, Massachusetts.
+2008.
+
+The Unicode Consortium.
+.I The Unicode Standard, Version 5.0.
+Fifth Edition.
+Addison-Wesley Professional.
+Reading, Massachusetts.
+2006.
+
+.SH AUTHOR
+James B. Moen
+
+.SH SEE ALSO
+.B ascii\c
+(7),
+.B
+gcc\c
+(1),
+.B unicode\c
+(7),
+.B utf-8\c
+(7).

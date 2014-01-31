@@ -1,0 +1,1914 @@
+{title A Tutorial: Computing Prime Numbers in Orson}
+
+{center
+ {b A Tutorial: Computing Prime Numbers in Orson}
+
+ James B. Moen
+ June 12, 2013}
+
+{justify
+  Copyright © 2013 James B. Moen.
+  Permission is granted to copy, distribute, and/or modify this document under
+  the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
+  version published by the Free Software Foundation; with no Invariant
+  Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license may be obtained at
+  {goto http://fsf.org/ {t <http://fsf.org/>.}}
+
+  This document uses special characters.
+  Without proper rendering support, you may see question marks, boxes, or other
+  symbols in place of these characters.
+  This document must be rendered in font where an italic quote `\ {i "}\ '
+  looks different from two apostrophes `\ {q ''}\ '.}
+
+{rule}
+
+{left {b 0. Introduction.}}
+
+{narrow
+ {justify
+   You may ask how a prime can be factored when it is divisible only by itself
+   and by one.
+   The problem is, for your system, solvable only by your mathematics.
+   Will you do it?}
+ {right
+  {goto vog1952 {c [vog 1952]}}}}
+
+{justify
+  One way to learn a new language is to read example programs that are written
+  in it.
+  In this essay, I'll show a series of Orson programs that write the prime
+  numbers between 2 and 1000, and explain how those programs work.
+  To make the explanations easy to understand, I'll often tell lies, or
+  otherwise evade the truth.
+  To find out what's really going on, you should read the ``Revised⁻¹ Report
+  on the Algorithmic Language Orson'' {goto moe2013b {c [moe 2013b].}}
+  I'll assume you already know a programming language, so I won't bother
+  explaining things like constants, expressions, objects, procedures,
+  recursions, types, and variables.}
+
+{left {b 1. Elementary programming.}}
+
+{narrow
+ {justify
+   Struggle you may with the elementary.}
+ {right
+  {goto har1982 {c [har 1982]}}}}
+
+{justify
+  An Orson program is a series of zero or more {i prog} clauses.
+  Each {i prog} clause looks like this.}
+
+{narrow
+ {layout
+  {row
+   {left ({b prog}}}}
+ {layout
+  {row
+   {left \ \ \ \ }
+   {center {i t}{- 1} {i n}{- 1} :− {i e}{- 1}}
+   {left \ }}
+  {row
+   {left \ \ \ \ }
+   {center {i t}{- 2} {i n}{- 2} :− {i e}{- 2}}
+   {left \ }}
+  {row
+   {left \ \ \ \ }
+   {center ⋮}
+   {left \ }}
+  {row
+   {left \ \ \ \ }
+   {center {i t}{-i k} {i n}{-i k} :− {i e}{-i k}}
+   {left )}}}}
+
+{justify
+  Each subscripted triple {i t}\ {i n}\ :−\ {i e} is called an {i equate.}
+  The equate {i binds} a name {i n} to an {i object} and its {i type.}
+  The object is returned by the expression {i e,} and its type is returned by
+  the expression {i t.}
+  For example, the first equate in the following {i prog} clause binds the name
+  ε to the object 0.001 and its type {i real.}}
+
+{narrow{orson
+(prog
+  real ε :− 0.001}}
+
+{justify
+  If I omit the type, then Orson uses the type of the expression on the left of
+  the :− symbol.
+  For example, I could have written the equate as ε\ :−\ 0.001, since 0.001 has
+  the type {i real.}
+  The type should be omitted only when it's so obvious that you don't need to
+  state it explicitly.
+
+  In this equate, ε is the name of the constant 0.001.
+  It is {c not} the name of a variable, so it can't be bound to another object.
+  Orson is fussier about distinguishing between constants and variables than
+  other languages.
+
+  Orson programs are written using Unicode {goto uni2006 {c [uni 2006],}} a
+  large character set that includes Greek letters and mathematical symbols.
+  That's why I could use ε, a Greek lower case {i epsilon,} as a name.
+  You don't have to use Unicode to write Orson programs.
+  You could write them using only {c Ascii} characters
+  {goto ans1986 {c [ans 1986],}} but Unicode is more fun and may be easier to
+  read {goto kam2010 {c [kam 2010].}}
+
+  The next equate in the {i prog} clause binds the name {i abs} to a
+  {i procedure.}
+  The procedure has a single {i parameter,} a real object whose name is
+  {i number.}
+  It returns another real object, the absolute value of {i number.}
+  The parameter name {i number} isn't a variable, so like ε, it can't be
+  rebound inside the procedure.}
+
+{narrow{orson
+abs :−
+ (proc (real number) real:
+  (if number < 0.0
+   then − number
+   else number))}}
+
+{justify
+  The procedure {i abs} also uses an {i if} clause.
+  An {i if} clause acts something like an {i if} statement in other languages.
+  However, Orson doesn't have statements.
+  Orson is an {i expression language,} which means that (almost) everything you
+  write is an expression that returns an object.
+
+  Orson evaluates the {i if} clause as follows.
+  It first evaluates the integer expression that follows {b if.}
+  If the expression is true, then Orson evaluates the expression that follows
+  {b then,} and the object it returns is also returned by the {i if} clause.
+  If the expression is false, then Orson evaluates the expression that follows
+  {b else,} and the object it returns is returned instead.
+  For example, if {i number} is greater than 0, then the {i if} clause in the
+  procedure {i abs} returns {i number,} but returns −\ {i number} otherwise.
+
+  Orson doesn't really have Boolean objects.
+  Instead, it uses the integer 0 to mean false, and it uses any integer other
+  than 0 to mean {i true.}
+  To make things easier to read, it binds the name {i bool} to an integer type,
+  it binds the name {i false} to 0, and it binds the name {i true} to 1.
+  In the rest of this essay, whenever I talk about Boolean objects, I really
+  mean integers that are used in this way.
+
+  The procedure returns the object that is returned by its {i body,} which is
+  the expression that follows the colon `\ :\ '.
+  For example, the procedure {i abs} returns the real number that is returned
+  by the {i if} clause.
+  Unlike other languages, Orson doesn't have anything like a {i return}
+  statement, because it doesn't need one.
+
+  The next equate defines another procedure called {i sqrt} (pronounced
+  ``squirt'') which is short for {i square root.}
+  It returns the square root of a non-negative real number {i a,} computed by
+  Newton's method.
+  It uses the real constant ε to tell it how accurate the square root should
+  be.
+  It also calls the procedure {i abs.}
+  Procedures defined by equates in the same {i prog} clause can call each
+  other freely, so I could have defined {i sqrt} before {i abs.}}
+
+{narrow{orson
+sqrt :−
+ (proc (real a) real:
+  (with
+    var real g :− 1.0
+    var real h :− a
+   do (while abs(g − h) ≥ ε
+       do g := (g + h) / 2.0
+          h := a / g)
+      g))}}
+
+{justify
+  The procedure {i sqrt} uses a {i with} clause.
+  A {i with} clause has a series of equates that bind names which can be used
+  inside the {i with} clause, but not outside it.
+  This {i with} clause binds the local names {i g} and {i h} to {i variables.}
+  Their types are both {b var}\ {i real,} which means their {i values} must be
+  real objects.
+  If their types had been {i real} (without the {b var} prefix) then they would
+  have been real constants instead, like ε.
+  The initial value of the variable {i g} is 1.0, and the initial value of the
+  variable {i h} is {i a.}
+
+  Unlike constants, the values of variables can be changed by an
+  {i assignment operator,} written as `\ :=\ '.
+  An assignment {i v}\ :=\ {i e} changes the value of the variable {i v} to be
+  the object returned by the expression {i e.}
+  The expression {i e} must return an object with the same type as the
+  variable {i v.}
+  The assignment returns {i skip,} a dummy object that represents the lack of
+  anything useful.
+
+  The procedure {i sqrt} also uses a {i while} clause.
+  It acts like a loop.
+  To evaluate a {i while} clause, Orson first evaluates the expression that
+  follows {b while.}
+  If the expression is true, the Orson evaluates the expression that comes
+  after {b do,} and repeats the entire process.
+  If it is false, then Orson stops the {i while} clause instead.
+  When a {i while} clause stops, it returns the dummy object {i skip.}
+
+  The last thing the {i with} clause does is return the value of the variable
+  {i g,} a real object.
+  Then the procedure {i sqrt} returns the object returned by the {i with}
+  clause, which is that same real.
+
+  The next equate defines a procedure {i isPrime.}
+  Its single parameter is an integer object whose name is {i number.}
+  It returns a Boolean object: {i true} if {i number} is a prime number, and
+  {i false} if it is not.
+  The procedure {i isPrime} uses the same things I mentioned along with other
+  procedures, like {i with} clauses, variables, {i while} clauses, and
+  assignments.}
+
+{narrow{orson
+isPrime :−
+ (proc (int number) bool:
+  (with
+    var int factor :− 2
+    var bool going :− true
+    int root :− sqrt(number\{real\})\{int\}
+   do (while going ∧ factor ≤ root
+       do going := number mod factor ≠ 0
+          factor += 1)
+      going))}}
+
+{justify
+  It also uses some things I haven't mentioned yet.
+  Unlike most other languages, Orson doesn't automatically convert integer
+  objects to real objects.
+  Instead, this must be done by {i casts,} written with curly brackets
+  `\ \{\ \}\ '.
+  For example, {i number}\{{i real}\} converts the integer object {i number} to
+  a real object, and returns it.
+
+  The `∧' operator returns {i true} if both its arguments are true, and it
+  returns {i false} otherwise.
+  It can also be written as {b and.}
+  If its left argument returns false, then its right argument isn't evaluated.
+  Although it isn't used here, the `∨' operator returns {i true} if one or
+  more of its arguments are true, and it returns {i false} otherwise.
+  It can also be written as {b or.}
+
+  The {b mod} operator returns the remainder after division.
+  The `\ ≠\ ' operator tests for inequality, and can also be written as
+  `\ <>\ '.
+  The `\ +=\ ' operator increments a variable.
+  For example, {i factor}\ +=\ 1 is an abbreviation for
+  {i factor}\ :=\ {i factor}\ +\ 1.
+  Although it isn't used here, the `\ −=\ ' operator decrements a variable in
+  a similar way.
+
+  As a result, the procedure {i isPrime} generates a series of {i factor}s.
+  They range from 2 to {i root,} the integer square root of {i number.}
+  It tests if {i number} is evenly divisible by any of the {i factor}s.
+  If it is, then {i number} can't be prime, so {i isPrime} stops and returns
+  {i false.}
+  If {i isPrime} can't find a {i factor} that evenly divides {i number,} then
+  {i number} is prime, so it returns {i true} instead.
+
+  The last equate in the {i prog} clause binds the name {i main.}
+  There's nothing special about that name: I chose it only to emphasize that
+  this is the main program.
+  Unlike the other equates, this one doesn't create a new procedure.
+  Instead, it evaluates a {i for} clause, which acts like a counting loop.
+  Like a {i while} clause, a {i for} clause returns {i skip.}}
+
+{narrow{orson
+main :−
+ (for int number in 2, 1000
+  do (if isPrime(number)
+      then writeln(number)))}}
+
+{justify
+  The {i for} clause binds the constant name {i number} to the integers 2, 3,
+  4 ..., 999, 1000, one at a time, one after the other.
+  Each time it binds {i number} to an integer, the {i if} clause calls
+  {i isPrime} to test if {i number} is prime.
+  If it is, then {i number} is written by calling {i writeln,} which writes it
+  on a new line.
+
+  That's the end of the Orson program.
+  All that remains is to finish off the {i prog} clause with a closing
+  parenthesis.
+  As a matter of style, this final parenthesis appears on a line by itself.}
+
+{narrow{orson
+)}}
+
+{justify
+  Now here's the whole program again, all in one place.
+  I've added a {i load} clause—which I'll explain in a moment—and some
+  {i comments.}
+  Each comment starts with an exclamation mark `\ !\ ', and stops at the end of
+  the line.
+  Comments are ignored by Orson, so they can be used to put explanatory text
+  into a program.
+  A comment can appear anywhere that the end of a line can appear.}
+
+{narrow{orson
+(load ''lib.file'')
+
+(prog
+  real ε :− 0.001  !  Accuracy of {i sqrt.}
+
+!  {c Abs.} Return the absolute value of {i number.}
+
+  abs :−
+   (proc (real number) real:
+    (if number < 0.0
+     then − number
+     else number))
+
+!  {c Sqrt.} Return the square root of nonnegative {i a} to accuracy ε. 
+
+ sqrt :−
+  (proc (real a) real:
+   (with
+     var real g :− 1.0
+     var real h :− a
+    do (while abs(g − h) ≥ ε
+        do g := (g + h) / 2.0
+           h := a / g)
+       g))
+
+!  {c IsPrime.} Test if {i number} is prime.
+
+ isPrime :−
+  (proc (int number) bool:
+   (with
+     var int factor :− 2
+     var bool going :− true
+     int root :− sqrt(number\{real\})\{int\}
+    do (while going ∧ factor ≤ root
+        do going := number mod factor ≠ 0
+           factor += 1)
+       going))
+
+!  {c Main.} Write all prime numbers between 2 and 1000.
+
+ main :−
+  (for int number in 2, 1000
+   do (if isPrime(number)
+       then writeln(number)))
+)}}
+
+{justify
+  What's the {i load} clause for?
+  Most Orson programs reside on multiple files.
+  Each file contains a {i prog} clause that binds some names to objects.
+  However, before I can use those objects, I must load the file whose {i prog}
+  clause binds their names.
+
+  Orson comes with a library of such files.
+  In this program, the {i load} clause {q ({b load}\ ''lib.file'')} loads a
+  library file.
+  The {i prog} clause in this file binds names to {i forms} that perform input
+  and output.
+  You'll find out what a form is later, but for now you can think of it as
+  being like a procedure.
+  One of the names it binds is {i writeln,} which is what I used to write
+  {i number.}
+
+  Inside the {i load} clause, {q ''lib.file''} is a string constant.
+  Orson string constants begin and end with two apostrophes `{q \ ''\ }'.
+  They're {c not} quotation marks `\ {i "}\ '.
+  Orson uses quotation marks for quoted names, which you'll also find out about
+  later.}
+
+{left {b 2. How to run an Orson program.}}
+
+{narrow
+ {justify
+   I have to admit to a deep love-hate relationship with Unix.}
+ {right
+  {goto nor1994 {c [nor 1994]}}}}
+
+{justify
+  Here's how to run the prime number program under a Unix-like operating
+  system {goto rit1974 {c [rit 1974]}} such as {c Gnu}/Linux.
+  I'll assume that an Orson compiler is installed.
+  You should have the prime number program on a text file called
+  {goto prime1.os {t prime1.os}} (the suffix {t os} stands for Orson Source).
+  To compile it, type the following command to the shell.}
+
+{narrow
+ {left
+  {t orson prime.os}}}
+
+{justify
+  If all went well, then nothing will be printed.
+  You should now have a file called {t a.out} that contains the binary code
+  for the prime number program.
+  To run it, type this.}
+
+{narrow
+ {left
+  {t ./a.out}}}
+
+{justify
+  The program should print the following list of prime numbers, one per line.
+  If it doesn't, then something has gone wrong.}
+
+{narrow{t{display
+  2    3    5    7   11   13   17   19   23   29   31   37
+ 41   43   47   53   59   61   67   71   73   79   83   89
+ 97  101  103  107  109  113  127  131  137  139  149  151
+157  163  167  173  179  181  191  193  197  199  211  223
+227  229  233  239  241  251  257  263  269  271  277  281
+283  293  307  311  313  317  331  337  347  349  353  359
+367  373  379  383  389  397  401  409  419  421  431  433
+439  443  449  457  461  463  467  479  487  491  499  503
+509  521  523  541  547  557  563  569  571  577  587  593
+599  601  607  613  617  619  631  641  643  647  653  659
+661  673  677  683  691  701  709  719  727  733  739  743
+751  757  761  769  773  787  797  809  811  821  823  827
+829  839  853  857  859  863  877  881  883  887  907  911
+919  929  937  941  947  953  967  971  977  983  991  997}}}
+
+{justify
+  A more realistic program would print these prime numbers arranged in a table,
+  as I show them above.}
+
+{left {b 3. Forms instead of procedures.}}
+
+{narrow
+ {justify
+   Why, good Heaven, we are nothing but forms! Think what a lot of our forms
+   you have gone through.}
+ {right {goto dic1970 {c [dic 1970]}}}}
+
+{justify
+  The prime number program used procedures.
+  However, it takes a little extra time to call a procedure, and to return an
+  object from it.
+  This isn't important in a small program that will run only once or twice, but
+  it might be important in a large program, or in one that will run frequently.
+  Orson solves this problem by providing {i forms} as an alternative to
+  procedures.
+  Before I can explain how forms work, I need to talk about how Orson programs
+  are run, or {i evaluated.}
+
+  An Orson program is evaluated in two distinct phases: first
+  {i transformation,} and then {i execution.}
+  During transformation, expressions in the program are {i transformed} to make
+  new expressions.
+  Then, during execution, the new expressions are {i executed} to make new
+  objects, and to perform side effects on those objects.
+
+  The results of transformation can affect execution, but the reverse is not
+  true: the results of execution cannot affect transformation.
+  Because of this, Orson can be implemented so that it performs all
+  transformations at compile time, and all executions at run time.
+  In such an implementation, all computations performed during transformation
+  are essentially free.
+  I might want to write programs so they do as much computation during
+  transformation as possible.
+
+  Forms let me do that.
+  They're similar to procedures, except that forms are called during
+  transformation, and procedures are called during execution.
+  When a form is called, a copy of the form's body is {i inserted} into the
+  program at the point where it's called, so it takes no extra execution time.
+  Forms resemble the {i macros} of programming languages like C
+  {goto ker1988 {c [ker 1988],}} but they're not macros.
+  They work directly with expressions, not with strings.
+  They have typed parameters, and they return typed objects.
+  Also, they can perform arbitrary computations during transformation,
+  including recursions.
+
+  To demonstrate this, I'll rewrite the prime number program using forms
+  instead of procedures.
+  First, I'll rewrite {i abs} as a form.}
+
+{narrow{orson
+abs :−
+ (form (real number) real:
+  (if number < 0.0
+   then − number
+   else number))}}
+
+{justify
+  Here's what happens if the form version of {i abs} is called by the procedure
+  {i sqrt} in the original prime number program.
+  When {i abs}({i g}\ −\ {i h}) is called in {i sqrt}, the parameter name
+  {i number} is bound to the argument {i g}\ −\ {i h.}
+  Then, in the body of {i abs,} each appearance of {i number} is replaced by
+  the argument to which it is bound.
+  Orson effectively adds parentheses where necessary, another way that forms
+  aren't like C macros.
+  The call to {i abs} then {i transforms} to this {i if} clause.}
+
+{narrow{orson
+(if g − h < 0
+ then − (g − h)
+ else g − h)}}
+
+{justify
+  The {i if} clause executes {i g}\ −\ {i h} twice.
+  That isn't a big problem here, because subtraction is fast.
+  However, it might be a problem if I had a more complicated argument than
+  {i g}\ −\ {i h.}
+  And it definitely would be a problem if the argument had side effects
+  (like changing the value of a variable) because then they would happen twice.
+
+  To fix this problem, I'll rewrite {i abs} so that {i number} is executed only
+  once.
+  The {i with} clause saves a copy of the object to which {i number} is bound
+  by using another name, {i number}{q '.}
+  Orson names can have apostrophes in them, and {i number}{q '} can be read as
+  ``number prime.''
+  Also, because I didn't mention a type, {i number}{q '} has the same type as
+  {i number,} namely {i real.}}
+
+{narrow{orson
+abs :−
+ (form (real number) real:
+  (with number' :− number
+   do (if number' < 0.0
+       then − number'
+       else number')))}}
+
+{justify
+  Now if I call {i abs}({i g}\ −\ {i h}), I get this instead, which executes
+  {i g}\ −\ {i h} only once.}
+
+{narrow{orson
+(with number' :− g − h
+ do (if number' < 0
+     then − number'
+     else number'))}}
+
+{justify
+  It can be a hassle to invent new names like {i number}{q '.}
+  Orson therefore provides a {i past clause,} written as ({b past}\ {i n}),
+  where {i n} is a name.
+  It returns the object to which {i n} was bound outside a {i with} clause.
+  I can rewrite {i abs} using a {i past} clause like this.}
+
+{narrow{orson
+abs :−
+ (form (real number) real:
+  (with number :− (past number)
+   do (if number < 0.0
+       then − number
+       else number)))}}
+
+{justify
+  If a form uses a parameter more than once, then it should use a {i with}
+  clause to save a copy of that parameter, in the way that I just demonstrated.
+  This rule doesn't apply to parameters that will be replaced by constants, or
+  to parameters that will be replaced by variables—only to those that are
+  replaced by arbitrary expressions.
+
+  With this rule in mind, I'll turn the procedures of the original prime
+  number program into forms.
+  The result is shown below.
+  It's on the file {goto {t prime2.os}} if you want to run it.}
+
+{narrow{orson
+(load ''lib.file'')
+
+(prog
+  real ε :− 0.001  !  Accuracy of {i sqrt.}
+
+!  {c Abs.} Return the absolute value of {i number.}
+
+  abs :−
+   (form (real number) real:
+    (with real number :− (past number)
+     do (if number < 0.0
+         then − number
+         else number)))
+
+!  {c Sqrt.} Return the square root of nonnegative {i a} to accuracy ε.
+
+  sqrt :−
+   (form (real a) real:
+    (with
+      var real g :− 1.0
+      var real h :− a
+     do (while abs(g − h) ≥ ε
+         do g := (g + h) / 2.0
+            h := a / g)
+        g))
+
+!  {c IsPrime.} Test if {i number} is prime.
+
+  isPrime :−
+   (form (int number) bool:
+    (with
+      int number :− (past number)
+      var int factor :− 2
+      var bool going :− true
+      int root :− sqrt(number\{real\})\{int\}
+     do (while going ∧ factor ≤ root
+         do going := number mod factor ≠ 0
+            factor += 1)
+        going))
+
+!  {c Main.} Write all prime numbers between 2 and 1000.
+
+  main :−
+   (for int number in 2, 1000
+    do (if isPrime(number)
+        then writeln(number)))
+)}}
+
+{justify
+  During transformation, each form call in this program turns into a copy of
+  its body, with parameters replaced by their corresponding arguments.
+  As a result, after transformation, I end up with a program that looks like
+  this.}
+
+{narrow{orson
+(load ''lib.file'')
+
+(prog
+  main :−
+   (for int number in 2, 1000
+    do (if
+        (with
+          var int factor :− 2
+          var bool going :− true
+          root :−
+           (with
+             var real g :− 1.0
+             var real h :− number
+            do (while
+                (with number :− g − h
+                 do (if number < 0.0
+                     then − number
+                     else number)) ≥ ε
+                do g := (g + h) / 2.0
+                   h := a / g)
+               g)
+         do (while going ∧ factor ≤ root
+             do going := number mod factor ≠ 0
+                factor += 1)
+            going)
+        then writeln(number)))
+)}}
+
+{justify
+  The transformed program is harder to read than the original, because it's no
+  longer broken into smaller parts by forms.
+  However, that doesn't matter, because you never see it.
+  It exists only behind the scenes, inside the Orson compiler.
+
+  In many Orson programs, forms are used more often than procedures.
+  Most operators are implemented as forms whose calls are replaced by machine
+  instructions called {i hooks,} although I didn't show that in the example.
+  The {i for} clause is implemented as a form whose call is replaced by a
+  {i with} clause and a {i while} clause, but I didn't show that either.
+  I also didn't show how a call to the form {i writeln} is replaced by an
+  unspecified expression that outputs an integer.
+
+  Defining these things as forms lets me redefine them if I want.
+  For example, if I define a new kind of numbers, different from integers or
+  reals, then I can redefine the plus operator to work with them.
+  I can even redefine the {i for} clause so it turns into something other than
+  a counting loop.
+  I'll show how to do some of these things later.}
+
+{left {b 4. Computation during transformation.}}
+
+{narrow
+ {justify
+   How can the mere transformation of an expression be of practical
+   consequence?}
+ {right
+  {goto wit1983 {c [wit 1983]}}}}
+
+{justify
+  Forms are more than just fast alternatives to procedures.
+  As I mentioned before, they can also perform arbitrary computations with
+  constants during transformation.
+  To demonstrate this, I'll rewrite the form {i isPrime} so that if I call it
+  with a constant, it will transform to a constant.
+  For example, the call {i isPrime}(4) will transform to the constant
+  {i false,} and {i isPrime}(5) will transform to the constant {i true.}
+  This program is on the file {goto {t prime3.os}} if you want to run it.}
+
+{narrow{orson
+(load ''lib.file'')
+
+(prog
+
+!  {c IsPrime.} Test if {i number} is prime during transformation.
+
+  isPrime :−
+   (form (int number) bool:
+    (with
+      real ε :− 0.001  !  Accuracy of {i sqrt.}
+
+!  {c Abs.} Return the absolute value of {i number.}
+
+      abs :−
+       (form (real number) real:
+        (with real number :− (past number)
+         do (if number < 0.0
+             then − number
+             else number)))
+
+!  {c Sqrt.} Return the square root of {i a} with accuracy ε.
+
+      sqrt :−
+       (form (real a) real:
+        (with
+          sqrting :−
+           (form (real g, real h) real:
+            (if abs(g − h) < ε
+             then g
+             else (with
+                    g' :− (g + h) / 2.0
+                    h' :− a / g'
+                   do sqrting(g', h'))))
+         do sqrting(1.0, a)))
+
+!  {c IsPriming.} Test if some {i divisor} evenly divides {i number.}
+
+      isPriming :−
+       (form (int divisor) bool:
+        (if divisor = 1
+         then true
+         else if number mod divisor = 0
+              then false
+              else isPriming(divisor − 1)))
+
+!  Test if {i number} is prime.
+
+     do isInt(number) ∧ number > 1 ∧ isPriming(sqrt(number\{real\})\{int\})))
+
+!  {c Main.} Write {t true} if 5 is prime, and write {t false} otherwise.
+
+  main :− writeln((if isPrime(5) then ''true'' else ''false''))
+)}}
+
+{justify
+  {i While} clauses, variables, and procedure calls are evaluated only during
+  execution.
+  As a result, I rewrote the forms {i sqrt} and {i isPrime} so they don't use
+  those things, and so they use recursion instead of iteration.
+  The recursions are done by two new forms, called {i sqrting} and
+  {i isPriming.}
+
+  To show how the new {i isPrime} works, I'll step through the transformation
+  of {i isPrime}(5).
+  The parameter {i number} becomes bound to the constant argument 5, and then
+  {i isPrime}'s body is evaluated.
+  Since the body is a {i with} clause, the name ε becomes bound to a real
+  constant, and the names {i abs,} {i sqrt,} and {i isPriming} become bound to
+  forms.
+  Only the body of the {i with} clause remains.
+  After {i number} is replaced by the object to which it is bound, I get this
+  expression.}
+
+{narrow{orson
+isInt(5) ∧ 5 > 1 ∧ isPriming(sqrt(5\{real\})\{int\}))}}
+
+{justify
+  Then name {i isInt} is bound to a form by Orson.
+  Its call is evaluated during transformation: the call transforms to {i true}
+  if its argument is an integer constant, and it transforms to {i false}
+  otherwise.
+  All the forms defined inside {i isPrime} assume their arguments are
+  constants, so I use {i isInt} to make sure they really are.
+  Since 5 is an integer constant, {i isInt}(5) transforms to {i true,} so I get
+  this.}
+
+{narrow{orson
+true ∧ 5 > 1 ∧ isPriming(sqrt(5\{real\})\{int\}))}}
+
+{justify
+  Of course 5 is greater than 1, so the expression 5\ >\ 1 transforms to
+  {i true.}
+  Most expressions that involve Orson's arithmetic operators transform to
+  constants if they are given constant arguments.
+  As a result, I get this.}
+
+{narrow{orson
+true ∧ true ∧ isPriming(sqrt(5\{real\})\{int\}))}}
+
+{justify
+  Orson next evaluates the cast 5\{{i real}\}, which converts the integer
+  constant 5 into the real constant 5.0.
+  The result of the cast is substituted back into the original expression, so
+  I get this:}
+
+{narrow{orson 
+true ∧ true ∧ isPriming(sqrt(5.0)\{int\}))}}
+
+{justify
+  Now Orson calls the form {i sqrt} with the constant real argument 5.0.
+  I could follow the recursive computation inside {i sqrt}, but this would
+  require lots of boring detail.
+  Instead, I'll just say that if the tests needed to control the recursion
+  involve constants, then they can be done during transformation.
+  As a result, the call to {i sqrt} transforms to a constant real approximation
+  to the square root of 5.0, which is about 2.236.}
+
+{narrow{orson
+true ∧ true ∧ isPriming(2.236\{int\})}}
+
+{justify
+  Orson casts 2.236 to an integer, giving 2.
+  Casts transforms to constants if their arguments are constants.}
+
+{narrow{orson
+true ∧ true ∧ isPriming(2)}}
+
+{justify
+  Orson calls the form {i isPriming} with the integer constant argument 2.
+  When it applies {i isPriming}, the parameter {i number} is replaced by 5, and
+  the parameter {i divisor} is replaced by 2, so the call transforms to this
+  {i if} clause.}
+
+{narrow{orson
+(if 2 = 1
+ then true
+ else if 5 mod 2 = 0
+      then false
+      else isPriming(2 − 1))}}
+
+{justify
+  Since 2\ =\ 1 transforms to {i false}, and 5\ {b mod}\ 2\ =\ 0 also 
+  transforms to {i false}, the {i if} clause transforms to the call
+  {i isPriming}(2\ −\ 1), which in turn transforms to the call
+  {i isPriming}(1).
+  This is a recursive call, so Orson transforms the body of {i isPriming} to
+  this.}
+
+{narrow{orson
+(if 1 = 1
+ then true
+ else if 5 mod 1 = 0
+      then false
+      else isPriming(1 − 1))}}
+
+{justify
+  Since 1\ =\ 1 transforms to 1, the {i if} clause transforms to {i true,} so
+  that the call {i isPriming}(2) is also {i true.}
+  Orson finally replaces the call by {i true} back in the original expression,
+  so I end up with this.}
+
+{narrow{orson
+true ∧ true ∧ true}}
+
+{justify
+  Orson transforms this expression to {i true}, so the value of {i isPrime}(5)
+  is also {i true.}
+
+  At this point you may wonder why anyone would want to test if a number is
+  prime during transformation.
+  One reason is that there are objects like {i hash tables} whose sizes must be
+  prime numbers.
+  An Orson implementation of hash tables might test if their sizes are prime
+  during transformation, so it need not do so later during execution.}
+
+{left {b 5. The Sieve of Eratosthenes.}}
+
+{narrow
+ {display
+And his answer trickled through my head,
+Like water through a sieve.}
+ {right
+  {goto car1998 {c [car 1998]}}}}
+
+{justify
+  Now I want to talk about a different program for finding prime numbers
+  between 2 and a positive number {i n.}
+  It's the {i Sieve of Eratosthenes,} named after a Greek mathematician of the
+  third century {c bce} {goto llo1973 {c [llo 1973],}} and it works like this.}
+
+{number
+ {justify
+   {label step1}
+   Make an empty set.}
+ {justify
+   {label step2}
+   Add integers 2, 3 ..., {i n} to the set.}
+ {justify
+   {label step3}
+   Visit each integer in the set.
+   Whenever you visit an integer, remove all other integers from the set that
+   are multiples of it.
+   For example, when you visit the integer 2, remove the integers 4, 6, 8,
+   etc.}
+ {justify
+   {label step4}
+   The integers left in the set are primes.
+   Write them.}}
+
+{justify
+  For example, suppose I want to find the prime numbers between 2 and 25.
+  I start with a set of the following numbers.}
+
+{narrow
+ {layout
+  {row
+   {left {b  2}\ \ }
+   {left {b  3}\ \ }
+   {left {b  4}\ \ }
+   {left {b  5}\ \ }
+   {left {b  6}\ \ }
+   {left {b  7}\ \ }
+   {left {b  8}\ \ }
+   {left {b  9}\ \ }
+   {left {b  10}\ \ }
+   {left {b  11}\ \ }
+   {left {b  12}\ \ }
+   {left {b  13}\ \ }
+   {left {b  14}\ \ }
+   {left {b  15}\ \ }
+   {left {b  16}\ \ }
+   {left {b  17}\ \ }
+   {left {b  18}\ \ }
+   {left {b  19}\ \ }
+   {left {b  20}\ \ }
+   {left {b  21}\ \ }
+   {left {b  22}\ \ }
+   {left {b  23}\ \ }
+   {left {b  24}\ \ }
+   {left {b  25}\ \ }}}}
+
+{justify
+  When I visit the integer 2 (it's underlined) I remove all other integers that
+  are multiples of 2 (they turn gray) so the set looks like this.}
+
+{narrow
+ {layout
+  {row
+   {left {bu 2}\ \ }
+   {left {b  3}\ \ }
+   {left {bg 4}\ \ }
+   {left {b  5}\ \ }
+   {left {bg 6}\ \ }
+   {left {b  7}\ \ }
+   {left {bg 8}\ \ }
+   {left {b  9}\ \ }
+   {left {bg 10}\ \ }
+   {left {b  11}\ \ }
+   {left {bg 12}\ \ }
+   {left {b  13}\ \ }
+   {left {bg 14}\ \ }
+   {left {b  15}\ \ }
+   {left {bg 16}\ \ }
+   {left {b  17}\ \ }
+   {left {bg 18}\ \ }
+   {left {b  19}\ \ }
+   {left {bg 20}\ \ }
+   {left {b  21}\ \ }
+   {left {bg 22}\ \ }
+   {left {b  23}\ \ }
+   {left {bg 24}\ \ }
+   {left {b  25}\ \ }}}}
+
+{justify
+  Then I visit 3, removing integers that are multiples of 3.}
+
+{narrow
+ {layout
+  {row
+   {left {b  2}\ \ }
+   {left {bu 3}\ \ }
+   {left {bg 4}\ \ }
+   {left {b  5}\ \ }
+   {left {bg 6}\ \ }
+   {left {b  7}\ \ }
+   {left {bg 8}\ \ }
+   {left {bg 9}\ \ }
+   {left {bg 10}\ \ }
+   {left {b  11}\ \ }
+   {left {bg 12}\ \ }
+   {left {b  13}\ \ }
+   {left {bg 14}\ \ }
+   {left {bg 15}\ \ }
+   {left {bg 16}\ \ }
+   {left {b  17}\ \ }
+   {left {bg 18}\ \ }
+   {left {b  19}\ \ }
+   {left {bg 20}\ \ }
+   {left {bg 21}\ \ }
+   {left {bg 22}\ \ }
+   {left {b  23}\ \ }
+   {left {bg 24}\ \ }
+   {left {b  25}\ \ }}}}
+
+{justify
+  And I visit 5, removing integers that are multiples of 5.}
+
+{narrow
+ {layout
+  {row
+   {left {b  2}\ \ }
+   {left {b  3}\ \ }
+   {left {bg 4}\ \ }
+   {left {bu 5}\ \ }
+   {left {bg 6}\ \ }
+   {left {b  7}\ \ }
+   {left {bg 8}\ \ }
+   {left {bg 9}\ \ }
+   {left {bg 10}\ \ }
+   {left {b  11}\ \ }
+   {left {bg 12}\ \ }
+   {left {b  13}\ \ }
+   {left {bg 14}\ \ }
+   {left {bg 15}\ \ }
+   {left {bg 16}\ \ }
+   {left {b  17}\ \ }
+   {left {bg 18}\ \ }
+   {left {b  19}\ \ }
+   {left {bg 20}\ \ }
+   {left {bg 21}\ \ }
+   {left {bg 22}\ \ }
+   {left {b  23}\ \ }
+   {left {bg 24}\ \ }
+   {left {bg 25}\ \ }}}}
+
+{justify
+  The Sieve algorithm continues in this way, visiting multiples of 7, 11, 13,
+  etc.
+  However, I know that there are no more primes in the set after I visit 5, so
+  I'll stop the example here.
+
+  Unlike the previous prime number algorithm, the Sieve doesn't need square
+  roots, or even multiplication, so I'll discard everything I've written
+  before.
+  I'll write the Sieve as a form called {i sieve,} whose call transforms into
+  an expression that will be executed later.
+  The form {i sieve} takes an integer parameter {i n} that tells it how many
+  prime numbers to find.
+  For simplicity, I'll assume that {i n} is a constant nonnegative integer.
+
+  Let's start with step {goto step1 1} of the algorithm, which makes an empty
+  set.
+  The three dots ``...'' stand for parts of the form I haven't written yet.}
+
+{narrow{orson
+(prog
+  sieve :−
+   (form (int n) void:
+    (with var set(n) s
+     do init(s)
+        ...))
+)}}
+
+{justify
+  The equate inside the {i with} clause makes a set variable called {i s} that
+  can contain integers from 0 to {i n,} inclusive.
+  It's different from the equates you've seen before, in two ways.
+
+  First, the type of the variable is {b var}\ {i set}({i n}).
+  The expression {i set}({i n}) calls a form {i set} with the argument {i n,} a
+  constant nonnegative integer.
+  Form calls can transform into types, in the same way that they can transform
+  into anything else.
+  I'll show how to write {i set} later.
+
+  Second, the equate doesn't have a `\ :−\ ' symbol.
+  That means it makes a variable with a known type, but an unknown value.
+  I can use an equate like this only when I make a variable, and only when I
+  intend to give that variable a known value later.
+  I initialize {i s} to be the empty set, by calling a form {i init.}
+  I'll write {i init} later, after I've written {i set.}
+
+  Step {goto step2 2} of the Sieve says that the integers 2 through {i n} must
+  be added to the set variable {i s.}
+  The {i for} clause binds the name {i k} to integers 2 through {i n,} and
+  the expression {i s}\ +=\ {i k} adds each integer {i k} to the set {i s.}}
+
+{narrow{orson
+(prog
+  sieve :−
+   (form (int n) void:
+    (with var set(n) s
+     do init(s)
+        (for int k in 2, n
+         do s += k)
+        ... ))
+)}}
+
+{justify
+  Earlier, I said that most of Orson's operators are actually forms.
+  The expression {i s}\ +=\ {i k} is actually an abbreviation for the
+  expression {i "}+={i "}({i s,}\ {i k}).
+  In other words, it calls a form whose name is {i "}+={i "} with the arguments
+  arguments {i s} and {i k.}
+  I'll write the form {i "}+={i "} later too.
+
+  By the way, the name {i "}+={i "} is written with quotation marks, so it's
+  what Orson calls a {i quoted name.}
+  It's {c not} a string, because strings aren't names.
+  Orson strings are written with two apostrophes, not with quotation marks.
+  Quoted names are like the names you've seen before, but they can have
+  characters other than letters, digits, and apostrophes in them.
+
+  Step {goto step3 3} of the algorithm says that I must visit each integer
+  element of the set variable {i s.}
+  I can do that by using another {i for} clause, which binds the name {i k} to
+  integers 2 through {i n.}
+  Inside the {i for} clause, I test if {i k} is in {i s} by using the
+  expression {i k}\ ∊\ {i s.}
+  It returns {i true} if {i k} is in {i s,} and it returns {i false} otherwise.
+  As you've probably guessed, {i k}\ ∊\ {i s} is an abbreviation for the form
+  call {i "}∊{i "}({i k,}\ {i s}).
+  I'll write {i "}∊{i "} later.}
+
+{narrow{orson
+(prog
+  sieve :−
+   (form (int n) void:
+    (with var set(n) s
+     do (for int k in 2, n
+         do s += k)
+        (for int k in 2, n
+         do (if k ∊ s
+             then ... ))
+        ...))
+)}}
+
+{justify
+  Step {goto step3 3} also says that whenever I find an integer {i k} in the
+  set, then I must remove all other elements from the set that are multiples of
+  {i k.}
+  I'll do that using another {i for} clause that binds {i m} to the multiples
+  of {i k.}
+  It binds {i m} to a series of integers starting with {i k}\ +\ {i k,} and
+  ending with {i n,} in steps of {i k.}
+  Each time I bind {i m} to a new multiple of {i k,} the expression
+  {i s}\ −=\ {i m} removes {i m} from the set {i s.}
+  Of course this is an abbreviation for {i "}−={i "}({i s,}\ {i m}), another
+  form that I'll write later.}
+
+{narrow{orson
+(prog
+  sieve :−
+   (form (int n) void:
+    (with var set(n) s
+     do (for int k in 2, n
+         do s += k)
+        (for int k in 2, n
+         do (if k ∊ s
+             then (for int m in k + k, n, k
+                   do s −= m)))
+        ...))
+)}}
+
+{justify
+  Finally, step {goto step4 4} says that any integers left in the set {i s} are
+  primes, so I must write them.
+  I'll do that using another {i for} clause, along with the form {i "}∊{i ".}
+  That gives me the final Orson program for the Sieve, which looks like this.
+  The first {i load} clause gets {i writeln} from Orson's library, and the
+  second gets the forms that work with sets.}
+
+{narrow{orson
+(load ''lib.file'')
+(load ''set'')
+
+(prog
+
+!  {c Sieve.} Write the prime numbers between 2 and {i n.}
+
+  sieve :−
+   (form (int n) void:
+    (with var set(n) s
+     do (for int k in 2, n
+         do s += k)
+        (for int k in 2, n
+         do (if k ∊ s
+             then (for int m in k + k, n, k
+                   do s −= m)))
+        (for int k in 2, n
+         do (if k ∊ s
+             then writeln(k)))))
+
+!  {c Main.} Write the prime numbers between 2 and 1000.
+
+  main :− sieve(1000)
+)}}
+
+{justify
+  Because I've assumed that the parameter {i n} is a nonnegative integer
+  constant, it doesn't matter how many times it appears in the body of the form
+  {i sieve.}
+  If I hadn't made that assumption, I would have used a {i with} clause to make
+  a copy of {i n.}
+  The program shown above is on the file {goto {t prime4.os}} if you want to
+  run it.}
+
+{left {b 6. Sets as abstract data structures.}}
+
+{narrow
+ {justify
+   Let no one imagine that representation is bad in itself; a realistic form
+   may be as significant, in its place as part of the design, as an abstract.}
+ {right
+  {goto bel1981 {c [bel 1981]}}}}
+
+{justify
+  In the previous example, I promised to write the forms that implement sets.
+  These forms are summarized in the following table.}
+
+{table
+ {row
+  {center {bc \ expression \ }}
+  {center {bc \ form call\ }}
+  {center {bc \ purpose\ }}}
+ {row
+  {center {i set}({i n})}
+  {center {i set}({i n})}
+  {left \ Return the type of a set of integers, 0 to {i n.}\ }}
+ {row
+  {center {i init}({i s})}
+  {center {i init}({i s})}
+  {left \ Initialize a set variable {i s.}\ }}
+ {row
+  {center {i s} += {i k}}
+  {center {i "}+={i "}({i s,} {i k})}
+  {left \ Add an integer {i k} to a set variable {i s.}\ }}
+ {row
+  {center {i s} −= {i k}}
+  {center {i "}−={i "}({i s,} {i k})}
+  {left \ Remove an integer {i k} from a set variable {i s.}\ }}
+ {row
+  {center {i k} ∊ {i s}}
+  {center {i "}∊{i "}({i k,} {i s})}
+  {left \ Test if an integer {i k} is a member of a set variable {i s.}\ }}}
+
+{justify
+  Before I explain how to write them, I'll talk about two kinds of objects that
+  I haven't mentioned yet, called arrays and tuples.
+  These objects exist only during execution.
+
+  An {i array} is a finite sequence of zero or more objects, all of the same
+  type, called {i elements.}
+  The number of elements in an array is a nonnegative integer constant, called
+  its {i length.}
+  Each element in the array has an {i index,} a nonnegative integer that is
+  less than its length.
+  The index of the first element is 0, the index of the second element is 1,
+  etc.
+  The index of the last element is the array's length minus 1.
+
+  The type of an array is written as the expression [{i k}]\ {i t,} where {i k}
+  is the array's length, and {i t} is the type of the array's elements.
+  For example, an array of ten integers has the type [10]\ {i int,} and an
+  array of two reals has the type [2]\ {i real.}
+  Since a form call can return a type, [{i k}]\ {i t} is an abbreviation for
+  the form call {i "}␣[]{i "}({i k,}\ {i t}).
+  I've written a blank as `␣' to emphasize its presence.
+
+  Like an array, a {i tuple} is also a finite sequence of zero or more objects,
+  called its {i slots.}
+  Unlike an array, however, a tuple's slots can have different types, and they
+  have names instead of indexes.
+  The type of a tuple is written like this.}
+
+{narrow{orson
+(tuple t{- 1} n{- 1}, t{- 2} n{- 2} ..., t{- k} n{- k})}}
+
+{justify
+  Each subscripted pair {i t}\ {i n} describes a slot, where {i t} is the
+  slot's type, and {i n} is its name.
+  For example, the tuple type
+  ({b tuple}\ {i real}\ {i x,}\ {i real}\ {i y,}\ {i real}\ {i z}) might
+  describe an object that represents a point in three-dimensional space.
+  It has three slots with the type {i real,} whose names are {i x,} {i y,} and
+  {i z.}
+
+  The tuple type
+  ({b tuple}\ [1001]\ {i bool}\ {i bits,}\ {i int}\ {i count})
+  describes an object that represents a set of 1001 integers between 0 and
+  1000, which is what I need for the Sieve.
+  The slot {i bits} is an array of 1001 Booleans, and the slot {i count} is an
+  integer.
+  If the element at index {i k} of {i bits} is {i true,} then {i k} is a member
+  of the set.
+  If it is {i false,} then {i k} is not a member of the set.
+  The slot {i count} holds the number of {i true} elements in {i bits,} so it's
+  the number of members in the set.
+
+  The form call {i set}({i n}) transforms to the type of a set of integers
+  that might range from 0 to {i n.}
+  I can write the form {i set} using the array and tuple representation that I
+  just described, like this.
+  The length of the array is {i n}\ +\ 1, and not just {i n,} so that {i n}
+  itself will fit in the set.
+  The form {i set} uses two more things you haven't seen yet: jokers and type
+  types.}
+
+{narrow{orson
+set :−
+ (form (inj n) type tup:
+  (tuple
+    [n + 1] bool Bits,
+    int Count))}}
+
+{justify
+  The names {i inj} and {i tup} are bound to types called {i jokers.}
+  Each type you've seen before describes only a finite number of objects.
+  For example, the type {i int} describes a finite range of integers that can
+  be represented in a computer.
+  However, a joker describes an infinite number of objects.
+  For example, the joker {i inj} describes any integer, and the joker {i tup}
+  describes any tuple.
+
+  Orson binds many names to predefined jokers.
+  You can't make an object whose type is a joker: since it describes infinitely
+  many objects, an object whose type is a joker would be infinitely large.
+  However, you can use a joker to describe a form's argument, or to describe
+  another type.
+  By the way, the name {i joker} comes from card games in which a joker card is
+  ``wild.''
+  A joker type can describe other types in somewhat the same way that a joker
+  card can match other cards.
+
+  The expression {b type}\ {i e} returns the type of any expression {i e.}
+  For example, {b type}\ 3.14159 returns the type {i real,} and
+  {b type}\ {q ''abcd''} returns the type {i string.}
+  It works even if {i e} itself is a type.
+  For example, if I write {b type}\ {i int,} I get the type of the type
+  {i int.}
+  In Orson, all objects have types, even types themselves.
+  For example, the joker {i tup} is the type of any tuple, so the type
+  {b type}\ {i tup} must be the type of any tuple type.
+  The type of a type is called a {i type type.}
+
+  The form {i set} takes a single argument of type {i inj,} meaning that it can
+  be called with any integer.
+  It returns an object of type {b type}\ {i tup,} meaning that the call can
+  transform to any tuple type.
+  As you can see from {i set}'s body, it actually returns a tuple type that
+  describes a set.
+
+  Now, the call {i set}({i n}) transforms to the type of a set that can contain
+  a specific range of elements, from 0 to {i n.}
+  I also need the type of a set that holds any range of elements.
+  I need it to write the rest of the forms that deal with sets, since they must
+  work with sets of any range.
+  Suppose I rewrite {i set} like this.}
+
+{narrow{orson
+set :−
+ (form () type tup:
+  (tuple
+    [] bool bits,
+    int count))}}
+
+{justify
+  The expression []\ {i t} returns a joker that describes an array of any
+  length, and whose elements have the type {i t.}
+  For example, []\ {i bool} returns a joker that describes an array of any
+  length, whose elements are Booleans.
+  As you probably guessed, []\ {i t} is an abbreviation for the form call
+  {i "}[]␣{i "}({i t}).
+
+  The form call {i set}() transforms to the type of a set with any range of
+  elements.
+  It returns a type with a joker inside it that acts something like a joker
+  itself.
+  However, I can't make an object of type {i set}() because it would have
+  infinite size.
+  I must still write {i set}({i n}) to describe specific, finite sets.
+
+  How can I reconcile the two versions of {i set,} since I need both of them?
+  I could give them two different names, like {i specificSet} and
+  {i generalSet,} but that would be ugly.
+  I'd rather write {i set} so it can be called in two different ways, either
+  as {i set}() or as {i set}({i n}).
+  I can do that by using an {i alternate form,} as shown below.}
+
+{narrow{orson
+set :−
+ (alt
+  (form () type tup:
+   (tuple
+     [] bool bits,
+     int count)),
+  (form (inj n) type tup:
+   (tuple
+     [n + 1] bool bits,
+     int count)))}}
+
+{justify
+  An alternate form has two or more forms inside it, called {i member forms.}
+  When Orson calls an alternate form, it tries to call the first member form.
+  If the first member form can't be called, because the arguments aren't right
+  for it, then Orson tries calling the second member form, then the third, etc.
+  If Orson finds a member form that it can call, then it calls that member form
+  in the usual way.
+  For example, {i set}() calls the first member form, and {i set}(1000) calls
+  the second member form.
+  It's an error if Orson can't call any of the member forms.
+
+  After I've defined {i set,} I can go on to define the other forms that work
+  with sets.
+  The first form is called {i init,} which is short for {i initialize.}
+  It takes a set variable {i s} as its argument, sets all elements of {i s}'s
+  array slot {i bits} to {i false,} and sets {i s}'s integer slot {i count} to
+  zero.
+  As a result, it makes {i s} be empty.}
+
+{narrow{orson
+init :−
+ (form (var set() s) void:
+  (for int e in 0, length(s.bits) − 1
+   do s.bits[e] := false)
+  s.count := 0)}}
+
+{justify
+  If {i a} is an array, then the form call {i length}({i a}) returns the
+  constant number of elements in {i a.}
+  For example, {i length}({i s}.{i bits})\ −\ 1 returns the largest index in
+  the array {i s}.{i bits.}
+  The name {i length} is bound to a predefined form by Orson.
+
+  If {i t} is a tuple, and {i n} is the name of a slot, then the expression
+  {i t}.{i n} returns the object in the slot {i n} that belongs to the tuple
+  {i t.}
+  For example, the expression {i s}.{i bits} returns the array in the slot
+  {i bits} that belongs to the tuple {i s.}
+  The expression {i t}.{i n} is an abbreviation for the form call
+  {i "}.{i "}({i t,}\ ${i n}), where ${i n} is an object that represents the
+  name {i n.}
+
+  If {i a} is an array, and {i k} is an integer, then the expression
+  {i a}[{i k}] returns the element of {i a} at index {i k.}
+  For example, {i set}.{i bits}[{i element}] returns the integer at the index
+  {i element} of the array in the slot {i bits} that belongs to the tuple
+  {i set.}
+  The expression {i a}[{i k}] is an abbreviation for the form call
+  {i "}␣[]{i "}({i a,}\ {i k}).
+
+  The second form that works with sets is called {i "}+={i ",} which adds an
+  integer element {i e} to a set variable {i s.}
+  It first tests if {i e} is already a member of {i s,} using the form
+  {i "}∊{i ".}
+  If it isn't a member, then it makes the element of {i bits} at index {i e} be
+  {i true,} and it increments {i count.}
+  I haven't defined {i "}∊{i "} yet, but that's not a problem, because forms
+  defined by equates in the same {i prog} clause can call each other freely.}
+
+{narrow{orson
+"+=" :−
+ (form (var set() s, int e) void:
+  (with int e :− (past e)
+   do (if ¬ (e ∊ s)
+       then s.bits[e] := true
+            s.count += 1)))}}
+
+{justify
+  The expression ¬\ {i e} is read as ``not {i e.}''
+  It returns {i true} if {i e} is {i false,} and it returns {i false} if {i e}
+  is {i true.}
+  Of course it's an abbreviation for the form call {i "}¬{i "}({i e}).
+
+  The third form is called {i "}−={i ",} and it removes an integer element
+  {i e} from a set variable {i s,} so it's the opposite of "+=".
+  It first tests if {i e} is a member of {i s.}
+  If it's a member, then it makes the element of {i bits} at index {i e} be
+  {i false,} and it decrements {i count.}}
+
+{narrow{orson
+"−=" :−
+ (form (var set() s, int e) void:
+  (with int e :− (past e)
+   do (if e ∊ s
+       then s.bits[e] := false
+            s.count −= 1)))}}
+
+{justify
+  Now you may wonder how I can use {i "}+={i "} to add an integer to a set
+  variable, and also to increment an integer variable.
+  You may also wonder how I can use {i "}−={i "} to remove an integer from a
+  set, and also to decrement an integer variable.
+  How does Orson know which one I mean?
+
+  Suppose that a name was previously bound to a form, and that I rebind that
+  name to a new form.
+  Then Orson automatically binds that name to an alternate form, whose member
+  forms are the new form, followed by the previous form.
+  As a result, it's as if {i "}+={i "} and {i "}−={i "} were defined like this,
+  where ``...'' stands for the form to which each name was previously bound.}
+
+{narrow{orson
+"+=" :−
+ (alt
+  (form (var set() s, int e) void:
+   (with int e :− (past e)
+    do (if ¬ (e ∊ s)
+        then s.bits[e] := true
+             s.count += 1))),
+   ...)
+
+"−=" :−
+ (alt
+  (form (var set() s, int e) void:
+   (with int e :− (past e)
+    do (if e ∊ s
+        then s.bits[e] := false
+             s.count −= 1))),
+  ...)}}
+
+{justify
+  The fourth form that works with sets is called {i "}∊{i ",} and it tests if
+  an integer {i e} is a member of a set variable {i s.}
+  All I do is get the Boolean element of {i bits} at index {i e.}}
+
+{narrow{orson
+"∊" :−
+ (form (int e, var set() s) bool:
+   s.bits[e])}}
+
+{justify
+  The fifth form is called {i card,} which is short for {i cardinality.}
+  It returns the number of members in the set variable {i s.}
+  This is easy to write, since the number of members is in the slot {i count.}
+  I don't need {i card} for the Sieve, but I might need it if I ever use sets
+  for something else.}
+
+{narrow{orson
+card :−
+ (form (var set() s) int:
+   s.count)}}
+
+{justify
+  The sixth form is called {i isEmpty,} and it tests if the set variable {i s}
+  has no members.
+  I just test if {i s}'s cardinality is 0.
+  I don't need {i isEmpty} to implement the Sieve either.}
+
+{narrow{orson
+isEmpty :−
+ (form (var set() set) bool:
+   card(set) = 0)}}
+
+{justify
+  Finally, here's a {i prog} clause that contains all the set forms.
+  It's on the file {goto {t set.os}} so the Sieve program {goto {t prime4.os}}
+  can load it.}
+
+{narrow{orson
+(prog
+
+!  {c Set.} Return the type of set with {i n} elements, or a joker describing all such sets.
+
+  set :−
+   (alt
+    (form () type tup:
+     (tuple
+       [] bool Bits,
+       int Count)),
+    (form (inj n) type tup:
+     (tuple
+       [n + 1] bool Bits,
+       int Count)))
+
+!  {c Init.} Initialize a set variable {i s} to have zero elements.
+
+  init :−
+   (form (var set() s) void:
+    (for int e in 0, length(s.Bits) − 1
+     do s.Bits[e] := false)
+    s.Count := 0)
+
+!  {i "}+={i ".} Add an integer {i e} to a set variable {i s.}
+
+  "+=" :−
+   (form (var set() s, int e) void:
+    (with int e :− (past e)
+     do (if ¬ (e ∊ s)
+         then s.Bits[e] := true
+              s.Count += 1)))
+
+!  {i "}−={i ".} Remove an integer {i e} from a set variable {i s.}
+
+  "−=" :−
+   (form (var set() s, int e) void:
+    (with int e :− (past e)
+     do (if e ∊ s
+         then s.Bits[s] := false
+              s.Count −= 1)))
+
+!  {i "}∊{i ".} Test if an integer {i e} is a member of a set variable {i s.}
+
+  "∊" :−
+   (form (int e, var set() s) bool:
+     s.Bits[e])
+
+!  {c Card.} Return the number of elements in a set variable {i s.}
+
+  card :−
+   (form (var set() s) int:
+     s.Count)
+
+!  {c IsEmpty.} Test if a set variable {i s} has zero elements.
+
+  isEmpty :−
+   (form (var set() s) bool:
+     card(s) = 0)
+)}}
+
+{justify
+  I've changed the names of the slots {i Bits} and {i Count} so they start with
+  upper case Roman letters (`{i A}' through `{i Z}').
+  Such names are called {i secret names.}
+  A secret name exists inside a {i prog} clause, but not outside it.
+  For example, if you write another {i prog} clause that mentions the names
+  {i Bits} or {i Count,} then Orson considers them to be different from the
+  names {i Bits} and {i Count} in the {i prog} clause shown above.
+
+  If a {i prog} clause creates an object with a secret name, then the object
+  can be used outside the {i prog} clause only by calling forms and procedures
+  that are defined inside it.
+  As a result, the object can be used only in ways that these forms and
+  procedures allow.
+  It can't be used in ways that don't make sense, either by mistake or
+  deliberately.
+  For example, the {i Count} slot of a set can be incremented only when a
+  member is added by {i "}+={i ",} and it can be decremented only when a member
+  is removed by {i "}−={i ".}
+
+  Because of this, my implementation of sets is an {i abstract data structure.}
+  In an abstract data structure, some objects are hidden, and are manipulated
+  only in well-defined ways.
+  A {i prog} clause can implement an abstract data structure by giving these
+  hidden objects secret names, and by giving plain or quoted names to the forms
+  and procedures that manipulate them.
+
+  Most Orson programs should be implemented using high level abstract objects,
+  like sets.
+  Low level concrete objects, like arrays and tuples, should be used primarily
+  to implement these abstract objects.
+  Implementations of many commonly used abstract objects can be loaded from
+  Orson's library.}
+
+{left {b 7. Conclusion.}}
+
+{narrow
+ {justify
+   With this handful of building blocks, it's possible to write useful programs
+   of considerable size, and it would probably be a good idea if you paused
+   long enough to do so.}
+ {right
+  {goto ker1988 {c [ker 1988]}}}}
+
+{justify
+  I haven't tried to explain the entire Orson language in this essay.
+  Here are some important things I've left out.
+  They're fully described in the ``Revised⁻¹ Report on the Algorithmic Language
+  Orson'' {goto moe2013b {c [moe 2013b].}}}
+
+{bullet
+ {justify
+   {i Case} clauses select among alternatives faster than {i if} clauses.}
+ {justify
+   {i Catch} and {i throw} clauses handle unexpected situations during
+   execution.}
+ {justify
+   The form {i error} handles unexpected situations during transformation.}
+ {justify
+   {i Generic} forms require the types of their arguments to have certain
+   relationships to each other.}
+ {justify
+   {i Iterators} are predefined {i for} clauses that visit parts of objects.}
+ {justify
+   {i Pointers} implement objects that change their size and shape, like
+   chains, trees, and graphs.}}
+
+{justify
+  If you're interested in seeing more example Orson programs, then you might
+  check the source files for the Orson library.
+  They contain Orson implementations of many classical abstract data
+  structures, including binary search trees, hash tables, queues, and stacks.
+  You may also want to check the source files for {i Bracy}
+  {goto moe2014a {c [moe 2014a],}} a simple document compiler that is written
+  in Orson.
+  I used Bracy to write most of Orson's {c html} documentation.}
+
+{rule}
+
+{center {b References}}
+
+{justify
+  Many works cited here are available in more recent versions.
+  These are the ones I have on my bookshelf, or that were available to me in
+  libraries.}
+
+{layout
+ {row
+  {left
+   {label ans1986}
+   {c [ans\ 1986]\ \ }}
+  {justify
+    American National Standards Institute.
+    {i American National Standard Code for Information Interchange.}
+    {c Ansi} X3.4–1986.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label bel1981}
+   {c [bel\ 1981]\ \ }}
+  {justify
+    Clive Bell.
+    {i Art.}
+    Perigee Books.
+    G. P. Putnam's Sons.
+    New York, New York.
+    1981.
+    Page 25.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label car1998}
+   {c [car\ 1998]\ \ }}
+  {justify
+    Lewis Carroll.
+    ``Through the Looking-Glass and What Alice Found There.''
+    In {i The Annotated Alice.}
+    Martin Gardner, editor.
+    Wings Books.
+    New York, New York.
+    1998.
+    Page 311.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label dic1970}
+   {c [dic\ 1970]\ \ }}
+  {justify
+    Charles Dickens.
+    {i Little Dorrit.}
+    Oxford University Press.
+    London, United Kingdom.
+    1970.
+    Page 736.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label har1982}
+   {c [har\ 1982]\ \ }}
+  {justify
+    George Harrison.
+    ``Dream Away.''
+    George Harrison, Ray Cooper, Phil McDonald, producers.
+    Dark Horse/Warner Brothers Records.
+    1982.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label kam2010}
+   {c [kam\ 2010]\ \ }}
+  {justify
+    Poul-Henning Kamp.
+    ``Sir, Please Step Away from the {c asr}-33.''
+    {i Communications of the {c Acm.}}
+    Volume 53.
+    Number 11.
+    2010.
+    Pages 56–57.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label ker1988}
+   {c [ker\ 1988]\ \ }}
+  {justify
+    Brian W. Kernighan, Dennis M. Ritchie.
+    {i The C Programming Language.}
+    Second Edition.
+    Prentice-Hall.
+    Upper Saddle River, New Jersey.
+    1988.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label llo1973}
+   {c [llo\ 1973]\ \ }}
+  {justify
+    G. E. R. Lloyd.
+    {i Greek Science After Aristotle.}
+    W. W. Norton.
+    New York, New York.
+    1973.
+    Page 49.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label moe2014a}
+   {c [moe\ 2014a]\ \ }}
+  {justify
+    James B. Moen.
+    ``The Bracy Manual.''
+    Unpublished technical report.
+    2014.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label moe2013b}
+   {c [moe\ 2013b]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2013.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label nor1994}
+   {c [nor\ 1994]\ \ }}
+  {justify
+    Donald Norman.
+    ``Foreword.''
+    In {i The Unix Haters' Handbook.}
+    Simson Garfinkel, Daniel Weise, Steven Strassmann, editors.
+    IDG Books.
+    San Mateo, California.
+    1994.
+    Page {c xvii.}}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label rit1974}
+   {c [rit\ 1974]}}
+  {justify
+    Dennis M. Ritchie, Ken Thompson.
+    ``The {c Unix} Time-Sharing System.''
+    {i Communications of the {c Acm.}}
+    Volume 17.
+    Number 7.
+    1974.
+    Pages 364–375.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label uni2006}
+   {c [uni\ 2006]\ \ }}
+  {justify
+    The Unicode Consortium.
+    {i The Unicode Standard, Version 5.0.}
+    Fifth Edition.
+    Addison-Wesley Professional.
+    Reading, Massachusetts.
+    2006.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label vog1952}
+   {c [vog\ 1952]\ \ }}
+  {justify
+    A. E. van Vogt.
+    ``Vault of the Beast.''
+    In {i The Astounding Science Fiction Anthology.}
+    John W. Campbell, Jr., editor.
+    Simon and Schuster.
+    New York, New York.
+    1952.
+    Pages 60–83.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label wit1983}
+   {c [wit\ 1983]\ \ }}
+  {justify
+    Ludwig Wittgenstein.
+    {i Remarks on the Foundation of Mathematics.}
+    Revised edition.
+    G. H. von Wright, R. Rhees, G. E. M. Anscombe, editors.
+    G. E. M. Anscombe, translator.
+    MIT Press.
+    Boston, Massachusetts.
+    1983.
+    Page 357.}}}

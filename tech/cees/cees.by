@@ -1,0 +1,271 @@
+{title Orson's Interface to GNU C}
+
+{center
+ {b Orson's Interface to {c Gnu} C}
+
+ James B. Moen
+ December 12, 2013}
+
+{justify
+  Copyright © 2013 James B. Moen.
+  Permission is granted to copy, distribute, and/or modify this document under
+  the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
+  version published by the Free Software Foundation; with no Invariant
+  Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license may be obtained at
+  {goto http://fsf.org/ {t <http://fsf.org/>.}}
+
+  This document uses special characters.
+  Without proper rendering support, you may see question marks, boxes, or other
+  symbols in place of these characters.
+  This document must be rendered in a font where an italic quote `\ {i "}\ '
+  looks different from two apostrophes `\ {q ''}\ '.}
+
+{rule}
+
+{left {b 1. Introduction.}}
+
+{narrow
+ {left
+   C in each act {i must} change her dress.}
+ {right
+  {goto gil1936 {c [gil 1936]}}}}
+
+{justify
+  The programming language Orson {goto moe2013 {c [moe 2013]}} is currently
+  implemented as a translator that turns Orson programs into equivalent {c Gnu}
+  C {goto sta2008 {c [sta 2008]}} programs.
+  As a result, {c Gnu} C code can be easily embedded into an Orson program.
+  This is done by loading {c Gnu} C source files, then calling the form
+  {q {i c}'{i s}} (that's {i cee} {i apostrophe} {i ess}) on {c Gnu} C
+  expressions to make them look like Orson expressions.
+  The form {q {i c}'{i s}} is defined in the Standard Prelude, but is not
+  described in the Revised⁻¹ Report.}
+
+{left {b 2. Loading {c Gnu} C files.}}
+
+{justify
+  If {i p} is a portable pathname that ends in the suffix {i c} or {i h,} then
+  the {i load} clause ({b load}\ {i p}) will load a {c Gnu} C source file.
+  For example, ({b load}\ {q ''{t own.clib.cstuff:c}''}) will load the file
+  {i cstuff.c} in the directory {i clib,} which in turn is in the user's
+  {i own} (home) directory.
+
+  Orson works by writing a scratch file that contains {c Gnu} C code, then
+  invoking the {c Gnu} C compiler {c gcc} to compile it.
+  A {i load} clause like the one mentioned above simply copies a file verbatim
+  into the scratch file, without examining it in any way.
+  If the copied file contains erroneous {c Gnu} C code, then {c gcc} may issue
+  error messages.}
+
+{left {b 3. The form {q {i c}'{i s.}}}}
+
+{justify
+  Orson's Standard Prelude binds the name {q {i c}'{i s}} ({i cee}
+  {i apostrophe} {i ess}) in the following way.}
+
+{narrow{orson
+c's :−
+ (alt
+  (form (type exe l, string r) exe:
+    ?strValue(l, r)),
+  (form (string l, int m, int r) type mut:
+    ?strType(l, m, r)),
+  (form (type void, string m, list r) void:
+    ?strApply(void, m, r)
+    skip),
+  (form (type exe l, string m, list r) exe:
+    ?strApply(l, m, r)))}}
+
+{justify
+  The form {q {i c}'{i s}} makes {c Gnu} C objects look like Orson objects.
+  It works by copying a constant string that contains {c Gnu} C code into the
+  scratch file, at the point where the call to {q {i c}'{i s}} appears.
+  It is an error if the string is not a constant.
+  The string is not examined in any way, so if it contains erroneous {c Gnu} C
+  code, then {c gcc} may issue error messages.
+
+  Orson always evaluates the result of a call to {q {i c}'{i s}} during
+  execution.
+  As a result, Orson cannot transform a {c Gnu} C expression to a constant,
+  even if {c gcc} treats it as a constant expression.
+  Orson might not recognize Orson names that appear inside a {c Gnu} C
+  expression.
+  This is because Orson changes some names to avoid inadvertent name capture by
+  forms.
+
+  As a matter of style, calls to {q {i c}'{i s}} are almost always hidden
+  inside Orson methods, so it is not apparent whether those methods are written
+  wholly or partly in C.}
+
+{left {b 3.1. {c Gnu} C expressions.}}
+
+{justify
+  The first member of the alternate form {q {i c}'{i s}} lets a {c Gnu} C
+  expression be used as an Orson expression.
+  The expression's type is the Orson execution type {i l,} and the expression
+  itself is represented as the string constant {i r.}
+  For example, {q {i c}'{i s}({b proc}\ ({i real})\ {i real},\ ''{t sin}'')}
+  will evaluate to the value of the {c Gnu} C name {t sin,} and Orson will
+  treat it as if it has a procedure type.
+  Orson does not check if the {c Gnu} C expression denoted by {i r} really has
+  the type {i l.}
+  {c Gcc} may issue error messages if the expression is used incorrectly.}
+
+{left {b 3.2. {c Gnu} C types.}}
+
+{justify
+  The second member of {q {i c}'{i s}} lets a {c Gnu} C type be used as an
+  Orson type.
+  The string constant {i l} denotes the type itself.
+  The integer constant {i m} is the type's alignment, and the integer constant
+  {i r} is the type's size.
+  Both {i m} and {i r} must be constants, {i m} must be greater than 0, and
+  {i r} must be greater than or equal to 0.
+  For example, {q {i c}'{i s}(''{t jmp_buf}'',\ 4,\ 156)} will transform to the
+  {c Gnu} C type {t jmp_buf,} whose alignment is 4, and whose size is 156.
+
+  {c Gnu} C types created in this way are subtypes of {i mut,} so they can be
+  the base types of variables.
+  One {c Gnu} C type is a subtype of another if their strings are
+  lexicographically equal, their alignments are equal, and their sizes are
+  equal.
+  These facts are expressed by rules {bc i} and {bc ii.}}
+
+{narrow
+ {layout
+  {row
+   {over
+    {center {q {i c}'{i s}({i l,} {i m,} {i r}) ⊆ {i mut}}}
+    {left \ {bc i}}
+    {center {i true}}}
+   {left \ \ \ \ \ \ }
+   {over
+    {center
+     {q {i c}'{i s}({i l,} {i m,} {i r}) ⊆ {i c}'{i s}({i L,} {i M,} {i R})}}
+    {left \ {bc ii}}
+    {center
+     {i l} = {i L,} {i m} = {i M,} {i r} = {i R}}}}}}
+
+{justify
+  The alignment and size constants are used to compute the alignments and sizes
+  of Orson types that contain {c Gnu} C types as parts.
+  These constants may depend on the version of {c gcc} in use, the operating
+  system on which {c gcc} runs, and the computer on which the operating system
+  runs.
+  The alignment and size of a {c Gnu} C type {i t} may be determined by a
+  {c Gnu} C program similar to this one.}
+
+{narrow{indent
+{t#include <stdio.h>
+int main()
+\{
+   fprintf(stdout, "alignment = %i\\n", __alignof__(}{i t}{t));
+   fprintf(stdout, "size      = %i\\n", sizeof(}{i t}{t));
+\}}}}
+
+{justify
+  Orson is distributed with a program {i gas} that can show the alignment and
+  size of any named {c Gnu} C type.
+  For example, if you type the command {t gas}\ {t FILE}\ {t stdio.h} to the
+  shell, you will see the alignment and size of the type {t FILE} as defined
+  by the header file {t stdio.h}.
+  It works by making a {c Gnu} C program similar to the one shown above, then
+  compiling and executing it behind the scenes.
+  Type {t man}\ {t gas} to the shell for more information.}
+
+{left {b 3.3. {c Gnu} C calls.}}
+
+{justify
+  The third and fourth members of {q {i c}'{i s}} allow calling a {c Gnu} C
+  function or macro in an Orson program.
+  The execution type {i l} is the type of the object that will be returned by
+  the call.
+  The string constant {i m} names the function or macro.
+  The elements of the list {i r} are the arguments of the function or macro.
+  For example, {q {i c}'{i s}({i real,}\ ''{t sin}'':\ π\ /\ 2.0)} calls the
+  {c Gnu} C function {t sin} on the argument that results from evaluating
+  π\ /\ 2.0.
+  It will return an object of type {i real.}
+
+  The argument list {i r} is flattened before the function or macro is called.
+  For example, suppose that {i a,} {i b,} {i c,} and {i d} are assignments.
+  Also suppose that {i r} is equivalent to the list clause
+  (:\ {i a,}\ (:\ {i b,}\ {i c}),\ {i d}).
+  Then the flattened version of {i r} is equivalent to the list clause
+  (:\ {i a,}\ {i b,}\ {i c,}\ {i d}).
+
+  The expressions in the argument list are evaluated by Orson in its usual way.
+  Orson does not check if the {c Gnu} C function or macro denoted by {i m} is
+  called with the correct number of arguments, or if it really returns an
+  object of type {i l.}
+  {c Gcc} may issue error messages if the function or macro is used
+  incorrectly.
+
+  Most calls are handled by the fourth member of {q {i c}'{i s.}}
+  The third member is a special case to handle {c Gnu} C functions or macros
+  that return {i void.}
+  This is because the Orson type {i void} describes a dummy object {i skip,}
+  but the C type {t void} describes no object at all
+  {goto ker1988 {c [ker 1988].}}
+  The special case makes sure that a function or macro that returns no object
+  in {c Gnu} C will appear to return {i skip} in Orson.}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label gil1936}
+   {c [gil\ 1936]\ \ }}
+  {justify
+    William S. Gilbert, Arthur Sullivan.
+    ``The Grand Duke, or, The Statutory Duel.''
+    In {i The Complete Plays of Gilbert and Sullivan.}
+    The Modern Library.
+    Random House, Inc.
+    New York, New York.
+    {c 1936.}
+    Page 655.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label ker1988}
+   {c [ker\ 1988]\ }}
+  {justify
+    Brian W. Kernighan, Dennis M. Ritchie.
+    {i The C Programming Language.}
+    Second Edition.
+    Prentice-Hall.
+    Upper Saddle River, New Jersey.
+    1988.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label moe2013}
+   {c [moe\ 2013]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2013.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label sta2008}
+   {c [sta\ 2008]\ \ }}
+  {justify
+    Richard M. Stallman, the {c Gcc} Developer Community.
+    ``Using and Porting the {c Gnu} Compiler Collection.''
+    Free Software Foundation.
+    Boston, Massachusetts.
+    2008.}}}
+

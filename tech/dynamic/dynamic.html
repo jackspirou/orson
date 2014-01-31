@@ -1,0 +1,1126 @@
+<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:35 PM CST -->
+<html>
+ <head>
+  <title>
+   Dynamic allocation in Orson
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Dynamic Memory in Orson: The Heap, the Stack, and the Dump</b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   November 15, 2013
+  </p>
+  <p align="justify">
+   Copyright &#169; 2013 James B. Moen. Permission is granted to copy,
+   distribute, and/or modify this document under the terms of the
+   G<small>NU</small> Free Documentation License, Version 1.3 or any later
+   version published by the Free Software Foundation; with no Invariant
+   Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the
+   license may be obtained at
+   <a href="http://fsf.org/">
+    <tt>&lt;http://fsf.org/&gt;.</tt>
+   </a>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This document uses special characters.
+   Without proper rendering support, you may see question marks, boxes, or
+   other symbols in place of these characters. This document must be rendered
+   in a font where an italic quote &lsquo;&nbsp;<i>"</i>&nbsp;&rsquo;
+   looks different from two apostrophes &lsquo;&nbsp;''&nbsp;&rsquo;.
+  </p>
+  <hr />
+  <p align="center">
+   <b>Contents</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a href="#introduction">
+       0.
+      </a>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      Introduction.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a href="#heap">
+       1.
+      </a>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      The heap.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <table cellpadding="0" cellspacing="0">
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#fromHeap">
+          1.1.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <i>fromHeap.</i>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#toHeap">
+          1.2.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <i>toHeap.</i>
+        </p>
+       </td>
+      </tr>
+     </table>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a href="#stack">
+       2.
+      </a>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      The stack.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a href="#dump">
+       3.
+      </a>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      The dump.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <table cellpadding="0" cellspacing="0">
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#initDump">
+          3.1.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <i>initDump.</i>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#disp">
+          3.2.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <i>disp.</i>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#makeTag">
+          3.3.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <i>makeTag.</i>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#fromDump">
+          3.4.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <i>fromDump.</i>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#fromHeap1">
+          3.5.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <i>fromHeap.</i>
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#toDump">
+          3.6.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         <i>toDump.</i>
+        </p>
+       </td>
+      </tr>
+     </table>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a href="#references">
+       4.
+      </a>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      References.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+  </table>
+  <hr />
+  <a name="introduction">
+  </a>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p align="justify">
+       <b>heap</b> <i>n.</i><sup>1</sup> <b>1</b>
+       [mid-17C&#8211;18C;19C+] a large amount, often of money.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="justify">
+       <b>stack</b> <i>n.</i><sup>1</sup> [late 19C+] (orig. US)
+       a large amount of money.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p align="justify">
+       <b>dump</b> <i>n.</i><sup>1</sup> [19C] (Aus./US)
+       <b>1</b> A small coin or small sum of money.
+      </p>
+     </td>
+    </tr>
+   </table>
+   <p align="right">
+    <a href="#gre2000">
+     [<small>GRE</small> 2000]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Some Orson
+   <a href="#moe2013">
+    [<small>MOE</small> 2013]
+   </a>
+   programs call an <i>allocator</i> form to request objects from a pool
+   of available memory. Each call takes an execution type as its argument. It
+   allocates an object of this type from the pool, then evaluates to a pointer
+   that references the object. After the program is finished with the object,
+   it calls a <i>deallocator</i> method on the pointer. This call sends
+   the memory used by the object back to the pool, so it can be reused by later
+   calls to the allocator form.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Orson library files
+   <i>lib.dynamic</i> and <i>lib.dump</i> provide several forms that
+   dynamically allocate and deallocate objects in this way. Some forms allocate
+   and deallocate from a global pool of memory called the
+   <a href="#heap">
+    heap.
+   </a>
+   Others allocate and deallocate from the
+   <a href="#stack">
+    stack,
+   </a>
+   which also stores objects created by procedures and <i>with</i>
+   clauses. Still others allocate and deallocate from the
+   <a href="#dump">
+    dump,
+   </a>
+   which is like the heap except that objects are automatically deallocated
+   when no pointers reference them. Using the dump may be safer than using the
+   heap, because an object cannot be mistakenly deallocated while pointers
+   still reference it.
+  </p>
+  <a name="heap">
+  </a>
+  <p>
+   <b>1. The heap.</b>
+  </p>
+  <p align="justify">
+   Loading the library file <i>lib.dynamic</i> defines a form
+   <a href="#fromHeap">
+    <i>fromHeap</i>
+   </a>
+   that allocates objects from the heap, and a form
+   <a href="#toHeap">
+    <i>toHeap</i>
+   </a>
+   that deallocates these objects.
+  </p>
+  <a name="fromHeap">
+  </a>
+  <p>
+   <b>1.1. <i>fromHeap.</i></b>
+  </p>
+  <p align="justify">
+   The library file <i>lib.dynamic</i> binds the name <i>fromHeap</i>
+   like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>fromHeap</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i></font>(<b>alt</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>(</font>(<b>gen</b>&nbsp;(<b>type</b>&nbsp;<i>exe</i>&nbsp;<i>tType</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>((<b>g</b></font><b>form</b>&nbsp;(<b>type</b>&nbsp;<i>tType</i>&nbsp;<i>t</i>)&nbsp;<b>ref</b>&nbsp;<i>tType</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>((<b>gf</b></font>...),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>(</font>(<b>gen</b>&nbsp;(<b>type</b>&nbsp;<i>exe</i>&nbsp;<i>tType</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>((<b>g</b></font><b>form</b>&nbsp;(<i>inj</i>&nbsp;<i>l</i>,&nbsp;<b>type</b>&nbsp;<i>tType</i>&nbsp;<i>t</i>)&nbsp;<b>row</b>&nbsp;<i>tType</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>((<b>gf</b></font>...))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i></font>
+    <br />
+    <i>inj</i>&nbsp;<i>"</i>allocator&nbsp;failed<i>"</i>&nbsp;:&#8722;&nbsp;<i>except</i>()&nbsp;
+    <br />
+    <i>inj</i>&nbsp;<i>"</i>negative&nbsp;length<i>"</i>&nbsp;:&#8722;&nbsp;<i>except</i>()
+   </p>
+  </blockquote>
+  <p align="justify">
+   If <i>t</i> transforms to an execution type without jokers, then the
+   call <i>fromHeap</i>(<i>t</i>) evaluates to a pointer of type
+   <b>ref</b>&nbsp;<i>t.</i> The pointer references an object of type
+   <i>t</i> that resides in the
+   <a href="#heap">
+    heap.
+   </a>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If <i>l</i> evaluates to an integer
+   greater than 0, and <i>t</i> transforms to an execution type without
+   jokers, then the call
+   <i>fromHeap</i>(<i>l,</i>&nbsp;<i>t</i>) evaluates to a
+   pointer of type <b>row</b>&nbsp;<i>t.</i> The pointer references
+   the 0th element of an array that resides in the heap. The array&rsquo;s
+   length is <i>l,</i> and its base type is <i>t.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If <i>l</i> evaluates to 0, then the
+   call <i>fromHeap</i>(<i>l,</i>&nbsp;<i>t</i>) evaluates to a
+   pointer of type <b>row</b>&nbsp;<i>t</i> that references an
+   unspecified object. If <i>l</i> transforms to an integer constant less
+   than 0, then <i>fromHeap</i> reports an error. If <i>l</i>
+   evaluates to an integer less than 0, but not a constant, then
+   <i>fromHeap</i> throws the exception
+   <i>"</i>negative&nbsp;length<i>".</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The form <i>fromHeap</i> may place an
+   upper limit on the size of an object that it can allocate. If
+   <i>fromHeap</i> can&rsquo;t allocate an object, either because
+   it&rsquo;s too large, or because there&rsquo;s not enough memory left in the
+   heap, then it throws the exception
+   <i>"</i>allocator&nbsp;failed<i>".</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Currently, the form <i>fromHeap</i> is
+   implemented using the C function <tt>malloc</tt>
+   <a href="#ker1988">
+    [<small>KER</small> 1988].
+   </a>
+   For more information, consult the Unix manual pages.
+  </p>
+  <a name="toHeap">
+  </a>
+  <p>
+   <b>1.2. <i>toHeap.</i></b>
+  </p>
+  <p align="justify">
+   The library file <i>lib.dynamic</i> binds the name <i>toHeap</i>
+   like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>toHeap</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>t</i></font>(<b>form</b>&nbsp;(<b>row</b>&nbsp;<i>exe</i>&nbsp;<i>p</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>t</i>(<b>f</b></font>...)
+   </p>
+  </blockquote>
+  <p align="justify">
+   If <i>p</i> evaluates to a pointer that references an object allocated
+   by
+   <a href="#fromHeap">
+    <i>fromHeap,</i>
+   </a>
+   then the call <i>toHeap</i>(<i>p</i>) deallocates the object If
+   <i>p</i> evaluates to <i>nil,</i> then the call
+   <i>toHeap</i>(<i>p</i>) does nothing. If <i>p</i> evaluates
+   to some other pointer that was not obtained by calling <i>fromHeap,</i>
+   then the call <i>toHeap</i>(<i>p</i>) has undefined results. After
+   the object is deallocated, it becomes undefined, even though pointers may
+   still reference it. It is undefined to dereference such pointers.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Currently, the form <i>toHeap</i> is
+   implemented using the C function <tt>free</tt>
+   <a href="#ker1988">
+    [<small>KER</small> 1988].
+   </a>
+   For more information, consult the Unix manual pages.
+  </p>
+  <a name="stack">
+  </a>
+  <p>
+   <b>2. The stack.</b>
+  </p>
+  <p align="justify">
+   The library file <i>lib.dynamic</i> binds the name
+   <i>fromStack</i> like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>fromStack</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i></font>(<b>alt</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>(</font>(<b>gen</b>&nbsp;(<b>type</b>&nbsp;<i>exe</i>&nbsp;<i>tType</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>((<b>g</b></font><b>form</b>&nbsp;(<b>type</b>&nbsp;<i>tType</i>&nbsp;<i>t</i>)&nbsp;<b>ref</b>&nbsp;<i>tType</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>((<b>gf</b></font>...),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>(</font>(<b>gen</b>&nbsp;(<b>type</b>&nbsp;<i>exe</i>&nbsp;<i>tType</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>((<b>g</b></font><b>form</b>&nbsp;(<i>inj</i>&nbsp;<i>l</i>,&nbsp;<b>type</b>&nbsp;<i>tType</i>&nbsp;<i>t</i>)&nbsp;<b>row</b>&nbsp;<i>tType</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>((<b>gf</b></font>...))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The form <i>fromStack</i> is like the form
+   <a href="#fromHeap">
+    <i>fromHeap,</i>
+   </a>
+   but it allocates objects from the stack instead of the
+   <a href="#heap">
+    heap.
+   </a>
+   However, there is no deallocation form corresponding to
+   <i>fromStack.</i> Instead, if <i>fromStack</i> is called inside
+   the body of a procedure, then the object it allocates is automatically
+   deallocated at the end of that procedure. If <i>fromStack</i> is called
+   anywhere else, then the object it allocates is automatically deallocated at
+   the end of the current <i>proc</i> clause. After the object is
+   deallocated, it becomes undefined, even though pointers may still reference
+   it. It is undefined to dereference such pointers.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Currently, the form <i>fromStack</i> is
+   implemented using the C function <tt>alloca</tt>
+   <a href="#ker1988">
+    [<small>KER</small> 1988].
+   </a>
+   For more information, consult the Unix manual pages.
+  </p>
+  <a name="dump">
+  </a>
+  <p>
+   <b>3. The dump.</b>
+  </p>
+  <p align="justify">
+   Loading the library file <i>lib.dump</i> also loads
+   <i>lib.dynamic,</i> so it defines all the forms that allocate objects
+   from the
+   <a href="#heap">
+    heap
+   </a>
+   and the
+   <a href="#stack">
+    stack.
+   </a>
+   It also defines the forms
+   <a href="#disp">
+    <i>disp,</i>
+   </a>
+   <a href="#fromDump">
+    <i>fromDump,</i>
+   </a>
+   <a href="#fromHeap1">
+    <i>fromHeap,</i>
+   </a>
+   <a href="#initDump">
+    <i>initDump,</i>
+   </a>
+   <a href="#makeTag">
+    <i>makeTag,</i>
+   </a>
+   and
+   <a href="#toDump">
+    <i>toDump</i>
+   </a>
+   that allow allocating and deallocating objects from the dump.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Currently, only small tuples can be allocated
+   from the dump. They are allocated using an algorithm called <i>Quick
+   Fit</i>
+   <a href="#wei1988">
+    [<small>WEI</small> 1988],
+   </a>
+   which is optimized for handling large numbers of small objects, such as
+   might be required in a compiler or an interpreter. (The Orson compiler uses
+   Quick Fit internally.) The maximum size of an allocated tuple is 127 bytes,
+   the largest integer that can be represented as an <i>int</i>0.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If a tuple is requested from the dump, but
+   not enough memory remains to satisfy the request, then the dump uses a
+   <i>mark-sweep</i> garbage collector
+   <a href="#jon1997">
+    [<small>JON</small> 1997]
+   </a>
+   to deallocate tuples that are no longer referenced by pointers. As its name
+   suggests, the mark-sweep collector works in two phases. It first
+   <i>marks</i> all tuples that are accessible, directly or indirectly,
+   from a few <i>base pointers,</i> using Orson&rsquo;s <i>refs</i>
+   iterator
+   <a href="#moe2013">
+    [<small>MOE</small> 2013]
+   </a>
+   and a nonrecursive traversal procedure
+   <a href="#sch1967">
+    [<small>SCH</small> 1967].
+   </a>
+   It then <i>sweeps</i> through all tuples that were allocated from the
+   dump, unmarking those that are marked, and deallocating those that are not
+   marked.
+  </p>
+  <a name="initDump">
+  </a>
+  <p>
+   <b>3.1. <i>initDump.</i></b>
+  </p>
+  <p align="justify">
+   The library file <i>lib.dump</i> binds the name <i>initDump</i>
+   like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>initDump</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i></font>(<b>alt</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>(</font>(<b>form</b>&nbsp;()&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>f</b></font><i>initDump</i>(1)),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>(</font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>c</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>f</b></font>...))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The
+   <a href="#dump">
+    dump
+   </a>
+   is made up of zero or more chunks of memory called <i>heaplets,</i>
+   each of which is allocated from the
+   <a href="#heap">
+    heap
+   </a>
+   by calling the form
+   <a href="#fromHeap">
+    <i>fromHeap.</i>
+   </a>
+   Currently, each heaplet is about a megabyte in size. The call
+   <i>initDump</i>() initializes the dump with one heaplet. If
+   <i>c</i> evaluates to a nonnegative integer, then the call
+   <i>initDump</i>(<i>c</i>) initializes it with <i>c</i>
+   heaplets. It is an error if <i>c</i> evaluates to a negative integer.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The dump must be initialized once, before
+   calls to the forms
+   <a href="#fromDump">
+    <i>fromDump</i>
+   </a>
+   or
+   <a href="#toDump">
+    <i>toDump</i>
+   </a>
+   are evaluated. It is undefined if calls to these forms are evaluated before
+   the heap is initialized. It is also undefined if a call to
+   <i>initDump</i> is evaluated more than once.
+  </p>
+  <a name="disp">
+  </a>
+  <p>
+   <b>3.2. <i>disp.</i></b>
+  </p>
+  <p align="justify">
+   The library file <i>lib.dump</i> binds the name <i>disp</i> like
+   this.
+  </p>
+  <blockquote>
+   <p>
+    <i>disp</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>d</i></font>(<b>form</b>&nbsp;(<b>type</b>&nbsp;<i>tup</i>&nbsp;<i>t</i>)&nbsp;<b>type</b>&nbsp;<i>tup</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>d</i>(<b>f</b></font>...)
+   </p>
+  </blockquote>
+  <p align="justify">
+   A call to the form <i>disp</i> (short for <i>disposable</i>)
+   transforms to the type of a tuple that can be allocated from the
+   <a href="#dump">
+    dump.
+   </a>
+   If <i>t</i> is a tuple type without jokers, then the call
+   <i>disp</i>(<i>t</i>) transforms to a new tuple type with the same
+   slots as <i>t,</i> along with extra slots that are used by the dump.
+   For example, the following equate binds the name <i>pair</i> to the
+   type of a tuple that might be used to implement a binary search tree
+   <a href="#wir1976">
+    [<small>WIR</small> 1976]
+   </a>
+   whose keys are strings.
+  </p>
+  <blockquote>
+   <p>
+    <i>pair</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>p</i></font><i>disp</i>(&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>pd</i></font>(<b>tuple</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>pd</i>(<b>tu</b></font><b>var</b>&nbsp;<b>ref</b>&nbsp;<i>pair</i>&nbsp;<i>left</i>,&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>pd</i>(<b>tu</b></font><b>var</b>&nbsp;<b>ref</b>&nbsp;<i>pair</i>&nbsp;<i>right</i>,&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>pd</i>(<b>tu</b></font><b>var</b>&nbsp;<i>string</i>&nbsp;<i>key</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   If <i>p</i> evaluates to a pointer that references a <i>pair,</i>
+   then the units <i>p</i>&#8593;.<i>left,
+   p</i>&#8593;.<i>right,</i> and <i>p</i>&#8593;.<i>key</i>
+   respectively evaluate to the <i>pair</i>&rsquo;s <i>left,
+   right,</i> and <i>key</i> slots in the usual way. The unit
+   <i>p</i>&#8593;.<i>tag</i> also evaluates to the
+   <i>pair</i>&rsquo;s <i>tag</i> slot, which is described later
+   along with the form
+   <a href="#makeTag">
+    <i>makeTag.</i>
+   </a>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A tuple that is allocated from the dump may
+   be
+   <a href="#dump">
+    marked
+   </a>
+   during garbage collection, and is said to be <i>markable.</i> Suppose
+   that a tuple of type <i>t</i> has pointer slots that reference markable
+   tuples. Then those pointer slots must appear in <i>t</i> before its
+   other slots. The number of slots that reference markable tuples is called
+   <i>t</i>&rsquo;s <i>degree.</i> For example, <i>pair</i> has
+   degree 2, because it has two pointer slots, <i>left</i> and
+   <i>right,</i> that reference markable tuples. These slots must appear
+   before the slot <i>key,</i> which does not reference a markable tuple.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If <i>t</i> is a tuple type with jokers,
+   then the call <i>disp</i>(<i>t</i>) transforms to a joker that
+   describes a tuple which can be allocated from the dump. For example, the
+   call <i>disp</i>(<i>tup</i>) transforms to a joker that describes
+   any tuple which can be allocated from the dump, no matter what slots it has.
+  </p>
+  <a name="makeTag">
+  </a>
+  <p>
+   <b>3.3. <i>makeTag.</i></b>
+  </p>
+  <p align="justify">
+   The library file <i>lib.dump</i> binds the name <i>makeTag</i>
+   like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>makeTag</i>&nbsp;:&#8722;&nbsp;<i>enum</i>(<i>high</i>(<i>int</i>0))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Tuple types created by the form
+   <a href="#disp">
+    <i>disp</i>
+   </a>
+   have extra slots that are used by the
+   <a href="#dump">
+    dump.
+   </a>
+   All these slots have secret names, except for one whose name is
+   <i>tag.</i> The <i>tag</i> slot has the type
+   <b>var</b>&nbsp;<i>int</i>0, and its value is a small nonnegative
+   integer that identifies the tuple&rsquo;s type.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The form <i>makeTag</i> generates
+   <i>int</i>0 constants that may be used as the values of <i>tag</i>
+   slots. Each call <i>makeTag</i>() transforms to the next
+   <i>int</i>0 constant in a series. The first call transforms to 0. The
+   next call transforms to 1, and the next transforms to 2, etc. The final call
+   transforms to 127, the largest integer constant that can be represented as
+   an <i>int</i>0. It is an error to call <i>makeTag</i> after that.
+  </p>
+  <a name="fromDump">
+  </a>
+  <p>
+   <b>3.4. <i>fromDump.</i></b>
+  </p>
+  <p align="justify">
+   The library file <i>lib.dump</i> binds the name <i>fromDump</i>
+   like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>fromDump</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i></font>(<b>gen</b>&nbsp;(<b>type</b>&nbsp;<i>disp</i>(<i>tup</i>)&nbsp;<i>tType</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>(<b>g</b></font><b>form</b>&nbsp;(<b>type</b>&nbsp;<i>tType</i>&nbsp;<i>t</i>,&nbsp;<i>int</i>0&nbsp;<i>d</i>,&nbsp;<i>int</i>0&nbsp;<i>g</i>)&nbsp;<b>ref</b>&nbsp;<i>tType</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>(<b>gf</b></font>...)
+   </p>
+  </blockquote>
+  <p align="justify">
+   Suppose that <i>t</i> transforms to a tuple type which was created by
+   calling the form
+   <a href="#disp">
+    <i>disp.</i>
+   </a>
+   Also suppose that <i>d</i> transforms to a nonnegative <i>int</i>0
+   constant that is the
+   <a href="#disp">
+    degree
+   </a>
+   of the tuple to be allocated, and that <i>g</i> transforms to a
+   nonnegative <i>int</i>0 constant that is the tuple&rsquo;s
+   <a href="#makeTag">
+    tag.
+   </a>
+   Then the call
+   <i>fromDump</i>(<i>t,</i>&nbsp;<i>d,</i>&nbsp;<i>g</i>)
+   evaluates to a pointer of type <b>ref</b>&nbsp;<i>t.</i> The
+   pointer references an tuple of type <i>t</i> that resides in the
+   <a href="#dump">
+    dump.
+   </a>
+   Its <i>tag</i> slot is preset to <i>g,</i> and its
+   <a href="#disp">
+    markable
+   </a>
+   pointer slots are preset to <i>nil.</i> For example, the call
+   <i>fromDump</i>(<i>pair,</i>&nbsp;2,&nbsp;0) evaluates to a
+   pointer that references a <i>pair</i> with 2 markable slots, and with
+   the tag 0.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It is an error if the size of <i>t</i>
+   is larger than 127 bytes, or if <i>t</i> has jokers. It is an error if
+   <i>d</i> is not a constant, or is negative. It is also an error if
+   <i>g</i> is not a constant, or is negative. If there is not enough
+   memory in the dump to allocate a tuple of type <i>t,</i> then
+   <i>fromDump</i> collects garbage in an attempt to obtain more. If there
+   is still not enough memory after garbage collection, then
+   <i>fromDump</i> throws the exception
+   <i>"</i>allocator&nbsp;failed<i>".</i>
+  </p>
+  <a name="fromHeap1">
+  </a>
+  <p>
+   <b>3.5. <i>fromHeap.</i></b>
+  </p>
+  <p align="justify">
+   The library file <i>lib.dump</i> binds the name <i>fromHeap</i>
+   like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>fromHeap</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i></font>(<b>gen</b>&nbsp;(<b>type</b>&nbsp;<i>disp</i>(<i>tup</i>)&nbsp;<i>tType</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>(<b>g</b></font><b>form</b>&nbsp;(<b>type</b>&nbsp;<i>tType</i>&nbsp;<i>t</i>,&nbsp;<i>int</i>0&nbsp;<i>d</i>,&nbsp;<i>int</i>0&nbsp;<i>g</i>)&nbsp;<b>ref</b>&nbsp;<i>tType</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>f</i>(<b>gf</b></font>...)
+   </p>
+  </blockquote>
+  <p align="justify">
+   This equate gives the form
+   <a href="#fromHeap">
+    <i>fromHeap</i>
+   </a>
+   a new member. The new member acts like
+   <a href="#fromDump">
+    <i>fromDump,</i>
+   </a>
+   but it allocates a tuple from the
+   <a href="#heap">
+    heap
+   </a>
+   instead of the
+   <a href="#dump">
+    dump.
+   </a>
+   A tuple allocated in this way can be referenced by tuples allocated from the
+   dump, and may be visited during the mark phase of garbage collection.
+   However, it cannot be deallocated by the garbage collector, even if no
+   pointers reference it, because it is never visited during the sweep phase.
+  </p>
+  <a name="toDump">
+  </a>
+  <p>
+   <b>3.6. <i>toDump.</i></b>
+  </p>
+  <p align="justify">
+   The library file <i>lib.dump</i> binds the name <i>toDump</i> like
+   this.
+  </p>
+  <blockquote>
+   <p>
+    <i>toDump</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>t</i></font>(<b>form</b>&nbsp;(<b>ref</b>&nbsp;<i>disp</i>(<i>tup</i>)&nbsp;<i>p</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>t</i>(<b>f</b></font>...)
+   </p>
+  </blockquote>
+  <p align="justify">
+   If <i>p</i> is a pointer to a tuple that was allocated by
+   <i>fromDump,</i> then the call <i>toDump</i>(<i>p</i>)
+   deallocates the tuple immediately, without involving the garbage collector.
+   If <i>p</i> evaluates to <i>nil,</i> then the call
+   <i>toDump</i>(<i>p</i>) does nothing. If <i>p</i> evaluates
+   to some other pointer that was not obtained by calling <i>fromDump,</i>
+   then the call <i>toDump</i>(<i>p</i>) has undefined results. After
+   the tuple is deallocated, it becomes undefined, even though pointers may
+   still reference it. It is undefined to dereference such pointers. It is also
+   undefined if a tuple deallocated by <i>toDump</i> is visited by the
+   garbage collector.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If it is known that a tuple will eventually
+   be deallocated by the garbage collector, then <i>toDump</i> can be
+   called to deallocate it instead. This may reduce the number of garbage
+   collections required by a program. However, it is never necessary to call
+   <i>toDump.</i>
+  </p>
+  <hr />
+  <a name="references">
+  </a>
+  <p align="center">
+   <b>References</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="gre2000">
+      </a>
+      [<small>GRE</small>&nbsp;2000]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Jonathon Green. <i>Cassell&rsquo;s Dictionary of Slang.</i> Cassell
+      and Company. London, United Kingdom. 2000. Pages 380, 582, 1131.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="jon1997">
+      </a>
+      [<small>JON</small>&nbsp;1997]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Richard Jones, Rafael Lins. <i>Garbage Collection: Algorithms for
+      Automatic Dynamic Memory Management.</i> John Wiley &amp; Sons.
+      Chichester, United Kingdom. 1997.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="ker1988">
+      </a>
+      [<small>KER</small>&nbsp;1988]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Brian W. Kernighan, Dennis M. Ritchie. <i>The C Programming
+      Language.</i> Second Edition. Prentice-Hall. Upper Saddle River, New
+      Jersey. 1988.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2013">
+      </a>
+      [<small>MOE</small>&nbsp;2013]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;Revised&#8315;&#185; Report on the
+      Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
+      2013.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="sch1967">
+      </a>
+      [<small>SCH</small>&nbsp;1967]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      H. Schorr, W. M. Waite. &lsquo;&lsquo;An Efficient Machine-Independent
+      Procedure for Garbage Collection in Various List
+      Structures.&rsquo;&rsquo; <i>Communications of the
+      A<small>CM</small>.</i> Volume 10, Number 8, August 1967. Pages
+      501&#8211;506.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="wir1976">
+      </a>
+      [<small>WIR</small>&nbsp;1976]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Niklaus Wirth. <i>Algorithms + Data Structures = Programs.</i>
+      Prentice-Hall. Englewood Cliffs, New Jersey. 1976.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="wei1988">
+      </a>
+      [<small>WEI</small>&nbsp;1988]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      C. B. Weinstock, W. A. Wulf. &lsquo;&lsquo;An Efficient Algorithm for
+      Heap Storage Allocation.&rsquo;&rsquo; <i>A<small>CM</small>
+      S<small>IGPLAN</small> Notices.</i> Volume 23, Number 10, October
+      1988. Pages 141&#8211;146.
+     </p>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

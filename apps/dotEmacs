@@ -1,0 +1,713 @@
+; 
+;  .EMACS. Customization file for GNU Emacs.
+;
+;    James Moen
+;    26 Sep 12
+;
+
+;  To install this file, copy it to your home directory, by typing this command
+;  to the shell.
+;
+;    cp dotEmacs ~/.emacs
+;
+;  Before you do that, make sure you don't already have a ".emacs" file in your
+;  home directory, because this command will overwrite it.
+;
+;  After this file is installed, Orson's funny Unicode chars (and a few others)
+;  can be entered in Emacs by typing their names. For example, to enter a Greek
+;  capital letter Δ (U+0394), you type "alt-X return Delta" or "escape X return
+;  Delta" or "meta-X return Delta" depending on what kind of keyboard you have.
+;  Sometimes the "alt-X" character is intercepted by a GUI before Emacs can see
+;  it. Most char names are those used by the document compiler TeX. See:
+;
+;  Donald E. Knuth. The TeXBook. Addison Wesley. Reading, Massachussetts. 1986.
+;  Pages 434–437.
+
+;  Turn off "helpful" automatic formatting. If you'd rather leave it turned on,
+;  then comment out or delete the next line.
+
+(setq auto-mode-alist nil)
+
+;  ALPHA. Insert the char "α" (U+03B1).
+
+(defun alpha ()
+ (interactive)
+ (insert ?α) )
+
+;  AST. Insert the char "∗" (U+2217).
+
+(defun ast ()
+ (interactive)
+ (insert ?∗) )
+
+;  BETA. Insert the char "β" (U+03B2).
+
+(defun beta ()
+ (interactive)
+ (insert ?β) )
+
+;  BLANK. Insert the char "␣" (U+2423).
+
+(defun blank ()
+ (interactive)
+ (insert ?␣) )
+
+;  BOT. Insert the char "⊥" (U+22A5).
+
+(defun bot ()
+ (interactive)
+ (insert ?⊥) )
+
+;  BULLET. Insert the char "∙" (U+2219).
+
+(defun bullet ()
+ (interactive)
+ (insert ?∙) )
+
+;  CAP. Insert the char "∩" (U+2229).
+
+(defun cap ()
+ (interactive)
+ (insert ?∩) )
+
+;  CDOT. Insert the char "⋅" (U+22C5).
+
+(defun cdot ()
+ (interactive)
+ (insert ?⋅) )
+
+;  CHI. Insert the char "χ" (U+03C7).
+
+(defun chi ()
+ (interactive)
+ (insert ?χ) )
+
+;  CIRC. Insert the char "∘" (U+2218).
+
+(defun circ ()
+ (interactive)
+ (insert ?∘) )
+
+;  COPYRIGHT. Insert the char "©" (U+00A9).
+
+(defun copyright ()
+ (interactive)
+ (insert ?©) )
+
+;  CUP. Insert the char "∪" (U+222A).
+
+(defun cup ()
+ (interactive)
+ (insert ?∪) )
+
+;  DASHV. Insert the char "⊣" (U+22A3).
+
+(defun dashv ()
+ (interactive)
+ (insert ?⊣))
+
+;  DELTA. Insert the char "Δ" (U+0394) or the char "δ" (U+03B4).
+
+(defun Delta ()
+ (interactive)
+ (insert ?Δ) )
+
+(defun delta ()
+ (interactive)
+ (insert ?δ) )
+
+;  DIAMOND. Insert the char "◇" (U+25C7).
+
+(defun diamond ()
+ (interactive)
+ (insert ?◇) )
+
+;  DOWNARROW. Insert the char "⇓" (U+21D3) or the char "↓" (U+2193).
+
+(defun Downarrow ()
+ (interactive)
+ (insert ?⇓) )
+
+(defun downarrow ()
+ (interactive)
+ (insert ?↓) )
+
+;  ELL. Insert the char "ℓ" (U+2113).
+
+(defun ell ()
+ (interactive)
+ (insert ?ℓ) )
+
+;  EMDASH. Insert the char "—" (U+2014).
+
+(defun emdash ()
+ (interactive)
+ (insert ?—))
+
+;  ENDASH. Insert the char "–" (U+2013).
+
+(defun endash ()
+ (interactive)
+ (insert ?–))
+
+;  EMPTYSET. Insert the char "∅" (U+2205).
+
+(defun emptyset ()
+ (interactive)
+ (insert ?∅) )
+
+;  EPSILON. Insert the char "ϵ" (U+03F5).
+
+(defun epsilon ()
+ (interactive)
+ (insert ?ϵ) )
+
+;  EQUIV. Insert the char "≡" (U+2261).
+
+(defun equiv ()
+ (interactive)
+ (insert ?≡) )
+
+;  ETA. Insert the char "η" (U+03B7).
+
+(defun eta ()
+ (interactive)
+ (insert ?η) )
+
+;  EXISTS. Insert the char "∃" (U+2203).
+
+(defun exists ()
+ (interactive)
+ (insert ?∃) )
+
+;  FORALL. Insert the char "∀" (U+2200).
+
+(defun forall ()
+ (interactive)
+ (insert ?∀) )
+
+;  GAMMA. Insert the char "Γ" (U+0393) or the char "γ" (U+03B3).
+
+(defun Gamma ()
+ (interactive)
+ (insert ?Γ) )
+
+(defun gamma ()
+ (interactive)
+ (insert ?γ) )
+
+;  GEQ. Insert the char "≥" (U+2265).
+
+(defun geq ()
+ (interactive)
+ (insert ?≥) )
+
+;  IN. Insert the char "∊" (U+220A).
+
+(defun in ()
+ (interactive)
+ (insert ?∊) )
+
+;  INFTY. Insert the char "∞" (U+221E).
+
+(defun infty ()
+ (interactive)
+ (insert ?∞) )
+
+;  IOTA. Insert the char "ι" (U+03B9).
+
+(defun iota ()
+ (interactive)
+ (insert ?ι) )
+
+;  KAPPA. Insert the char "κ" (U+03BA).
+
+(defun kappa ()
+ (interactive)
+ (insert ?κ) )
+
+;  LAMBDA. Insert the char "Λ" (U+039B) or the char "λ" (U+03BB).
+
+(defun Lambda ()
+ (interactive)
+ (insert ?Λ) )
+
+(defun lambda ()
+ (interactive)
+ (insert ?λ) )
+
+;  LANGLE. Insert the char "⟨" (U+27E8).
+
+(defun langle ()
+ (interactive)
+ (insert ?⟨) )
+
+;  LEFTARROW. Insert the char "⇐" (U+21D0) or the char "←" (U+2190).
+
+(defun Leftarrow ()
+ (interactive)
+ (insert ?⇐) )
+
+(defun leftarrow ()
+ (interactive)
+ (insert ?←) )
+
+;  LEFTRIGHTARROW. Insert the char "⇔" (U+21D4) or the char "↔" (U+2194).
+
+(defun Leftrightarrow ()
+ (interactive)
+ (insert ?⇔) )
+
+(defun leftrightarrow ()
+ (interactive)
+ (insert ?↔) )
+
+;  LEQ. Insert the char "≤" (U+2264).
+
+(defun leq ()
+ (interactive)
+ (insert ?≤) )
+
+;  LQUOTE. Insert the char "‘" (U+2018) or the char "“" (U+201C).
+
+(defun lquote ()
+ (interactive)
+ (insert ?‘) ) ; 342392
+
+(defun Lquote ()
+ (interactive)
+ (insert ?“) ) ; 342396
+
+;  MINUS. Insert the char "−" (U+2212).
+
+(defun minus ()
+ (interactive)
+ (insert ?−) )
+
+;  MU. Insert the char "μ" (U+03BC).
+
+(defun mu ()
+ (interactive)
+ (insert ?μ) )
+
+;  NEG. Insert the char "¬" (U+00AC).
+
+(defun neg ()
+ (interactive)
+ (insert ?¬) )
+
+;  NEQ. Insert the char "≠" (U+2260).
+
+(defun neq ()
+ (interactive)
+ (insert ?≠) )
+
+;  NI. Insert the char "∍" (U+220D).
+
+(defun ni ()
+ (interactive)
+ (insert ?∍) )
+
+;  NOTEQUIV. Insert the char "≢" (U+2262).
+
+(defun notequiv ()
+ (interactive)
+ (insert ?≢) )
+
+;  NU. Insert the char "ν" (U+03BD).
+
+(defun nu ()
+ (interactive)
+ (insert ?ν) )
+
+;  ODOT. Insert the char "⊙" (U+2299).
+
+(defun odot ()
+ (interactive)
+ (insert ?⊙) )
+
+;  OMEGA. Insert the char "Ω" (U+039A) or the char "ω" (U+03C9).
+
+(defun Omega ()
+ (interactive)
+ (insert ?Ω) )
+
+(defun omega ()
+ (interactive)
+ (insert ?ω) )
+
+;  OMINUS. Insert the char "⊖" (U+2296).
+
+(defun ominus ()
+ (interactive)
+ (insert ?⊖) )
+
+;  OPLUS. Insert the char "⊕" (U+2295).
+
+(defun oplus ()
+ (interactive)
+ (insert ?⊕) )
+
+;  OSLASH. Insert the char "⊘" (U+2298).
+
+(defun oslash ()
+ (interactive)
+ (insert ?⊘) )
+
+;  OTIMES. Insert the char "⊗" (U+2297).
+
+(defun otimes ()
+ (interactive)
+ (insert ?⊗) )
+
+;  PHI. Insert the char "Φ" (U+03A6) or the char "ϕ" (U+03D5).
+
+(defun Phi ()
+ (interactive)
+ (insert ?Φ) )
+
+(defun phi ()
+ (interactive)
+ (insert ?ϕ) )
+
+;  PI. Insert the char "Π" (U+03A0) or the char "π" (U+03C0).
+
+(defun Pi ()
+ (interactive)
+ (insert ?Π) )
+
+(defun pi ()
+ (interactive)
+ (insert ?π) )
+
+;  PREC. Insert the char "≺" (U+227A).
+
+(defun prec ()
+ (interactive)
+ (insert ?≺) )
+
+;  PRECEQ. Insert the char "≼" (U+227C).
+
+(defun preceq ()
+ (interactive)
+ (insert ?≼) )
+
+;  PRIME. Insert the char "′" (U+2032).
+
+(defun prime()
+ (interactive)
+ (insert ?′) )
+
+;  PSI. Insert the char "Ψ" (U+03A8) or the char "ψ" (U+03C8).
+
+(defun Psi ()
+ (interactive)
+ (insert ?Ψ) )
+
+(defun psi ()
+ (interactive)
+ (insert ?ψ) )
+
+;  RANGLE. Insert the char "⟩" (U+27E9).
+
+(defun rangle ()
+ (interactive)
+ (insert ?⟩) )
+
+;  RHO. Insert the char "ρ" (U+03C1).
+
+(defun rho ()
+ (interactive)
+ (insert ?ρ) )
+
+;  RIGHTARROW. Insert the char "⇒" (U+21D2) or the char "→" (U+2192).
+
+(defun Rightarrow ()
+ (interactive)
+ (insert ?⇒) )
+
+(defun rightarrow ()
+ (interactive)
+ (insert ?→) )
+
+;  RQUOTE. Insert the char "’" (U+2019) or the char "”" (U+201D).
+
+(defun Rquote ()
+ (interactive)
+ (insert ?”) )
+
+(defun rquote ()
+ (interactive)
+ (insert ?’) )
+
+;  SIGMA. Insert the char "Σ" (U+03A3) or the char "σ" (U+03C3).
+
+(defun Sigma ()
+ (interactive)
+ (insert ?Σ) )
+
+(defun sigma ()
+ (interactive)
+ (insert ?σ) )
+
+;  SQCAP. Insert the char "⊓" (U+2293).
+
+(defun sqcap ()
+ (interactive)
+ (insert ?⊓))
+
+;  SQCUP. Insert the char "⊔" (U+2294).
+
+(defun sqcup ()
+ (interactive)
+ (insert ?⊔))
+
+;  SQSUBSET. Insert the char "⊏" (U+228F).
+
+(defun sqsubset ()
+ (interactive)
+ (insert ?⊏) )
+
+;  SQSUBSETEQ. Insert the char "⊑" (U+2291).
+
+(defun sqsubseteq ()
+ (interactive)
+ (insert ?⊑) )
+
+;  SQSUPSET. Insert the char "⊐" (U+2290).
+
+(defun sqsupset ()
+ (interactive)
+ (insert ?⊐) )
+
+;  SQSUPSETEQ. Insert the char "⊒" (U+2292).
+
+(defun sqsupseteq ()
+ (interactive)
+ (insert ?⊒) )
+
+;  SUB0. Insert the char "₀" (U+2080).
+
+(defun sub0 ()
+ (interactive)
+ (insert ?₀) )
+
+;  SUB1. Insert the char "₁" (U+2081).
+
+(defun sub1 ()
+ (interactive)
+ (insert ?₁) )
+
+;  SUB2. Insert the char "₂" (U+2082).
+
+(defun sub2 ()
+ (interactive)
+ (insert ?₂) )
+
+;  SUB3. Insert the char "₃" (U+2083).
+
+(defun sub3 ()
+ (interactive)
+ (insert ?₃) )
+
+;  SUB4. Insert the char "₄" (U+2084).
+
+(defun sub4 ()
+ (interactive)
+ (insert ?₄) )
+
+;  SUB5. Insert the char "₅" (U+2085).
+
+(defun sub5 ()
+ (interactive)
+ (insert ?₅) )
+
+;  SUB6. Insert the char "₆" (U+2086).
+
+(defun sub6 ()
+ (interactive)
+ (insert ?₆) )
+
+;  SUB7. Insert the char "₇" (U+2087).
+
+(defun sub7 ()
+ (interactive)
+ (insert ?₇) )
+
+;  SUB8. Insert the char "₈" (U+2088).
+
+(defun sub8 ()
+ (interactive)
+ (insert ?₈) )
+
+;  SUB9. Insert the char "₉" (U+2089).
+
+(defun sub9 ()
+ (interactive)
+ (insert ?₉) )
+
+;  SUBI. Insert the char "ᵢ" (U+1D62).
+
+(defun subi ()
+ (interactive)
+ (insert ?ᵢ) )
+
+;  SUBJ. Insert the char "ⱼ" (U+2C7C).
+
+(defun subj ()
+ (interactive)
+ (insert ?ⱼ) )
+
+;  SUBSET. Insert the char "⊂" (U+2282).
+
+(defun subset ()
+ (interactive)
+ (insert ?⊂) )
+
+;  SUBSETEQ. Insert the char "⊆" (U+2286).
+
+(defun subseteq ()
+ (interactive)
+ (insert ?⊆) )
+
+;  SUCC. Insert the char "≻" (U+227B).
+
+(defun succ ()
+ (interactive)
+ (insert ?≻) )
+
+;  SUCCEQ. Insert the char "≽" (U+227D).
+
+(defun succeq ()
+ (interactive)
+ (insert ?≽) )
+
+;  SUPSET. Insert the char "⊃" (U+2283).
+
+(defun supset ()
+ (interactive)
+ (insert ?⊃) )
+
+;  SUPSETEQ. Insert the char "⊇" (U+2287).
+
+(defun supseteq ()
+ (interactive)
+ (insert ?⊇) )
+
+;  TAU. Insert the char "τ" (U+03C4).
+
+(defun tau ()
+ (interactive)
+ (insert ?τ) )
+
+;  THETA. Insert the char "Θ" (U+0398) or the char "θ" (U+03B8).
+
+(defun Theta ()
+ (interactive)
+ (insert ?Θ) )
+
+(defun theta ()
+ (interactive)
+ (insert ?θ) )
+
+;  TIMES. Insert the char "×" (U+00D7).
+
+(defun times ()
+ (interactive)
+ (insert ?×) )
+
+;  UPARROW. Insert the char "⇑" (U+21D1) or the char "↑" (U+2191).
+
+(defun Uparrow ()
+ (interactive)
+ (insert ?⇑) )
+
+(defun uparrow ()
+ (interactive)
+ (insert ?↑) )
+
+;  UPSILON. Insert the char "ϒ" (U+03D2) or the char "υ" (U+03C5).
+
+(defun Upsilon ()
+ (interactive)
+ (insert ?ϒ) )
+
+(defun upsilon ()
+ (interactive)
+ (insert ?υ) )
+
+;  VAREPSILON. Insert the char "ε" (U+03B5).
+
+(defun varepsilon ()
+ (interactive)
+ (insert ?ε) )
+
+;  VARPHI. Insert the char "φ" (U+03C6).
+
+(defun varphi ()
+ (interactive)
+ (insert ?φ) )
+
+;  VARPI. Insert the char "ϖ" (U+03D6).
+
+(defun varpi ()
+ (interactive)
+ (insert ?ϖ) )
+
+;  VARRHO. Insert the char "ϱ" (U+03F1).
+
+(defun varrho ()
+ (interactive)
+ (insert ?ϱ) )
+
+;  VARSIGMA. Insert the char "ς" (U+03C2).
+
+(defun varsigma ()
+ (interactive)
+ (insert ?ς) )
+
+;  VARTHETA. Insert the char "ϑ" (U+03D1).
+
+(defun vartheta ()
+ (interactive)
+ (insert ?ϑ) )
+
+;  VDASH. Insert the char "⊢" (U+22A2).
+
+(defun vdash ()
+ (interactive)
+ (insert ?⊢) )
+
+;  VEE. Insert the char "∨" (U+2228).
+
+(defun vee ()
+ (interactive)
+ (insert ?∨) )
+
+;  WEDGE. Insert the char "∧" (U+2227).
+
+(defun wedge ()
+ (interactive)
+ (insert ?∧) )
+
+;  WHITEBAR. Insert the char "⫿" (U+2AFF).
+
+(defun whitebar ()
+ (interactive)
+ (insert ?⫿) )
+
+;  XI. Insert the char "Ξ" (U+039E) or the char "ξ" (U+03BE).
+
+(defun Xi ()
+ (interactive)
+ (insert ?Ξ) )
+
+(defun xi ()
+ (interactive)
+ (insert ?ξ) )
+
+;  ZETA. Insert the char "ζ" (U+03B6).
+
+(defun zeta ()
+ (interactive)
+ (insert ?ζ) )

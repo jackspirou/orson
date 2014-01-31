@@ -1,0 +1,115 @@
+.TH PRESCRIPT 1 "October 25, 2013"
+.DD October 25, 2013
+
+.SH NAME
+prescript - Preprocess Unicode characters for GNU Enscript
+
+.SH SYNOPSIS
+.B prescript
+.RI [ \c
+.I file\c
+\&...]
+
+.SH DESCRIPTION
+Orson source files may be written with UTF-8 Unicode characters that are not
+ASCII characters.
+Unfortunately, GNU
+.B enscript
+cannot print such files.
+.B Prescript
+copies source files to stdout, replacing Unicode characters in the Symbol font
+with equivalent embedded PostScript commands, so that
+.B enscript
+can print them.
+If
+.B p
+is a path to an Orson source file, then you can print the file like this.
+
+.PP
+.B \ \ \ \ \ prescript p | enscript -2rG -e -f Courier6.75
+
+.PP
+If no paths are given to
+.B prescript\c
+\&,
+then it takes its input from stdin.
+For example, you can print a cross reference listing of several Orson source
+files like this, using the Orson cross referencer
+.B ox\c
+\&.
+
+.PP
+.B \ \ \ \ \ ox p1 p2 ... pj | prescript | enscript -2rG -e -f Courier6.75
+
+.PP
+.B Prescript
+correctly handles all Unicode characters that are also in the Symbol font.
+It simulates a few characters that are not.
+For example, the Unicode "not identical to" character (U+2262) is simulated as
+an "identical to" character (U+2261) overstruck with a "solidus" (U+002F).
+Subscript digits (U+2080 through U+2089) are simulated by printing ordinary
+digits in smaller size and shifting them down a few points.
+Characters that are not in the Symbol font which cannot be simulated are
+printed as "black diamond suit" characters (U+2666).
+
+.PP
+.B Prescript
+writes messages to stderr about characters that it can't print.
+To see just the messages about a series of source files, you can do this.
+
+.PP
+.B \ \ \ \ \ prescript p1 p2 ... pj > /dev/null
+
+.PP
+.B Prescript
+is a kludge, intended as a temporary stopgap until a better way to print
+Unicode files from the command line comes along.
+
+.SH COPYING
+Copyright (C) 2013 by James B. Moen.
+Permission is granted to copy, distribute, and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.3 or any later
+version published by the Free Software Foundation; with no Invariant
+Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license may be obtained at <http://fsf.org/>.
+
+.SH VERSION
+Version 0.1.
+
+.SH REFERENCES
+Adobe Systems Incorporated.
+.I PostScript Language Reference Manual.
+Addison-Wesley.
+Reading, Massachusetts.
+1985.
+
+.PP
+James B. Moen.
+"Unrevised Report on the Algorithmic Language Orson."
+Unpublished Technical Report.
+2013.
+
+.PP
+The Unicode Consortium.
+.I The Unicode Standard, Version 5.0.
+Fifth Edition.
+Addison-Wesley Professional.
+Reading, Massachusetts.
+2006.
+
+.SH AUTHOR
+James B. Moen
+
+.SH SEE ALSO
+.B ascii\c
+(7),
+.B enscript\c
+(1),
+.B orson\c
+(1),
+.B ox\c
+(1),
+.B unicode\c
+(7),
+.B utf-8\c
+(7).

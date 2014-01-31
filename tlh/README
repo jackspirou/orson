@@ -1,0 +1,35 @@
+				      TLH
+
+				 James B. Moen
+			       January 14, 2014
+
+This directory  contains source  code for TLH,  a program that  makes two-level
+perfect hash  methods for  large sets of  string keys.  It may be  helpful when
+writing lexical scanners  or parsers. TLH is written in  Orson, and is intended
+to run  under Unix-like systems, such  as GNU/Linux. These  files contain Orson
+source code for TLH.
+
+    array.os     Arrays from the heap.
+    hash.os      Convert strings to arbitrary integers.
+    key.os       Linear chains of strings used as hash keys.
+    main.os      Main program.
+    tlh.os       Make a two-level perfect hash method for string keys.
+    tree.os      Unbalanced binary search trees of ints.
+    write.os     Write results.
+
+These files  contain documentation, sample inputs, and  supporting material for
+TLH.  The program can’t currently find a hash method for the strings in egHooks
+because hash.os converts two or more of them to the same int.
+
+    Makefile     Compile, install, uninstall TLH.
+    README       What you're reading now.
+    Readme.by    Bracy source for Readme.html.
+    Readme.html  Long HTML version of README.
+    egHooks      An example TLH input: Orson hook names (see above).
+    egJava       An example TLH input: Java reserved names.
+    egOrson      An example TLH input: Orson reserved names.
+    tlh.1        Manual page for TLH.
+
+TLH  is available  under the  terms  of the  GNU General  Public License  (GPL)
+version 3. An  Orson compiler is also available from the  author under the same
+terms.

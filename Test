@@ -1,0 +1,73 @@
+#
+#  ORSON/TEST. Compile Orson source files for debugging.
+#
+#  James B. Moen
+#
+#  This file runs the Orson compiler on each Orson source file it can find, and
+#  throws away the results, assuming the Orson compiler and library are already
+#  installed. It's for debugging after changing the compiler or library.
+#
+
+#  Compile the standard prelude in raw (-r) mode.
+
+cd library
+echo "orson -r prelude.op"
+orson -r prelude.op
+rm -f a.out Out.c *.o
+
+#  Compile the Orson library. It does not find all errors, since Orson does not
+#  transform a form's body until the form is called.
+
+for x in *.op
+do if test $x != prelude.op;
+   then echo "orson" $x;
+        orson $x;
+        rm -f a.out Out.c *.o
+   fi
+done
+
+for x in *.os
+do echo "orson" $x;
+   orson $x;
+   rm -f a.out Out.c *.o
+done
+
+#  Compile all Orson sources in the APPS directory.
+
+cd ../apps
+
+for x in *.os
+do echo "orson" $x;
+   orson $x;
+   rm -f a.out Out.c *.o
+done
+
+#  Compile BRACY.
+
+cd ../bracy
+make
+make clean
+
+#  Compile EG.
+
+cd ../eg
+make
+make clean
+
+#  Compile OX.
+
+cd ../ox
+make
+make clean
+
+#  Compile SCAM.
+
+cd ../scam
+make
+make clean
+
+#  Compile TLH.
+
+cd ../tlh
+make
+make clean

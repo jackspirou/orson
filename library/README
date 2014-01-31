@@ -1,0 +1,109 @@
+                               AN ORSON LIBRARY
+
+                                 James B. Moen
+                               January 20, 2014
+
+The Orson source files in this  directory implement an Orson library. It is not
+intended to be  a standard library, but rather a  collection of methods (mostly
+forms) that may  be helpful or interesting. Some library  files were written to
+help find bugs in the Orson compiler. Others were written as parts of programs,
+then moved to the library if it was felt they might be of general use.
+
+Most  of the  Orson library  is  written in  Orson, although  some files  (like
+file.os) are  simply false beards for functions  from the GNU C  library. A few
+files (like width.os) use code written in GNU C.
+
+    action.os     Operations on actions associated with Unix signals.
+    array.os      Make arrays with specified elements.
+    ascii.os      Operations on ASCII characters.
+    assert.os     Report an error if an expression is false.
+    bht.os        Bucketed hash tables.
+    bitset.os     Finite sets of small integers.
+    break.os      Terminate an iterator.
+    buffer.os     Fixed length linear queues.
+    cdlc.os       Circular doubly linked chains.
+    cell.op       Operations on cells.
+    chain.os      Visit nodes in a linear linked chain.
+    chainsort.os  Sort a linear linked chain of execution objects.
+    char.os       Operations on characters.
+    command.os    Process Unix command line arguments.
+    complex.os    Complex arithmetic.
+    convert.os    Convert a string to an integer or a real.
+    count.os      Counting loops with breakers.
+    cxr.op        Compositions of cars and cdrs.
+    decode.os     Decode a string to a series of characters.
+    default.os    Default values of given types.
+    delimit.os    Visit delimited substrings of a string.
+    directory.os  Operations on Unix directories.
+    dotref.os     Dereference pointers to tuples using dots.
+    dump.os       Dynamic memory allocation with garbage collection.
+    dynamic.os    Dynamic memory allocation with explicit release.
+    empty.os      An empty program.
+    encode.os     Encode a character as a string.
+    environ.op    Communicate with the operating system.
+    exchange.os   Suzuki generalized variable exchanges.
+    fail.os       Terminate a program with an error message.
+    file.os       Input and output on file streams.
+    flq.os        Fixed length queues.
+    fls.os        Fixed length stacks.
+    formif.os     Simulate transformation-time ifs using forms.
+    headtail.os   Traverse arrays using pointers.
+    krig.os       Knuth’s random int generator.
+    library.os    Get a string of library directory paths.
+    list.os       Operations on lists.
+    lslc.os       Linear singly linked chains.
+    making.os     Allocate an object from the heap and initialize it.
+    match.os      Test if a string is a member of a list of strings.
+    math.os       Mathematical constants and functions.
+    methcast.os   Cast forms to procedures and vice versa.
+    multi.os      Multi-dimensional arrays.
+    path.os       Operations on Unix pathnames.
+    plain.os      Operations on Orson plain names.
+    pmrig.os      Park-Miller Random int Generator.
+    prelude.op    A standard prelude for Orson (version Burbot).
+    prime.os      Test if an integer constant is prime.
+    primes.os     Generate a series of prime ints.
+    quicksort.os  Quicksort the elements of an array.
+    roman.os      Convert small positive ints to Roman numerals.
+    seed.os       Initialize a random number generator.
+    select.os     Simulate a case clause whose labels are strings.
+    sequence.op   Iterators that transform to sequences.
+    shell.os      Execute Unix shell commands.
+    signal.os     Operations on Unix signals and sets of signals.
+    skolem.os     Make Skolem types for debugging Orson.
+    string.op     Operations on strings.
+    subsup.os     Write integers using subscript and superscript digits.
+    text.os       Read characters and lines from a text file.
+    throw.os      Throw exceptions in response to Unix signals.
+    time.os       Operations on dates and times.
+    twirl.os      Write a twirling baton during a loop.
+    ubst.os       Unbalanced binary search trees.
+    uncaught.os   Catch otherwise uncaught exceptions.
+    vlq.os        Variable length queues.
+    vls.os        Variable length stacks.
+    width.os      Determine columns to write simple objects.
+    withify.os    Transform a list of terms into a with clause.
+
+Some  library files  use  GNU C  types that  are  created by  calling the  form
+c's. When c's creates a GNU C type,  it must be given the alignment and size of
+that type, since  Orson cannot determine these for  itself. Unfortunately, type
+alignments and sizes  can vary from one system to another,  and those used here
+may not  be correct for  your system. Orson  is distributed with a  program gas
+that can  show the alignment  and size of  any named GNU  C type. If  there are
+problems, you should use it to check type alignments and sizes.
+
+The Orson library also contains a few  files that do not define methods for use
+in other programs. Some (like makecxr.os and ranger.os) automatically construct
+source files for the library.
+
+    C/            A directory that contains GNU C code. Boring.
+    README        What you're reading now.
+    Readme.by     Bracy source for Readme.html.
+    Readme.html   Long HTML version of README.
+    makecxr.os    Generate the Orson library file cxr.op.
+    ranger.os     Make arrays that clone GNU C’s wcwidth function.
+
+The Orson  library is available  for free, under  the terms of the  GNU General
+Public License  version 3,  so it may  be used  by free Orson  programs. People
+bothered by  this are invited  to make their  Orson programs free, or  to write
+their own libraries.

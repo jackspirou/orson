@@ -1,0 +1,741 @@
+<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:33 PM CST -->
+<html>
+ <head>
+  <title>
+   Generic Forms
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>An Introduction to Generic Forms</b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   June 10, 2013
+  </p>
+  <p align="center">
+   <b>Abstract</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    In the assignment <i>v</i>&nbsp;:=&nbsp;<i>e,</i> the variable
+    <i>v</i> and the expression <i>e</i> must have compatible types.
+    In most programming languages, the operator <i>"</i>:=<i>"</i>
+    cannot be implemented as a procedure, because procedures do not allow the
+    type of one parameter to depend on the type of another. However, in the
+    programming language <i>Orson, "</i>:=<i>"</i> can be written as
+    a <i>generic form,</i> whose parameter types can depend on each other
+    in arbitrary ways. Generic forms are explained by showing how they can
+    implement <i>"</i>:=<i>"</i> and other allegedly useful
+    operations involving variables.
+   </p>
+  </blockquote>
+  <p align="justify">
+   Copyright &#169; 2013 James B. Moen. Permission is granted to copy,
+   distribute, and/or modify this document under the terms of the
+   G<small>NU</small> Free Documentation License, Version 1.3 or any later
+   version published by the Free Software Foundation; with no Invariant
+   Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the
+   license may be obtained at
+   <a href="http://fsf.org/">
+    <tt>&lt;http://fsf.org/&gt;.</tt>
+   </a>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This document uses special characters.
+   Without proper rendering support, you may see question marks, boxes, or
+   other symbols in place of these characters. This document must be rendered
+   in a font where an italic quote &lsquo;&nbsp;<i>"</i>&nbsp;&rsquo;
+   looks different from two apostrophes &lsquo;&nbsp;''&nbsp;&rsquo;.
+  </p>
+  <hr />
+  <p>
+   <b>1. Introduction.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    You may find a model of the lesser in the greater, I said; for they are
+    necessarily of the same type, and there is the same spirit in both of them.
+   </p>
+   <p align="right">
+    <a href="#pla1943">
+     [<small>PLA</small> 1943]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The programming language <i>Orson</i>
+   <a href="#moe2013">
+    [<small>MOE</small> 2013]
+   </a>
+   provides methods called <i>forms</i> that are similar to macros
+   <a href="#ker1988">
+    [<small>KER</small> 1988].
+   </a>
+   However, they are different from macros because their parameters and results
+   have types, because they work directly with expressions, and because they
+   can perform arbitrary computations during compilation.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A <i>generic form</i> has parameters
+   whose types can depend on each other in arbitrary ways. For example, in a
+   generic form, a parameter may be declared to have a type that must be
+   compatible with that of another parameter, and it may be declared without
+   stating either type explicitly. This essay shows a series of examples that
+   explain how generic forms work. Many examples discuss how to implement the
+   assignment operator <i>"</i>:=<i>"</i> as a generic form.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To understand the examples, you must first
+   know a few things about Orson. First, most of Orson&rsquo;s operators are
+   implemented as forms. For example, an expression like
+   <i>v</i>&nbsp;:=&nbsp;<i>e</i> is actually an abbreviation for the
+   form call <i>"</i>:=<i>"</i>(<i>v,</i>&nbsp;<i>e</i>),
+   where <i>"</i>:=<i>"</i> is the name of the form. The name
+   <i>"</i>:=<i>"</i> is not a string: Orson uses two adjacent
+   apostrophes &lsquo;&nbsp;''&nbsp;&rsquo; to delimit strings.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Second, a type <i>a</i> is a
+   <i>subtype</i> of another type <i>b</i> if all objects of the type
+   <i>a</i> also have the type <i>b.</i> If <i>a</i> is a
+   subtype of <i>b,</i> then an object of type <i>a</i> may be used
+   anywhere an object of type <i>b</i> is expected. An object of another
+   type <i>a</i>&#8242; may also be used if Orson can automatically
+   <i>coerce</i> it to an object of the type <i>b.</i> For example,
+   an object of type <i>int</i>0, which describes an integer that fits in
+   one (2&#8304;) byte, can be automatically coerced to an object of type
+   <i>int</i>1, which describes an integer that fits in two (2&#185;)
+   bytes.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Third, Orson has types called
+   <i>jokers</i> that describe infinite sets of objects. For example, the
+   joker <i>mut</i> describes the infinite set of <i>mutable</i>
+   objects that can be the values of variables. Just as the type
+   <b>var</b>&nbsp;<i>int</i> describes an integer variable, so the
+   type <b>var</b>&nbsp;<i>mut</i> describes any variable whatsoever.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fourth, all objects have types, and all types
+   are objects, so all types have types. If <i>t</i> is a type, then the
+   expression <b>type</b>&nbsp;<i>t</i> is the type of the type
+   <i>t.</i> For example, <b>type</b>&nbsp;<i>int</i> is the
+   type of the type <i>int,</i> and <b>type</b> <i>mut</i> is
+   the type of any type that is a subtype of <i>mut.</i>
+  </p>
+  <p>
+   <b>2. A form that doesn&rsquo;t work.</b>
+  </p>
+  <p align="justify">
+   Suppose I want to implement the assignment operator
+   <i>"</i>:=<i>"</i> as a form. It must take two arguments. The
+   first argument must be a variable of type
+   <b>var</b>&nbsp;<i>t,</i> where <i>t</i> is a subtype of
+   <i>mut.</i> The second argument must be an object whose type is a
+   subtype of <i>t.</i> My first attempt might be to write this.
+  </p>
+  <blockquote>
+   <p>
+    <i>"</i>:=<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>mut</i>&nbsp;<i>l</i>,&nbsp;<i>mut</i>&nbsp;<i>r</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(<b>f</b></font>?<i>varSet</i>(<i>l</i>,&nbsp;<i>r</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Every form has a <i>yield type,</i> which describes the object that the
+   form returns. The yield type of this form is <i>void,</i> which means
+   that the form returns a dummy object. A form has the yield type
+   <i>void</i> when it is used only for its side effects, like changing
+   the value of a variable.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The form <i>"</i>:=<i>"</i> uses
+   ?<i>varSet,</i> a primitive procedure or <i>hook.</i> If the
+   variable <i>l</i> resides in memory, then
+   ?<i>varSet</i>(<i>l,</i>&nbsp;<i>r</i>) copies bytes from the
+   object <i>r</i> into <i>l.</i> If <i>l</i> resides in a
+   register instead, then
+   ?<i>varSet</i>(<i>l,</i>&nbsp;<i>r</i>) moves the object
+   <i>r</i> into <i>l.</i> As a result, if I write
+   <i>v</i>&nbsp;:=&nbsp;<i>e,</i> then the variable <i>v</i>
+   will be assigned the object returned by the expression <i>e.</i> For
+   example, if <i>k</i> has the type <b>var</b>&nbsp;<i>int,</i>
+   then I can write <i>k</i>&nbsp;:=&nbsp;1.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Unfortunately, I haven&rsquo;t implemented
+   <i>"</i>:=<i>"</i> correctly, because it allows <i>l</i> and
+   <i>r</i> to have incompatible types. For example, I can write
+   <i>k</i>&nbsp;:=&nbsp;''Hello'', which incorrectly assigns a
+   string to the integer variable <i>k.</i> This should be an error,
+   because strings aren&rsquo;t integers. However, it&rsquo;s allowed by the
+   form I just wrote, because the integer type <i>int</i> and the string
+   type <i>string</i> are both subtypes of <i>mut.</i>
+  </p>
+  <p>
+   <b>3. Another form that doesn&rsquo;t work.</b>
+  </p>
+  <p align="justify">
+   Maybe I can write <i>"</i>:=<i>"</i> as an <i>alternate
+   form.</i> It has a separate <i>member form</i> for each possible
+   variable and its corresponding expression, as shown below. There&rsquo;s a
+   member for an integer variable and an integer expression, another member for
+   a real variable and a real expression, and still another for a string
+   variable and a string expression, etc.
+  </p>
+  <blockquote>
+   <p>
+    <i>"</i>:=<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i></font>(<b>alt</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(</font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>int</i>&nbsp;<i>l</i>,&nbsp;<i>int</i>&nbsp;<i>r</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((<b>f</b></font>?<i>varSet</i>(<i>l</i>,&nbsp;<i>r</i>)),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(</font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>real</i>&nbsp;<i>l</i>,&nbsp;<i>real</i>&nbsp;<i>r</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((<b>f</b></font>?<i>varSet</i>(<i>l</i>,&nbsp;<i>r</i>)),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(</font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>string</i>&nbsp;<i>l</i>,&nbsp;<i>string</i>&nbsp;<i>r</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((<b>f</b></font>?<i>varSet</i>(<i>l</i>,&nbsp;<i>r</i>)),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(</font>...)
+   </p>
+  </blockquote>
+  <p align="justify">
+   When I call an alternate form, a member is called whose parameter types
+   match the call&rsquo;s arguments. Now I can write
+   <i>k</i>&nbsp;:=&nbsp;1 because it calls the first member, which takes
+   an integer variable and an integer as its arguments. However, I can&rsquo;t
+   write <i>k</i>&nbsp;:=&nbsp;''Hello'' because there is no member
+   that takes an integer variable and a string as its arguments.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; However, I still haven&rsquo;t implemented
+   <i>"</i>:=<i>"</i> correctly, because there are infinitely many
+   possible types. I&rsquo;d need an alternate form with infinitely many
+   members to correctly implement <i>"</i>:=<i>".</i> I could have a
+   different version of <i>"</i>:=<i>"</i> in each program, one that
+   mentions only the types used in that program, but it would be a hassle.
+  </p>
+  <p>
+   <b>4. Still another form that doesn&rsquo;t work.</b>
+  </p>
+  <p align="justify">
+   Suppose that a form could have a funny kind of parameter <i>t,</i>
+   which can be a type. Then I could use <b>var</b>&nbsp;<i>t</i> as
+   the type of the variable <i>l,</i> and <i>t</i> as the type of the
+   expression <i>r.</i> I&rsquo;d end up with a form that looks like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>"</i>:=<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>t</i>&nbsp;<i>l</i>,&nbsp;<i>t</i>&nbsp;<i>r</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(<b>f</b></font>?<i>varSet</i>(<i>l</i>,&nbsp;<i>r</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now I can write <i>k</i>&nbsp;:=&nbsp;1, because then <i>t</i> is
+   the type <i>int.</i> However, I can&rsquo;t write
+   <i>k</i>&nbsp;:=&nbsp;''Hello'', because <i>t</i> can&rsquo;t
+   be both <i>int</i> and <i>string</i> at the same time. I also
+   don&rsquo;t need infinitely many member forms, as in my previous version of
+   <i>"</i>:=<i>".</i> Since <i>t</i> can be any type, this one
+   form will work for any possible variable and expression, even those with
+   types I haven&rsquo;t thought of yet.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I can&rsquo;t use <i>t</i> as a
+   parameter in this way, but suppose that I could. Then I must answer two
+   questions. First, every name must be declared somewhere. Where should
+   <i>t</i> be declared? Second, every name must be declared to have a
+   type. What should <i>t</i>&rsquo;s type be? I&rsquo;ll answer these
+   questions in the next section.
+  </p>
+  <p>
+   <b>5. A form that almost works.</b>
+  </p>
+  <p align="justify">
+   Parameters like <i>t</i> are so useful that there is a way to use them
+   in Orson: they can appear in <i>generic forms.</i> If I write
+   <i>"</i>:=<i>"</i> as a generic form, it looks like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>"</i>:=<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i></font>(<b>gen</b>&nbsp;(<b>type</b>&nbsp;<i>mut</i>&nbsp;<i>t</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(<b>g</b></font><b>form</b>&nbsp;(<b>var</b>&nbsp;<i>t</i>&nbsp;<i>l</i>,&nbsp;<i>t</i>&nbsp;<i>r</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(<b>gf</b></font>?<i>varSet</i>(<i>l</i>,&nbsp;<i>r</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The part at the beginning,
+   <b>gen</b>&nbsp;(<b>type</b>&nbsp;<i>mut</i>&nbsp;<i>t</i>),
+   is called a <i>generic prefix.</i> It declares <i>t</i> to be a
+   <i>generic name,</i> which has the type
+   <b>type</b>&nbsp;<i>mut.</i> The joker <i>mut</i> is the type
+   of any object that can be the value of a variable, and
+   <b>type</b>&nbsp;<i>mut</i> is the type of <i>mut.</i> As a
+   result, <b>type</b>&nbsp;<i>mut</i> must be the type of the type
+   of any object that can be the value of a variable.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A generic name like <i>t</i> must be
+   declared by a generic prefix to have a type that describes another type.
+   After the generic name is declared in this way, it can appear in the rest of
+   the form. It must also appear at least once as part of the form&rsquo;s
+   parameter types. In the form <i>"</i>:=<i>",</i> the generic name
+   <i>t</i> appears twice in this way. It appears in
+   <b>var</b>&nbsp;<i>t,</i> which is the type of the parameter
+   <i>l.</i> It also appears alone, as the type of the parameter
+   <i>r.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; When a generic form is called, its parameter
+   types are matched with their corresponding argument types. During this
+   process, its generic names are also matched with corresponding parts of the
+   argument types. When a generic name is matched with part of a type, the
+   generic name is <i>bound</i> to that part, so the name takes on the
+   part as its value.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For example, suppose that the generic form
+   <i>"</i>:=<i>"</i> is called with arguments whose types are
+   <b>var</b>&nbsp;<i>int</i> and <i>int.</i> Then when the
+   parameter type <b>var</b>&nbsp;<i>t</i> is matched with the
+   argument type <b>var</b>&nbsp;<i>int,</i> the generic name
+   <i>t</i> is bound to <i>int,</i> and the match succeeds. Later,
+   when the parameter type <i>t</i> is matched with the argument type
+   <i>int,</i> the match also succeeds, because <i>t</i> was bound to
+   <i>int.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Now suppose that <i>"</i>:=<i>"</i>
+   is called with arguments whose types are
+   <b>var</b>&nbsp;<i>int</i> and <i>string</i> instead. Then
+   when the parameter type <b>var</b>&nbsp;<i>t</i> is matched with
+   the argument type <b>var</b>&nbsp;<i>int,</i> the generic name
+   <i>t</i> is bound to <i>int,</i> and the match succeeds. Later,
+   when the parameter type <i>t</i> is matched with the argument type
+   <i>string,</i> the match fails, because <i>t</i> was bound to
+   <i>int.</i> As a result, the call is incorrect.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The generic form <i>"</i>:=<i>"</i>
+   works even when its arguments must be coerced. Suppose that I call it with
+   arguments whose types are <b>var</b>&nbsp;<i>int</i>1 and
+   <i>int</i>0. Then when the parameter type
+   <b>var</b>&nbsp;<i>t</i> is matched with the argument type
+   <b>var</b>&nbsp;<i>int</i>1, the generic name <i>t</i> is to
+   <i>int</i>1, and the match succeeds. Later, when the parameter type
+   <i>t</i> is matched with the argument type <i>int</i>0, the
+   argument is coerced to have the type <i>int</i>1, because <i>t</i>
+   was bound to <i>int</i>1, so the match also succeeds.
+  </p>
+  <p>
+   <b>6. A form that works.</b>
+  </p>
+  <p align="justify">
+   The version of <i>"</i>:=<i>"</i> from the previous section solves
+   most problems with assignments, but not all of them. Suppose I have these
+   two types.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <i>comp</i>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;:&#8722;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       (<b>tuple</b> <i>real re, real im</i>)
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <i>pair</i>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;&nbsp;:&#8722;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       (<b>tuple</b> <i>real, real</i>)
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   The type <i>comp</i> is a <i>tuple</i> type that represents a
+   complex number. It has two <i>real</i> slots, called <i>re</i>
+   (for the real part) and <i>im</i> (for the imaginary part). The type
+   <i>pair</i> also has two real slots, but they don&rsquo;t have names.
+   It describes any tuple that has two real slots, whatever their names may be.
+   As a result, <i>comp</i> is a subtype of <i>pair,</i> but
+   <i>pair</i> is not a subtype of <i>comp.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Now suppose I have two expressions,
+   <i>c</i> and <i>p.</i> The type of <i>c</i> is
+   <b>var</b>&nbsp;<i>comp,</i> and the type of <i>p</i> is
+   <i>pair.</i> Then, based on arguments like those of the previous
+   section, I can write <i>c</i>&nbsp;:=&nbsp;<i>p.</i> The parameter
+   type <b>var</b>&nbsp;<i>t</i> is matched with the argument type
+   <b>var</b>&nbsp;<i>comp,</i> so <i>t</i> is bound to
+   <i>comp,</i> and the match succeeds. Later, the parameter type
+   <i>t</i> is matched with the argument type <i>pair,</i> so the
+   match also succeeds, because <i>t</i> was bound to <i>comp,</i>
+   and <i>pair</i> is a subtype of <i>comp.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; What&rsquo;s the problem? I assumed that
+   Orson will match parameter types with argument types in the order they
+   appear in a form. As a result, the leftmost appearance of a generic name
+   determines how that name is bound to a type. However, what happens if Orson
+   matches parameter and argument types in reverse order of their appearance?
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Here&rsquo;s what happens to
+   <i>c</i>&nbsp;:=&nbsp;<i>p.</i> The parameter type <i>t</i>
+   is matched with the argument type <i>pair,</i> so <i>t</i> is
+   bound to <i>pair,</i> and the match succeeds. Later, the parameter type
+   <b>var</b>&nbsp;<i>t,</i> which is equivalent to
+   <b>var</b>&nbsp;<i>pair</i> because of <i>t</i>&rsquo;s
+   binding, is matched with the argument type
+   <b>var</b>&nbsp;<i>comp.</i> However, <i>pair</i> is not a
+   subtype of <i>comp,</i> so now the match fails.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To avoid this problem, I&rsquo;ll rewrite
+   <i>"</i>:=<i>"</i> so it works regardless of the order that
+   parameter types are matched with argument types. The rewritten version of
+   <i>"</i>:=<i>"</i> has two generic prefixes, and it looks like
+   this.
+  </p>
+  <blockquote>
+   <p>
+    <i>"</i>:=<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i></font>(<b>gen</b>&nbsp;(<b>type</b>&nbsp;<i>mut</i>&nbsp;<i>a</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(<b>g</b></font><b>gen</b>&nbsp;(<b>type</b>&nbsp;<i>a</i>&nbsp;<i>b</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(<b>gg</b></font><b>form</b>&nbsp;(<b>var</b>&nbsp;<i>a</i>&nbsp;<i>l</i>,&nbsp;<i>b</i>&nbsp;<i>r</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(<b>ggf</b></font>?<i>varSet</i>(<i>l</i>,&nbsp;<i>r</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The first generic prefix declares the generic name <i>a</i> to have the
+   type <b>type</b>&nbsp;<i>mut.</i> In other words, <i>a</i>
+   can be bound to any type that can describe the value of a variable. The
+   second generic prefix declares the generic name <i>b</i> to have the
+   type <b>type</b> <i>a.</i> In other words, <i>b</i> can be
+   bound to any type that is a subtype of <i>a.</i> I used two generic
+   prefixes because I must declare <i>a</i> before I can declare
+   <i>b.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Suppose that I write
+   <i>c</i>&nbsp;:=&nbsp;<i>p.</i> Also suppose that Orson matches
+   parameter types with argument types from left to right. Then, Orson first
+   matches the parameter type <b>var</b>&nbsp;<i>a</i> with the
+   argument type <b>var</b>&nbsp;<i>comp,</i> so the generic name
+   <i>a</i> is bound to <i>comp,</i> and the match succeeds. Second,
+   it matches the parameter type <i>b</i> with the argument type
+   <i>pair,</i> so the generic name <i>b</i> is bound to
+   <i>pair,</i> and the match also succeeds.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Both bindings are consistent with how
+   <i>a</i> and <i>b</i> are declared by the generic prefixes. The
+   first generic prefix says that <i>a,</i> which is bound to
+   <i>comp,</i> must have the type <b>type</b>&nbsp;<i>mut,</i>
+   and it does. The second generic prefix says that <i>b,</i> which is
+   bound to <i>pair,</i> must have the type
+   <b>type</b>&nbsp;<i>a,</i> which is equivalent to
+   <b>type</b>&nbsp;<i>comp</i> because of <i>a</i>&rsquo;s
+   bindings, and it also does.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Now suppose that Orson matches parameter
+   types with argument types from right to left. First, it matches the
+   parameter type <i>b</i> with the argument type <i>pair,</i> so the
+   generic name <i>b</i> is bound to <i>pair,</i> and the match
+   succeeds. Second, it matches the parameter type
+   <b>var</b>&nbsp;<i>a</i> with the argument type
+   <b>var</b>&nbsp;<i>comp,</i> so the generic name <i>a</i> is
+   bound to <i>comp,</i> and the match also succeeds. These are the same
+   bindings that <i>a</i> and <i>b</i> had in the previous example.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; By the way, the current version of Orson
+   actually does match parameter types with argument types from left to right.
+   As a result, the original generic form, with one generic prefix, would have
+   worked correctly. However, future versions of Orson might do matches in a
+   different order. Whenever possible, generic forms should be written so that
+   they will work regardless of the matching order.
+  </p>
+  <p>
+   <b>7. Another generic form.</b>
+  </p>
+  <p align="justify">
+   Generic forms were designed specifically to implement the assignment
+   operator <i>"</i>:=<i>",</i> but they have other uses. I&rsquo;ll
+   demonstrate one such use in a form called <i>swap</i> that exchanges
+   the values of two variables.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Suppose that <i>l</i> and <i>r</i>
+   are variables of the same type. Also suppose that I want to swap their
+   values, so that <i>l</i> receives <i>r</i>&rsquo;s value, and
+   <i>r</i> receives <i>l</i>&rsquo;s value. The simplest way to do
+   this uses three assignments, along with a scratch variable <i>s,</i>
+   like this.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <i>s</i>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;:=&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <i>l</i>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <i>l</i>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;:=&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <i>r</i>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <i>r</i>
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &nbsp;:=&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <i>s</i>
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   I want to write a form <i>swap</i> that constructs these assignments
+   automatically, so I can write
+   <i>swap</i>(<i>l,</i>&nbsp;<i>r</i>). It should work with any
+   two variables of the same type, regardless of what those types are. That
+   suggests <i>swap</i> ought to be a generic form.
+  </p>
+  <blockquote>
+   <p>
+    <i>swap</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i></font>(<b>gen</b>&nbsp;(<b>type</b>&nbsp;<i>mut</i>&nbsp;<i>t</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(<b>g</b></font><b>form</b>&nbsp;(<b>var</b>&nbsp;<i>t</i>&nbsp;<i>l</i>,&nbsp;<b>var</b>&nbsp;<i>t</i>&nbsp;<i>r</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(<b>gf</b></font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>t</i>&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(<b>gf</b>(</font><b>do</b>&nbsp;<i>s</i>&nbsp;:=&nbsp;<i>l</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(<b>gf</b>(<b>do</b>&nbsp;</font><i>l</i>&nbsp;:=&nbsp;<i>r</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(<b>gf</b>(<b>do</b>&nbsp;</font><i>r</i>&nbsp;:=&nbsp;<i>s</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Here the generic name <i>t</i> appears in the body of the form. When
+   <i>swap</i> is called, <i>t</i> is replaced by the type to which
+   it was bound during the matching process. For example, if the variables
+   <i>l</i> and <i>r</i> both have the type
+   <b>var</b>&nbsp;<i>int,</i> then <i>t</i> is bound to
+   <i>int,</i> and the form call <i>swap</i> turns into this:
+  </p>
+  <blockquote>
+   <p>
+    (<b>with</b>&nbsp;<b>var</b>&nbsp;<i>int</i>&nbsp;<i>u</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;<i>u</i>&nbsp;:=&nbsp;<i>a</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;</font><i>a</i>&nbsp;:=&nbsp;<i>b</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;</font><i>b</i>&nbsp;:=&nbsp;<i>u</i>)
+   </p>
+  </blockquote>
+  <p align="justify">
+   Here <i>u</i> is a new, unique name that appears nowhere else in the
+   program. Orson makes up a new name, instead of using <i>s,</i> so the
+   scratch variable can&rsquo;t be confused with a variable that&rsquo;s passed
+   to <i>swap</i> as an argument. Orson automatically makes up unique
+   names in this way if there&rsquo;s any possibility of confusion, so you
+   never need to worry about it.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Unlike the final definition of
+   <i>"</i>:=<i>"</i> from the previous section, I really do need to
+   use the same generic name <i>t</i> twice in <i>swap.</i>
+   It&rsquo;s the only way to make sure that both variables <i>l</i> and
+   <i>r</i> have the same type. Using arguments like those of previous
+   sections, I could show that <i>swap</i> can&rsquo;t be called with
+   variables of incompatible types, no matter how Orson matches parameter and
+   argument types.
+  </p>
+  <p>
+   <b>8. Still another generic form.</b>
+  </p>
+  <p align="justify">
+   In the previous section, I showed how generic names can appear in a generic
+   form&rsquo;s body, just like parameter names. A generic name can also appear
+   in a generic form&rsquo;s yield type. For example, the form <i>inc</i>
+   increments an integer variable and returns its value afterward. It works for
+   any integer variable, so the call <i>inc</i>(<i>k</i>) increments
+   the integer variable <i>k.</i>
+  </p>
+  <blockquote>
+   <p>
+    <i>inc</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i></font>(<b>gen</b>&nbsp;(<b>type</b>&nbsp;<i>inj</i>&nbsp;<i>t</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>(<b>g</b></font><b>form</b>&nbsp;(<b>var</b>&nbsp;<i>t</i>&nbsp;<i>r</i>)&nbsp;<i>t</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>(<b>gf</b></font><i>r</i>&nbsp;+=&nbsp;1&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>(<b>gf</b></font><i>r</i>)
+   </p>
+  </blockquote>
+  <p align="justify">
+   The joker type <i>inj</i> describes all possible integers, regardless
+   of their types, so the type <b>type</b>&nbsp;<i>inj</i> describes
+   all possible integer types. If <i>t</i> has the generic type
+   <b>type</b>&nbsp;<i>inj,</i> as it does in the generic form
+   <i>inc,</i> then the parameter type <b>var</b>&nbsp;<i>t</i>
+   must describe all possible integer variables.
+  </p>
+  <hr />
+  <p align="center">
+   <b>References</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="ker1988">
+      </a>
+      [<small>KER</small>&nbsp;1988]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Brian W. Kernighan, Dennis M. Ritchie. <i>The C Programming
+      Language.</i> Second Edition. Prentice-Hall. Upper Saddle River, New
+      Jersey. 1988.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2013">
+      </a>
+      [<small>MOE</small>&nbsp;2013]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. "The Revised&#8315;&#185; Report on the Algorithmic
+      Language Orson." Unpublished technical report. 2013.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="pla1943">
+      </a>
+      [<small>PLA</small>&nbsp;1943]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Plato. <i>The Republic.</i> Benjamin Jowett, translator. Books, Inc.
+      New York, New York. 1943. Page 64.
+     </p>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

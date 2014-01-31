@@ -1,0 +1,1467 @@
+{title Writing Loops in Orson}
+
+{center
+ {b Writing Loops in Orson}
+
+ James B. Moen
+ June 12, 2013}
+
+{center {b Abstract}}
+
+{narrow
+ {justify
+   The only loop provided by the programming language Orson is a {i while}
+   loop.
+   However, Orson can still implement all the loops that are commonly used in
+   other languages, and many that are not.
+   This essay shows how to implement {i repeat} loops, {i middle check} loops,
+   and complex loops with multiple termination tests.
+   It also shows how higher order forms can implement {i counting} loops,
+   C-like {i for} loops, loops that can be terminated by {i breakers,} and
+   {i iterator} loops for specific data structures.}}
+
+{justify
+  Copyright © 2013 James B. Moen.
+  Permission is granted to copy, distribute, and/or modify this document under
+  the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
+  version published by the Free Software Foundation; with no Invariant
+  Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license may be obtained at
+  {goto http://fsf.org/ {t <http://fsf.org/>.}}
+
+  This document uses special characters.
+  Without proper rendering support, you may see question marks, boxes, or other
+  symbols in place of these characters.
+  This document must be rendered in a font where an italic quote `\ {i "}\ '
+  looks different from two apostrophes `\ {q ''}\ '.}
+
+{rule}
+
+{left {b 1. Introduction.}}
+
+{narrow
+ {justify
+   You will soon find a loop [...] that is right for your purpose, one that is
+   both practical and attractive.}
+ {right {goto zar1961 {c [zar 1961]}}}}
+
+{justify
+  Most programming languages provide several different kinds of loops, but
+  Orson {goto moe2013a {c [moe 2013a]}} provides only one.
+  It's called a {i while} clause, and it looks like this.}
+
+{narrow{orson
+(while test do body)}}
+
+{justify
+  Orson executes a {i while} clause by first executing the expression {i test.}
+  If it executes to a {i true} value (any integer other than zero) then the
+  expression {i body} is executed, its value is discarded, and the {i while}
+  clause is executed in the same way again.
+  However, if it executes to a {i false} value (zero) then the {i while} clause
+  is terminated, and it returns the dummy value {i skip.}
+  For example, the following fragment prints integers from 1 to 10, using the
+  form {i writeln} {goto moe2013b {c [moe 2013b].}}}
+
+{narrow{orson
+(with var int k :− 1
+ do (while k ≤ 10
+     do writeln(k)
+        k += 1))}}
+
+{justify
+  This essay will show how you can use Orson's {i while} clause to implement
+  other kinds of loops.
+  Some of these loops depend on Orson being an expression language, in which
+  everything returns a value.
+  Other loops depend on higher-order forms that take other forms as arguments,
+  or that return other forms as values.
+  It's assumed that you already know a little about Orson.}
+
+{left {b 2. Repeat loops.}}
+
+{justify
+  Some languages provide a loop similar to a {i while} clause, but whose body
+  is always executed at least once.
+  The programming language Pascal {goto jnw1974 {c [jnw 1974]}} called this a
+  {i repeat} statement, and the languages based on C
+  {goto knr1988 {c [knr 1988]}} call it a {i do} statement.
+  I'll call it a {i repeat} loop.
+  You can implement a {i repeat} loop in Orson by using the semicolon
+  operator, like this.}
+
+{narrow{orson
+(while body ; test do skip)}}
+
+{justify
+  Here the expression ({i body}\ ;\ {i test}) first executes {i body,} then
+  {i test,} and returns the value of {i test.}
+  Since the {i while} clause's body is {i skip,} the loop can also be
+  abbreviated like this.}
+
+{narrow{orson
+(while body ; test)}}
+
+{justify
+  A repeat loop implemented in this way can print integers from 1 to 10, as
+  shown below.}
+
+{narrow{orson
+(with var int k :− 1
+ do (while
+      writeln(k)
+      k += 1
+      k ≤ 10))}}
+
+{justify
+  I first saw this trick for implementing {i repeat} loops as {i while} loops
+  in the programming language Algol 68 {goto vwi1977 {c [vwi 1977].}}}
+
+{left {b 3. Middle check loops.}}
+
+{justify
+  In a {i while} clause, the Boolean test is executed before the body.
+  In an {i until} loop, it's executed {i after} the body.
+  You can also have a loop that has two bodies, with the test between them.
+  I'll call it a {i middle check} loop.
+  It looks like this.}
+
+{narrow{orson
+(while body₁ ; test do body₂)}}
+
+{justify
+  The first body ({i body}₁) is executed, well, first.
+  Then {i test} is executed.
+  If {i test} executes to a true value, then the second body ({i body}₂) is
+  executed, and the loop keeps going.
+  If it executes to a false value, then the loop terminates without executing
+  the second body.
+
+  Middle check loops are often used to read files.
+  Suppose that {q {i open}({i p,}\ ''r'')} returns a {i stream}
+  {goto moe2013a {c [moe 2013a]}} that's connected to a file whose pathname is
+  the string {i p} {goto moe2013b {c [moe 2013b].}}
+  Also suppose that {i read}({i s}) reads a {i char} from the stream {i s} and
+  returns it.
+  If there are no more characters left to read, then it returns {i eos} (end of
+  stream) instead.
+  If {i c} is a {i char,} then {i write}({i c}) writes it on a standard output
+  device.
+  And if {i s} is a stream, then {i close}({i s}) breaks the connection between
+  the stream and the file that was made by {i open.}
+
+  You can now write a code fragment that lists a file whose name is
+  {q ''foo''.}
+  It uses a middle check loop, as shown below.
+  The first body is {i read}({i s}), the test is ({i c}\ ≠\ {i eos}), and the
+  second body is {i write}({i c}).}
+
+{narrow{orson
+(with
+  stream s :− open(''foo'', ''r'')
+  var char c
+ do (while
+      c := read(s)
+      c ≠ eos
+     do write(c))
+    close(s))}}
+
+{justify
+  In languages based on C {goto knr1988 {c [knr 1988],}} you'd set the variable
+  {i c} inside the test for {i eos.}
+  However, this is a bad idea, since it requires complicated rules about how
+  to handle side effects inside expressions.
+  As a result, it's almost never done in Orson programs.}
+
+{left {b 4. Complex loops.}}
+
+{justify
+  So far, you've seen what I call {i simple loops,} because they have only one
+  test that decides when they should terminate.
+  Other loops, which I'll call {i complex loops,} can have two or more such
+  tests.
+
+  I'll talk about complex loops by showing how to find a node in a binary
+  search tree ({c bst} for short).
+  See any undergraduate data structures textbook to find out about {c bst}s 
+  (my favorite is {goto wir1976 {c [wir 1976],}} but it's long out of print).
+  I'll represent a node in a {c bst} by using a tuple type, like this.}
+
+{narrow{orson
+bst :−
+ (tuple
+   keyType key,
+   valueType value,
+   var ref bst left,
+   var ref bst right)}}
+
+{justify
+  I'll assume the {i key} slots are totally ordered, so that if you have two
+  keys, the first is either less than the second, greater than the second, or
+  equal to the second.
+  I'll also assume that in each node, the left subtree {i left} is either
+  empty, or else is made up of nodes whose keys are less than {i key.}
+  Similarly, the right subtree {i right} is either empty, or else is made up
+  of nodes whose keys are greater than {i key.}
+  An empty subtree is represented as {i nil.}
+
+  Now, I want to write a procedure called {i find} whose parameters are a
+  {c bst} whose root is {i r,} and a key {i k.}
+  It finds the node in {i r} whose key equals {i k,} and returns that node.
+  If there's no such node in {i r,} then {i find} returns the empty tree
+  {i nil} instead.
+
+  To write {i find,} I'll use a complex loop that starts at {i r} and moves
+  downward into {i r}'s subtrees.
+  There are two ways to stop the loop, handled by two different tests.
+  One test detects an empty subtree {i nil.}
+  The other test detects when I've found the node I'm looking for: the one
+  whose {i key} slot equals {i k.}
+
+  The first way I can think of to write {i find} uses a Boolean variable {i g,}
+  which is true as long as the loop is still going.
+  It becomes false when the loop should stop.}
+
+{narrow{orson
+find :−
+ (proc (ref bst r, keyType k) ref bst:
+  (with
+    var bool g :− true
+    var ref bst p :− r
+   do (while g
+       do (if p = nil
+           then g := false
+           else if k < p↑.key
+                then p := p↑.left
+                else if k > p↑.key
+                     then p := p↑.right
+                     else g := false))
+      p))}}
+
+{justify
+  This is slightly unpleasant, because {i g} has little to do with the problem.
+  It's there only to control the loop.
+  One way to eliminate it uses a {i catch} clause, so the loop continues until
+  {i throw} is called.}
+
+{narrow{orson
+find :−
+ (proc (ref bst r, keyType k) ref bst:
+  (with var ref bst p :− r
+   do (catch
+       (while true
+        do (if p = nil
+            then throw()
+            else if k < p↑.key
+                 then p := p↑.left
+                 else if k > p↑.key
+                      then p := p↑.right
+                      else throw())))
+      p))}}
+
+{justify
+  Although this works, Orson may require significant effort to set up {i catch}
+  clauses, so they should be used only for handling infrequent or unexpected
+  situations.
+  They're also typically used to make big jumps through a program, not little
+  jumps inside a single procedure.
+  All this means they're not appropriate for terminating most loops.
+
+  A better way to get rid of {i g} uses an {i if} clause that returns a Boolean
+  value.
+  I'll write an {i if} clause inside the loop, so it returns {i false} if the
+  loop should stop, and returns {i true} if the loop should continue.
+  This gets rid of both the Boolean variable {i g} and the {i catch} clause.}
+
+{narrow{orson
+find :−
+ (proc (ref bst r, keyType k) ref bst:
+  (with var ref bst p :− r
+   do (while
+       (if p = nil
+        then false
+        else if k < p↑.key
+             then p := p↑.left
+                  true
+             else if k > p↑.key
+                  then p := p↑.right
+                       true
+                  else false))
+      p))}}
+
+{justify
+  If I want to write a loop with two or more tests, then I can use an {i if}
+  clause with more branches.
+  If the number of branches is large enough, I might be able to use a {i case}
+  clause instead.}
+
+{left {b 5. Higher-order forms.}}
+
+{justify
+  The rest of the loops I'll discuss in this essay will be implemented by forms
+  that take other forms as arguments, or that return other forms as values, or
+  both.
+  Such forms are called {i higher-order} forms, a term borrowed from
+  mathematical logic.
+  The easiest way to explain higher-order forms is by using an example.
+  Suppose that I define a form called {i tenTimes,} like this.}
+
+{narrow{orson
+tenTimes :−
+ (form (form (int) obj f) void:
+  (with var int k :− 1
+   do (while k ≤ 10
+       do f(k)
+          k += 1)))}}
+
+{justify
+  The form {i tenTimes} takes another form called {i f} as an argument.
+  It uses a loop to call {i f} on the integers 1 through 10.
+  The form {i f,} in turn, takes an integer as its single argument.
+  It returns an object (an {i obj}) that I don't care about.
+
+  If I want to write the integers from 1 to 10 (as in previous examples), I can
+  do it by calling {i tenTimes,} like this.
+  Here {i writeln} is a form that takes an integer as its argument, and writes
+  the integer to standard output.}
+
+{narrow{orson
+tenTimes(writeln)}}
+
+{justify
+  When I call a form, Orson makes a new copy of the form's body, in which the
+  parameters are replaced by their corresponding arguments.
+  The copy of the form's body then replaces the call to the form.
+  As a result, the call {i tenTimes}({i writeln}) is replaced by this.}
+
+{narrow{orson
+(with var int k :− 1
+ do (while k ≤ 10
+     do writeln(k)
+        k += 1))}}
+
+{justify
+  (What I just said isn't quite true.
+  What really happens is that {i f} is not replaced by {i writeln,} but rather
+  by the expression that results from transforming {i writeln.}
+  Things like this don't matter for the purposes of this essay, so I won't
+  mention them again.)
+
+  Similarly, if I want to write only the odd integers from 1 to 10, I can use
+  my own form instead of using {i writeln.}
+  I'll assume {i isOdd}({i j}) returns a true value if {i j} is an odd integer,
+  and a false value otherwise.}
+
+{narrow{orson
+tenTimes(
+ (form (int j) void:
+  (if isOdd(j)
+   then writeln(j))))}}
+
+{justify
+  Now I get a loop that's similar to the one you just saw, but with an {i if}
+  clause inside it.
+  Let's see how that works.
+  The first thing that happens is that {i f} is replaced by the form I gave to
+  {i tenTimes} as an argument, like this.}
+
+{narrow{orson
+(with var int k :− 1
+ do (while k ≤ 10
+     do (form (int j) void: (if isOdd(j) then writeln(j)))(k)
+        k += 1))}}
+
+{justify
+  Then the form inside the {i while} clause is called, so that {i j} is
+  replaced by {i k.}
+  This gives me a loop that writes the odd numbers, which looks like this.}
+
+{narrow{orson
+(with var int k :− 1
+ do (while k ≤ 10
+     do (if isOdd(k)
+         then writeln(k))
+        k += 1))}}
+
+{justify
+  At this point you may ask why anyone would bother defining {i tenTimes,} when
+  it's so easy to write such a simple loop.
+  You're right: for a loop like this, it's probably more trouble than it's
+  worth.
+  However, it might be worth it for a more complicated loop, or for a loop that
+  gets used very often.}
+
+{left {b 6. Counting loops.}}
+
+{justify
+  One loop that's used often is called a {i counting loop,} in which a name is
+  bound to a series of integer values.
+  Each value is computed by incrementing or decrementing the previous value,
+  until some final value is reached.
+  The example that prints the integers from 1 to 10 is a counting loop.
+  Counting loops are commonly used in programs that work with arrays.
+  In fact, the only kind of loops provided by early programming languages were
+  counting loops, since they were primarily designed for array algorithms.
+  If you wanted another kind of loop, you had to build it yourself out of
+  {i goto}'s.
+
+  Orson's Standard Prelude uses an alternate form called {i "}for{i "} to
+  implement four different kinds of counting loops.
+  (The last member is in gray because I won't discuss it until later.)}
+
+{narrow{orson
+"for" :−
+ (alt
+  (form (form (int) obj f, int b, int e, int s) void:
+   (with
+     e :− (past e)
+     s :− (past s)
+     var int k :− b
+    do (while (if s ≥ 0 then k ≤ e else k ≥ e)
+        do f(k)
+           k += s))),
+  (form (form (int) obj f, int b, int e) void:
+    "for"(f, b, e, 1)),
+  (form (form (int) obj f, int e) void:
+    "for"(f, 0, e − 1, 1)),
+  (form (form () obj f, int e) void:
+   (with var int k :− e
+    do (while k > 0
+        do f()
+           k −= 1))){g,}
+  {g(gen (type foj fType)
+    gen (type form (fType) obj wType)
+     form (fType f, wType w) obj:
+      w(f))})}}
+
+{justify
+  A {i for} clause abbreviates a call to the form {i "}for{i "} as defined
+  above.
+  For example, suppose I write this {i for} clause.}
+
+{narrow{orson
+(for int j in 1, 10, 1 do writeln(j))}}
+
+{justify
+  It abbreviates a call to the form {i "}for{i "} that looks like this.}
+
+{narrow{orson
+"for"((form (int j) obj: writeln(j)), 1, 10, 1)}}
+
+{justify
+  The form {i "}for{i "} is a higher-order form, like {i tenTimes} from the
+  last section, because it's called with another form as its argument.
+  When {i "}for{i "} is called in this example, the parameter {i f} is replaced
+  by ({b form}\ ({i int}\ {i j})\ {i obj}:\ {i writeln}({i j})).
+  Similarly, {i b} is replaced by 1, {i e} is replaced by 10, and {i s} is also
+  replaced by 1.
+  (The parameters {i b,} {i e,} and {i s} stand for {i begin,} {i end,} and
+  {i step,} respectively.)
+  As a result of these replacements, the call to {i "}for{i "} shown above is
+  replaced by this expression:}
+
+{narrow{orson
+(with
+  e :− 10
+  s :− 1
+  var int k :− 1
+ do (while
+     (if 1 ≥ 0
+      then k ≤ e
+      else k ≥ e)
+     do (form (int j) obj: writeln(j))(k)
+        k += 1))}}
+
+{justify
+  Orson simplifies the parts of this expression that involve constants.
+  It replaces {i e} by 10, {i s} by 1, and 1\ ≥\ 0 by a true value, so you
+  end up with this.}
+
+{narrow{orson
+(with var int k :− 1
+ do (while
+     (if true
+      then k ≤ 10
+      else k ≥ 10)
+     do (form (int j) obj: writeln(j))(k)
+        k += 1))}}
+
+{justify
+  It also simplifies the {i if} clause, and calls the form inside the {i while}
+  clause.
+  After all that, you get this.}
+
+{narrow{orson
+(with var int k :− 1
+ do (while k ≤ 10
+     do writeln(k)
+        k += 1))}}
+
+{justify
+  This is the same counting loop that appeared in previous examples, except
+  that {i "}for{i "} did all the work of writing it.
+  Also, {i "}for{i "} works for values of {i b,} {i e,} and {i s} that aren't
+  constants, and it lets you count either forwards or backwards, in steps
+  other than 1.
+
+  The other members of alternate form (except the last, in gray) provide
+  counting loops in which {i b,} {i e,} and {i s} take on default values.
+  If the stepping value {i s} is 1, you can write something like this, and the
+  second member does the work.}
+
+{narrow{orson
+(for int j in 1, 10 do writeln(j))}}
+
+{justify
+  If you want to write integers from 0 to 9 in steps of 1, you can also write
+  this, so the third member does the work.
+  Note that this loop generates integers that are the indexes of an array or a
+  list whose length is 10.}
+
+{narrow{orson
+(for int j in 10 do writeln(n))}}
+
+{justify
+  If you just want to execute something a fixed number of times, you can leave
+  off everything before {b in,} and the fourth member does the work.
+  For example, this {i for} clause writes three cheers.}
+
+{narrow{orson
+(in 3 do writeln(''cheer''))}}
+
+{justify
+  In all these examples, the resulting loops are just as efficient as if you'd
+  written them by hand, without using a {i for} clause.
+  This is because a {i for} clause abbreviates a form call, and form calls are
+  replaced by copies of their bodies.
+  There is usually no execution time penalty for using forms, as there is for
+  procedures, so you can use them as much as you like.}
+
+{left {b 7. C's {i for} statements.}}
+
+{justify
+  C {goto knr1988 {c [knr 1988]}} provides an ugly but very general kind of
+  loop, called a {i for} statement.
+  (It has little to do with Orson's {i for} clauses: any coincidence of names
+  is regretted.)
+  For example, the following fragment of C code uses a {i for} statement to
+  print the integers from 1 to 10.}
+
+{narrow{t{display
+int k;
+for (k = 1, k <= 10, k += 1)
+\{
+  fprintf(stdout, "%i\\n", k);
+\}}}}
+
+{justify
+  The advantage of C's {i for} statement is that all the important parts of the
+  loop are in one place, where they're easy to find.
+  It's actually just an abbreviation for C's {i while} statement, which acts
+  much like Orson's {i while} clause.
+  Suppose that {i start,} {i test,} and {i next} are C expressions, and
+  {i body} is a C statement.
+  Then this {i for} statement:}
+
+{narrow{left
+{t for} ({i start}{t ;} {i test}{t ;} {i next}) {i body}}}
+
+{justify
+  is an abbreviation for this C code fragment.}
+
+{narrow{display
+{i start}
+{t while} {t (}{i test}{t )}
+{t \{}
+    {i body}
+    {i next}
+{t \}}}}
+
+{justify
+  You can plug in any expression for {i start} and {i next,} and any expression
+  that returns a integer value for {i test.}
+  Because of this, you can use a C {i for} statement for things other than just
+  counting loops.
+  For example, you could use it to traverse a linear linked chain.
+
+  Now suppose that you want to define an Orson form that does the same thing as
+  a C {i for} statement.
+  You can do it like this, much like the C code fragment shown above.}
+
+{narrow{orson
+"for" :−
+ (form (form () obj body, exe start, bool test, exe next) void:
+   start
+   (while test
+    do body()
+       next))}}
+
+{justify
+  This equate adds a new member to the beginning of the alternate form
+  {i "}for{i "}
+  from the previous section.
+  As a result, you can call the new member by writing something like this.
+  Like my previous examples, it writes the integers from 1 to 10.}
+
+{narrow{orson
+(with var int k
+ do (in k := 1, k ≤ 10, k += 1
+     do writeln(k)))}}
+
+{justify
+  This isn't exactly like a C {i for} statement, because in C you can omit the
+  expressions {i start,} {i next,} and {i test,} and they're replaced by
+  defaults.
+  That won't work in the Orson version: all three expressions must appear.
+  You could handle the defaults by adding more members to the alternate form.}
+
+{left {b 8. Breakers.}}
+
+{justify
+  Sometimes you want to stop a counting loop (or some other kind of loop)
+  before it's supposed to finish.
+  For example, suppose you want to search a series of integers from 0 to {i n,}
+  looking for the first such integer that has the property {i p.}
+  When you find the integer, you want to write it and stop searching.
+  Here's a loop that does that.
+  I assume the method {i isP} tests if its argument has the property {i p.}}
+
+{narrow{orson
+(with
+  var int k :− 0
+  var bool g :− true
+ do (while g ∧ k ≤ n
+     do (if isP(k)
+         then writeln(k)
+              g := false)
+         k += 1))}}
+
+{justify
+  You can also write a {i "}for{i "} loop that can be stopped in this way.
+  What's more, you can stop it without even having to know that a Boolean
+  variable like {i g} is used to control the loop.
+  The trick is to use a form called a {i breaker.}
+
+  I'll start by defining {i breaker} to be the type of a breaker.
+  I'll also define a higher-order form {i makeBreaker} that returns a new
+  breaker when it's called.}
+
+{narrow{orson
+breaker :− form () void
+
+makeBreaker :−
+ (form (var bool g) breaker:
+  (form () void:
+    g := false))}}
+
+{justify
+  The form {i makeBreaker} takes a Boolean variable {i g} as its argument.
+  It returns a new form with no parameters that sets {i g} to {i false.}
+
+  Using {i breaker} and {i makeBreaker,} I can define a new member of the
+  alternate form {i "}for{i ".}
+  Like the earlier members of {i "}for{i ",} it implements a counting loop.
+  Unlike them, however, it can use a breaker to stop the loop.
+  To make things simpler, I'll write the loop so it increments {i k} only in
+  steps of 1.}
+
+{narrow{orson
+"for" :−
+ (form (form (breaker, int) obj f, int b, int e) void:
+  (with
+    e :− (past e)
+    var int k :− b
+    var bool g :− true
+   do (while g ∧ k ≤ e
+       do f(makeBreaker(g), k)
+          k += 1)))}}
+
+{justify
+  Now I can write a {i for} clause that acts like the loop at the beginning of
+  this section.
+  Calling {i x}() will stop the loop at the end of its current iteration.}
+
+{narrow{orson
+(for breaker x, int j in 0, n
+ do (if isP(j)
+     then writeln(j)
+          x()))}}
+
+{justify
+  To see how this works, recall that a {i for} clause is an abbreviation for a
+  call to the form {i "}for{i ".}
+  That means the {i for} clause that I just wrote will turn into this:}
+
+{narrow{orson
+"for"(
+  (form (breaker x, int j) obj:
+   (if isP(j)
+    then writeln(j)
+         x())),
+  0, n)}}
+
+{justify
+  Also recall that when you call a form, it turns into a copy of its body, in
+  which parameters are replaced by their corresponding arguments.
+  As a result, the call to {i "}for{i "} turns into this expression.}
+
+{narrow{orson
+(with
+  e :− n
+  var int k :− 0
+  var bool g :− true
+ do (while g ∧ k ≤ e
+     do (form (breaker x, int j) obj:
+         (if isP(j)
+          then writeln(j)
+               x()))(makeBreaker(g), k)
+        k += 1))}}
+
+{justify
+  I'll now explain what Orson does to this expression, one step at a time.
+  First, I'll replace {i e} by {i n,} just to get the easy part out of the
+  way.}
+
+{narrow{orson
+(with
+  var int k :− 0
+  var bool g :− true
+ do (while g ∧ k ≤ n
+     do (form (breaker x, int j) obj:
+         (if isP(j)
+          then writeln(j)
+               x()))(makeBreaker(g), k)
+        k += 1))}}
+
+{justify
+  Next, I'll replace {i breaker} by the type {b form}\ ()\ {i void.}}
+
+{narrow{orson
+(with
+  var int k :− 0
+  var bool g :− true
+ do (while g ∧ k ≤ n
+     do (form (form () void x, int j) obj:
+         (if isP(j)
+          then writeln(j)
+               x()))(makeBreaker(g), k)
+        k += 1))}}
+
+{justify
+  Now I'll call {i makeBreaker} with the argument {i g.}
+  Note that {i g} is a Boolean variable, which is just what {i makeBreaker}
+  expects.}
+
+{narrow{orson
+(with
+  var int k :− 0
+  var bool g :− true
+ do (while g ∧ k ≤ n
+     do (form (form () void x, int j) obj:
+         (if isP(j)
+          then writeln(j)
+               x()))((form () void: g := false), k)
+        k += 1))}}
+
+{justify
+  Next, I'll call the form that appears inside the {i while} clause.
+  I'll replace {i x} by the form that {i makeBreaker} made, and replace {i j}
+  by {i k.}}
+
+{narrow{orson
+(with
+  var int k :− 0
+  var bool g :− true
+ do (while g ∧ k ≤ n
+     do (if isP(k)
+         then writeln(k)
+              (form () void: g := false)())
+        k += 1))}}
+
+{justify
+  Finally, I'll do the last form call, inside the {i if} clause.}
+
+{narrow{orson
+(with
+  var int k :− 0
+  var bool g :− true
+ do (while g ∧ k ≤ n
+     do (if isP(k)
+         then writeln(k)
+              g := false)
+        k += 1))}}
+
+{justify
+  This gives me the same loop that I wrote by hand at the beginning of this
+  section.
+  The form {i "}for{i "} did all the work of setting it up.
+
+  I need to make a few comments.
+  First, to make things easier to understand, I took some liberties with the
+  order in which Orson would have transformed the call to {i "}for{i ".}
+  Despite that, however, Orson would get the same results that I did.
+
+  Second, all the transformations I just showed are done automatically, behind
+  the scenes.
+  You can write a {i for} clause with a breaker without knowing (or even
+  caring!) that breakers use hidden Boolean variables like {i g.}
+  You don't even have to know that breakers are forms.
+
+  Third, a breaker stops a loop after its current iteration is finished.
+  It doesn't act like the {t break} statement in C-like languages
+  {goto knr1988 {c [knr 1988],}} that stops a loop immediately.
+  To get the same effect as a {t break} statement, the loop body must always
+  call a breaker as the last thing it does.
+
+  Fourth, each breaker stops only a single loop.
+  To see why that matters, suppose that you want to find the first pair of
+  integers {i i,}\ {i j} that have some property {i q.}
+  Assume that {i isQ}({i i,}\ {i j}) returns {i true} if they do.
+  You might then write a nested loop that looks something like this, using two
+  breakers {i xi} and {i xj.}}
+
+{narrow{orson
+(for breaker xi, int i in 0, n
+ do (for breaker xj, int j in 0, n
+     do (if isQ(i, j)
+         then writeln(''%i %i'': i, j)
+              xi()
+              xj())))}}
+
+{justify
+  To stop both loops, you must call both breakers.
+  If you didn't call {i xi,} then the inner loop would stop, but the outer one
+  one would keep going, and it would start the inner loop over again.
+  If you didn't call {i xj,} then the inner loop would keep going, but the
+  outer loop would stop as soon as the inner loop finished.
+  Sometimes you want to do things like that.}
+
+{left {b 9. Wrappers.}}
+
+{justify
+  It's time to discuss that last member of the alternate form {i "}for{i ".}
+  Recall that {i "}for{i "} was defined in the prelude like this.
+  I've already talked about the members that appear in gray.}
+
+{narrow{orson
+"for" :−
+ (alt
+  {g(form (form (int) obj f, int b, int e, int s) void:
+   (with
+     e :− (past e)
+     s :− (past s)
+     var int k :− b
+    do (while
+        (if s ≥ 0
+         then k ≤ e
+         else k ≥ e)
+        do f(k)
+           k += s))),
+  (form (form (int) obj f, int b, int e) void:
+    "for"(f, b, e, 1)),
+  (form (form (int) obj f, int e) void:
+    "for"(f, 0, e − 1, 1)),
+  (form (form () obj f, int e) void:
+   (with var int k :− e
+    do (while k > 0
+        do f()
+           k −= 1))),}
+  (gen (type foj fType)
+    gen (type form (fType) obj wType)
+     form (fType f, wType w) obj:
+      w(f)))}}
+
+{justify
+  The last member defines a {i for} clause that uses a special kind of form,
+  called a {i wrapper.}
+  When a wrapper {i w} is called with zero or more arguments, it returns
+  another form {i w}′.
+  The form {i w}′ takes only one argument, which is a third form {i f.}
+  When {i w}′ is called with {i f,} it transforms to an expression that (when
+  executed) does some computation with {i f} and with {i w}'s arguments.
+
+  Lost?
+  An example might make things clearer.
+  Suppose that you have the forms {i close,} {i open,} {i read,} and {i write}
+  that work with files.
+  They were discussed earlier along with middle check loops.
+  You can then define a wrapper called {i file} that does all the dirty work of
+  opening and closing a file.}
+
+{narrow{orson
+file :−
+ (form (string p) foj:
+  (form (form (stream) obj f) obj:
+   (with stream t :− open(p, ''r'')
+    do f(t)
+       close(t))))}}
+
+{justify
+  The wrapper {i file} is called with a string {i p} that names a file.
+  It transforms to a second form that takes yet a third form {i f} as its
+  argument.
+  The third form {i f} takes a stream as its argument.
+  When {i f} is called, it transforms to an expression that opens {i p} to
+  create a stream {i t,} then calls {i f} on {i t} to read or write characters
+  from it.
+  When {i f} is done, it closes {i t.}
+
+  Let's see how that works.
+  Suppose you want to read characters from a file {q ''foo''} and write them to
+  standard output, as in the previous example.
+  You could do that by calling {i file} directly, like this.}
+
+{narrow{orson
+file(''foo'')(
+ (form (stream s) obj:
+  (with var char c
+   do (while
+        c := read(s)
+        c ≠ eos
+       do write(c)))))}}
+
+{justify
+  First, the call {q {i file}(''foo'')} is replaced by a copy of {i file}'s
+  body, in which {i p} is replaced by {q ''foo'',} like this.}
+
+{narrow{orson
+(form (form (stream) obj f) obj:
+ (with stream t :− open(''foo'', ''r'')
+  do f(t)
+     close(t)))((form (stream s) obj:
+                 (with var char c
+                  do (while
+                       c := read(s)
+                       c ≠ eos
+                      do write(c)))))}}
+
+{justify
+  Then the first form is called.
+  It's replaced by a copy of its body in which {i f} is replaced by the second
+  form.}
+
+{narrow{orson
+(with stream t :− open(''foo'', ''r'')
+ do (form (stream s) obj:
+     (with var char c
+      do (while
+           c := read(s)
+           c ≠ eos
+          do write(c))))(t)
+    close(t))}}
+
+{justify
+  Finally, the form inside the {i with} clause is called.
+  It's replaced by a copy of its body where {i s} is replaced by {i t.}}
+
+{narrow{orson
+(with stream t :− open(''foo'', ''r'')
+ do (with var char c
+     do (while
+          c := read(t)
+          c ≠ eos
+         do write(c)))
+    close(t))}}
+
+{justify
+  Orson can collapse the two nested {i with} clauses into one.
+  This gives you the same expression that you saw before in the section on
+  middle check loops, but with the name {i t} instead of {i s.}}
+
+{narrow{orson
+(with
+  stream t :− open(''foo'', ''r'')
+  var char c
+ do (while
+      c := read(t)
+      c ≠ eos
+     do write(c))
+    close(t))}}
+
+{justify
+  Unlike the example, a wrapper like {i file} is almost never called directly.
+  Instead, it's called by a {i for} clause, like this.}
+
+{narrow{orson
+(for stream s in file(''foo'')
+ do (with var char c
+     do (while
+          c := read(s)
+          c ≠ eos
+         do write(c))))}}
+
+{justify
+  I'll now show that this {i for} clause gives you the same results as if you'd
+  called {i file} directly.
+  Recall that a {i for} clause abbreviates a call to {i "}for{i ",} like this.}
+
+{narrow{orson
+"for"(
+ (form (stream s) obj:
+  (with var char c
+   do (while
+        c := read(s)
+        c ≠ eos
+       do write(c)))),
+ file(''foo''))}}
+
+{justify
+  When the form {i file} is called, you get this.}
+
+{narrow{orson
+"for"(
+ (form (stream s) obj:
+  (with var char c
+   do (while
+        c := read(s)
+        c ≠ eos
+       do write(c)))),
+ (form (form (stream) obj f) obj:
+  (with stream t :− open(''foo'', ''r'')
+   do f(t)
+      close(t))))}}
+
+{justify
+  Now, this results in calling the last member of the alternate form
+  {i "}for{i ",} like this.}
+
+{narrow{orson
+(gen (type foj fType)
+  gen (type form (fType) obj wType)
+   form (fType f, wType w) obj:
+    w(f))((form (stream s) obj:
+           (with var char c
+            do (while
+                 c := read(s)
+                 c ≠ eos
+                do write(c)))),
+          (form (form (stream) obj f) obj:
+           (with stream t :− open(''foo'', ''r'')
+            do f(t)
+               close(t))))}}
+
+{justify
+  And that turns into this form call, which is just what we got above when we
+  called {i file} directly, without using a {i for} clause.}
+
+{narrow{orson
+(form (form (stream) obj f) obj:
+ (with stream t :− open(''foo'')
+  do f(t)
+     close(t)))((form (stream s) obj:
+                 (with var char c
+                  do (while
+                       c := read(s)
+                       c ≠ eos
+                      do write(c)))))}}
+
+{justify
+  At this point, I could go through all the steps of calling {i file} again,
+  and I'd get the same middle check loop that copies characters from {i s} to
+  standard output.
+
+  I've left something out of this example to simplify it.
+  To see what it was, I'll show the definition of the wrapper {i file} again,
+  so you can see it up close.}
+
+{narrow{orson
+file :−
+ (form (string p) foj:
+  (form (form (stream) obj f) obj:
+   (with stream s :− open(p)
+    do f(s)
+       close(s))))}}
+
+{justify
+  What happens if {i f}({i s}) is replaced by an expression that throws an
+  exception?
+  The {i with} clause will be terminated before it closes the stream {i s.}
+  This is a problem, because every stream should be closed after it's opened.
+  I can solve the problem by rewriting {i file} so it uses a {i catch} clause,
+  as follows.}
+
+{narrow{orson
+file :−
+ (form (string p) foj:
+  (form (form (stream) obj f) obj:
+   (with
+     stream s :− open(p)
+     int x :− (catch f(s))
+    do close(s)
+       (if x
+        then throw(x)))))}}
+
+{justify
+  Now if {i f}({i s}) throws an exception {i x,} it will be caught, the stream
+  {i s} will be closed, and {i x} will be thrown again, in case other {i catch}
+  clauses are waiting for it.
+  If {i f}({i s}) doesn't throw an exception, then {i x} will be 0.
+  The stream {i s} will still be closed, but {i x} will not be thrown again.
+
+  Just as in previous examples, the wrapper {i file} can be used with a {i for}
+  clause even if you don't know (or care) how it works.
+  You don't need to know that it uses higher-order forms, or that it catches
+  exceptions and rethrows them.}
+
+{left {b 10. Iterators.}}
+
+{justify
+  I'm not done talking about wrappers yet.
+  An {i iterator} is a wrapper that acts like a loop: it executes an expression
+  zero or more times.
+  Recall from the previous section that when a wrapper {i w} is called with
+  some arguments, it returns a form {i w}′.
+  The form {i w}′ in turn takes a third form {i f} as its argument.
+  When {i w}′ is called with {i f,} it transforms to an expression that does
+  some computation with {i f,} and with {i w}'s arguments.
+  If this computation involves executing that expression multiple times, then
+  the wrapper is an iterator.
+
+  For example, I can use the wrapper {i file} from the previous section to
+  write the iterator {i chars,} as shown.
+  It reads characters from a file whose pathname is {i p.}}
+
+{narrow{orson
+chars :−
+ (form (string p) foj:
+  (form (form (char) obj f) obj:
+   (for stream s in file(p)
+    do (with var char c
+        do (while
+             c := read(s)
+             c ≠ eos
+            do f(c))))))}}
+
+{justify
+  Note that within {i chars,} the wrapper {i file} does all the dirty work of
+  opening a stream, catching exceptions, and closing the stream.
+  I can now use {i chars} to write characters from the file {q ''foo''} in a
+  single {i for} clause, like this.}
+
+{narrow{orson
+(for char c in chars(''foo'')
+ do write(c))}}
+
+{justify
+  This {i for} clause is transformed into the following loop.
+  It handles all the dirty work behind the scenes: opening the stream, copying
+  characters, closing the stream, catching and rethrowing exceptions.}
+
+{narrow{orson
+(with
+  stream s :− open(''foo'')
+  int x :−
+   (catch
+    (with var char c
+     do (while
+          c := read(s)
+          c ≠ eos
+         do write(c))))
+ do close(s)
+    (if x
+     then throw(x)))}}
+
+{justify
+  I won't go through the steps in which this {i for} clause is transformed into
+  a loop.
+  I did that in earlier examples, and it would be boring to read it again.}
+
+{left {b 11. Recursive iterators.}}
+
+{justify
+  An iterator need not use a loop to perform repetitive actions: it might use
+  recursion instead.
+  I'll show an example using {c bst}'s (binary search trees).
+  First, recall from previous examples that a {c bst} can be built from tuples
+  like this.}
+
+{narrow{orson
+bst :−
+ (tuple
+   keyType key,
+   valueType value,
+   var ref bst left,
+   var ref bst right)}}
+
+{justify
+  Using this tuple type, I can write an iterator that does an inorder traversal
+  of a {c bst} whose root is {i r.}
+  An inorder traversal will traverse the {c bst} in sorted order of its {i key}
+  slots.
+  (As before, consult any undergraduate data structures textbook to find out
+  how to traverse binary trees.)
+  My iterator is called {i inorder,} and it looks like this.}
+
+{narrow{orson
+inorder :−
+ (form (ref bst r) foj:
+  (form (form (keyType, valueType) obj f) obj:
+   (with
+     p :−
+      (proc (ref bst s) void:
+       (if s ≠ nil
+        then p(s↑.left)
+             f(s↑.key, s↑.value)
+             p(s↑.right)))
+    do p(r))))}}
+
+{justify
+  It's not possible to traverse a binary tree using only a loop, unless you
+  also use a stack, or add extra pointer slots to {i node.}
+  As a result, I had to use a recursive procedure {i p.}
+  Now, if {i t} is the root of a {c bst,} I now can write a {i for} clause to
+  write the {i key} slots of {i t} in sorted order.}
+
+{narrow{orson
+(for keyType k, valueType v in inorder(t)
+ do writeln(k))}}
+
+{justify
+  The {i for} clause transforms to an expression that looks like this.
+  I won't show the steps in this transformation: you've seen enough of those
+  already.}
+
+{narrow{orson
+(with
+  p :−
+   (proc (ref bst s) void:
+    (if s ≠ nil
+     then p(s↑.left)
+          writeln(s↑.key)
+          p(s↑.right)))
+ do p(t))}}
+
+{justify
+  One problem with {i inorder} is that it works only on {c bst}s whose {i key}
+  and {i value} slots have specific types.
+  I can rewrite it so it works on {c bst}s whose slots have any execution
+  ({i exe}) types.
+  This is possible by making {i bst} be a form that transforms to a tuple type,
+  and by making {i inorder} be a generic form.}
+
+{narrow{orson
+bst :−
+ (form (type exe keyType, type exe valueType) tup:
+  (with
+    n :−
+     (tuple
+       keyType key,
+       valueType value,
+       var ref n left,
+       var ref n right)
+   do n))
+
+inorder :−
+ (gen (type exe keyType, type exe valueType)
+   form (ref bst(keyType, valueType) r) foj:
+    (form (form (keyType, valueType) obj f) obj:
+     (with
+       p :−
+        (proc (ref bst(keyType, valueType) s) void:
+         (if s ≠ nil
+          then p(s↑.left)
+               f(s↑.key, s↑.value)
+               p(s↑.right)))
+      do p(r))))}}
+
+{justify
+  For example, I might have a {c bst} of type
+  {b ref}\ {i bst}({i string,}\ {i int}), whose keys are strings and whose
+  values are integers.
+  If the root of this {c bst} is {i r,} then the the following {i for} clause
+  will write its {i key} and {i value} slots, in lexicographic order of the
+  {i key} slots.}
+
+{narrow{orson
+(for string k, int v in inorder(r)
+ do writeln(''%s %i'': k, v))}}
+
+{justify
+  As if that weren't enough, suppose that I want not only to traverse a {c bst}
+  in order, but also to stop the traversal if I find a specific node.
+  I'm not sure I'd ever want to do that, but it makes a good example.
+  Regardless, I can do it by modifying {i inorder} so it uses a breaker.}
+
+{narrow{orson
+inorder :−
+ (gen (type exe keyType, type exe valueType)
+   form (ref bst(keyType, valueType) r) foj:
+    (form (form (breaker, keyType, valueType) obj f) obj:
+     (with
+       var bool g :− true
+       p :−
+        (proc (ref node(keyType, valueType) s) void:
+         (if s ≠ nil
+          then p(s↑.left)
+               (if g
+                then f(makeBreaker(g), s↑.key, s↑.value)
+                     (if g
+                      then p(s↑.right)))))
+      do p(r))))}}
+
+{justify
+  Using this new version of {i inorder,} I can traverse a {c bst} whose root is
+  {i t.}
+  I can stop the traversal if I find a value slot {i v} that has some property
+  recognized by the method {i isV.}}
+
+{narrow{orson
+(for breaker x, keyType k, valueType v in inorder(t)
+ do (if isV(v)
+     then x()
+     else writeln(''%s %i'': k, v)))}}
+
+{justify
+  Here's the big finish.
+  I can write a final, grand unified, version of {i inorder} that can be used
+  with or without a breaker.
+  The trick is that {i inorder} transforms to an alternate form whose first
+  member doesn't use a breaker, but whose second member does.}
+
+{narrow{orson
+inorder :−
+ (gen (type exe keyType, type exe valueType)
+   form (ref bst(keyType, valueType) r) foj:
+    (alt
+     (form (form (keyType, valueType) obj f) obj:
+      (with
+        p :−
+         (proc (ref bst(keyType, valueType) s) void:
+          (if s ≠ nil
+           then p(s↑.left)
+                f(s↑.key, s↑.value)
+                p(s↑.right)))
+       do p(r))),
+     (form (form (breaker, keyType, valueType) obj f) obj:
+      (with
+        var bool g :− true
+        p :−
+         (proc (ref bst(keyType, valueType) s) void:
+          (if s ≠ nil
+           then p(s↑.left)
+                (if g
+                 then f(makeBreaker(g), s↑.key, s↑.value)
+                      (if g
+                       then p(s↑.right)))))
+       do p(r)))))}}
+
+{justify
+  It might have been better to use a {i catch} clause in these last two
+  versions of {i inorder.}
+  The breaker would then call {i throw} to stop the iterator instead of setting
+  a Boolean variable to {i false.}
+  This would require the form {i makeBreaker} to be defined in a different way.
+  Interested readers (if there are any) may want to write such a thing
+  themselves.}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label jnw1974}
+   {c [jnw\ 1974]\ \ }}
+  {justify
+    Kathleen Jensen, Niklaus Wirth.
+    {i {c Pascal} User Manual and Report.}
+    Lecture Notes In Computer Science No. 18.
+    Berlin, Germany.
+    1974.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label knr1988}
+   {c [knr\ 1988]\ \ }}
+  {justify
+    Brian W. Kernighan, Dennis M. Ritchie.
+    {i The C Programming Language.}
+    Prentice Hall {c ptr.}
+    Upper Saddle River, New Jersey.
+    1988.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2013a}
+   {c [moe\ 2013a]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2013.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2013b}
+   {c [moe\ 2013b]\ \ }}
+  {justify
+    James B. Moen.
+    ``Input and Output in Orson.''
+    Unpublished technical report.
+    2013.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label vwi1977}
+   {c [vwi\ 1977]\ \ }}
+  {justify
+    A.\ van Wijngaarden,
+    B.\ J.\ Mailloux,
+    J.\ E.\ L.\ Peck,
+    C.\ H.\ A.\ Koster,
+    M.\ Sintzoff,
+    C.\ H.\ Lindsey,
+    L.\ G.\ L.\ T.\ Meertens,
+    R.\ G.\ Fisker.
+    ``Revised Report on the Algorithmic Language Algol 68.''
+    {i {c Acm Sigplan} Notices.}
+    Vol. 12, No. 5, May 1977.
+    Pages 1–70.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label wir1976}
+   {c [wir\ 1976]\ \ }}
+  {justify
+    Niklaus Wirth.
+    {i Algorithms + Data Structures = Programs.}
+    Prentice-Hall, Inc.
+    Englewood Cliffs, New Jersey.
+    1976.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label zar1961}
+   {c [zar\ 1961]\ \ }}
+  {justify
+    Barbara J. Zarbock.
+    {i The Complete Book of Rug Hooking.}
+    D. Van Nostrand Company, Inc.
+    Princeton, New Jersey.
+    1961.
+    Page 60.}}}

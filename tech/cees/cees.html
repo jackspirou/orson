@@ -1,0 +1,473 @@
+<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:35 PM CST -->
+<html>
+ <head>
+  <title>
+   Orson's Interface to GNU C
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Orson&rsquo;s Interface to G<small>NU</small> C</b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   December 12, 2013
+  </p>
+  <p align="justify">
+   Copyright &#169; 2013 James B. Moen. Permission is granted to copy,
+   distribute, and/or modify this document under the terms of the
+   G<small>NU</small> Free Documentation License, Version 1.3 or any later
+   version published by the Free Software Foundation; with no Invariant
+   Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the
+   license may be obtained at
+   <a href="http://fsf.org/">
+    <tt>&lt;http://fsf.org/&gt;.</tt>
+   </a>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This document uses special characters.
+   Without proper rendering support, you may see question marks, boxes, or
+   other symbols in place of these characters. This document must be rendered
+   in a font where an italic quote &lsquo;&nbsp;<i>"</i>&nbsp;&rsquo;
+   looks different from two apostrophes &lsquo;&nbsp;''&nbsp;&rsquo;.
+  </p>
+  <hr />
+  <p>
+   <b>1. Introduction.</b>
+  </p>
+  <blockquote>
+   <p>
+    C in each act <i>must</i> change her dress.
+   </p>
+   <p align="right">
+    <a href="#gil1936">
+     [<small>GIL</small> 1936]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The programming language Orson
+   <a href="#moe2013">
+    [<small>MOE</small> 2013]
+   </a>
+   is currently implemented as a translator that turns Orson programs into
+   equivalent G<small>NU</small> C
+   <a href="#sta2008">
+    [<small>STA</small> 2008]
+   </a>
+   programs. As a result, G<small>NU</small> C code can be easily embedded
+   into an Orson program. This is done by loading G<small>NU</small> C
+   source files, then calling the form <i>c</i>'<i>s</i>
+   (that&rsquo;s <i>cee apostrophe ess</i>) on G<small>NU</small> C
+   expressions to make them look like Orson expressions. The form
+   <i>c</i>'<i>s</i> is defined in the Standard Prelude,
+   but is not described in the Revised&#8315;&#185; Report.
+  </p>
+  <p>
+   <b>2. Loading G<small>NU</small> C files.</b>
+  </p>
+  <p align="justify">
+   If <i>p</i> is a portable pathname that ends in the suffix
+   <i>c</i> or <i>h,</i> then the <i>load</i> clause
+   (<b>load</b>&nbsp;<i>p</i>) will load a G<small>NU</small> C
+   source file. For example,
+   (<b>load</b>&nbsp;''<tt>own.clib.cstuff:c</tt>'') will load
+   the file <i>cstuff.c</i> in the directory <i>clib,</i> which in
+   turn is in the user&rsquo;s <i>own</i> (home) directory.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson works by writing a scratch file that
+   contains G<small>NU</small> C code, then invoking the
+   G<small>NU</small> C compiler <small>GCC</small> to compile it. A
+   <i>load</i> clause like the one mentioned above simply copies a file
+   verbatim into the scratch file, without examining it in any way. If the
+   copied file contains erroneous G<small>NU</small> C code, then
+   <small>GCC</small> may issue error messages.
+  </p>
+  <p>
+   <b>3. The form <i>c</i>'<i>s.</i></b>
+  </p>
+  <p align="justify">
+   Orson&rsquo;s Standard Prelude binds the name
+   <i>c</i>'<i>s</i> (<i>cee apostrophe ess</i>) in
+   the following way.
+  </p>
+  <blockquote>
+   <p>
+    <i>c</i>'<i>s</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i></font>(<b>alt</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i>(</font>(<b>form</b>&nbsp;(<b>type</b>&nbsp;<i>exe</i>&nbsp;<i>l</i>,&nbsp;<i>string</i>&nbsp;<i>r</i>)&nbsp;<i>exe</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i>((<b>f</b></font>?<i>strValue</i>(<i>l</i>,&nbsp;<i>r</i>)),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i>(</font>(<b>form</b>&nbsp;(<i>string</i>&nbsp;<i>l</i>,&nbsp;<i>int</i>&nbsp;<i>m</i>,&nbsp;<i>int</i>&nbsp;<i>r</i>)&nbsp;<b>type</b>&nbsp;<i>mut</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i>((<b>f</b></font>?<i>strType</i>(<i>l</i>,&nbsp;<i>m</i>,&nbsp;<i>r</i>)),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i>(</font>(<b>form</b>&nbsp;(<b>type</b>&nbsp;<i>void</i>,&nbsp;<i>string</i>&nbsp;<i>m</i>,&nbsp;<i>list</i>&nbsp;<i>r</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i>((<b>f</b></font>?<i>strApply</i>(<i>void</i>,&nbsp;<i>m</i>,&nbsp;<i>r</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i>((<b>f</b></font><i>skip</i>),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i>(</font>(<b>form</b>&nbsp;(<b>type</b>&nbsp;<i>exe</i>&nbsp;<i>l</i>,&nbsp;<i>string</i>&nbsp;<i>m</i>,&nbsp;<i>list</i>&nbsp;<i>r</i>)&nbsp;<i>exe</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i>((<b>f</b></font>?<i>strApply</i>(<i>l</i>,&nbsp;<i>m</i>,&nbsp;<i>r</i>)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The form <i>c</i>'<i>s</i> makes G<small>NU</small>
+   C objects look like Orson objects. It works by copying a constant string
+   that contains G<small>NU</small> C code into the scratch file, at the
+   point where the call to <i>c</i>'<i>s</i> appears. It is
+   an error if the string is not a constant. The string is not examined in any
+   way, so if it contains erroneous G<small>NU</small> C code, then
+   <small>GCC</small> may issue error messages.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson always evaluates the result of a call
+   to <i>c</i>'<i>s</i> during execution. As a result,
+   Orson cannot transform a G<small>NU</small> C expression to a constant,
+   even if <small>GCC</small> treats it as a constant expression. Orson
+   might not recognize Orson names that appear inside a G<small>NU</small>
+   C expression. This is because Orson changes some names to avoid inadvertent
+   name capture by forms.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; As a matter of style, calls to
+   <i>c</i>'<i>s</i> are almost always hidden inside Orson
+   methods, so it is not apparent whether those methods are written wholly or
+   partly in C.
+  </p>
+  <p>
+   <b>3.1. G<small>NU</small> C expressions.</b>
+  </p>
+  <p align="justify">
+   The first member of the alternate form <i>c</i>'<i>s</i>
+   lets a G<small>NU</small> C expression be used as an Orson expression.
+   The expression&rsquo;s type is the Orson execution type <i>l,</i> and
+   the expression itself is represented as the string constant <i>r.</i>
+   For example,
+   <i>c</i>'<i>s</i>(<b>proc</b>&nbsp;(<i>real</i>)&nbsp;<i>real</i>,&nbsp;''<tt>sin</tt>'')
+   will evaluate to the value of the G<small>NU</small> C name
+   <tt>sin,</tt> and Orson will treat it as if it has a procedure type.
+   Orson does not check if the G<small>NU</small> C expression denoted by
+   <i>r</i> really has the type <i>l.</i> G<small>CC</small> may
+   issue error messages if the expression is used incorrectly.
+  </p>
+  <p>
+   <b>3.2. G<small>NU</small> C types.</b>
+  </p>
+  <p align="justify">
+   The second member of <i>c</i>'<i>s</i> lets a
+   G<small>NU</small> C type be used as an Orson type. The string constant
+   <i>l</i> denotes the type itself. The integer constant <i>m</i> is
+   the type&rsquo;s alignment, and the integer constant <i>r</i> is the
+   type&rsquo;s size. Both <i>m</i> and <i>r</i> must be constants,
+   <i>m</i> must be greater than 0, and <i>r</i> must be greater than
+   or equal to 0. For example,
+   <i>c</i>'<i>s</i>(''<tt>jmp_buf</tt>'',&nbsp;4,&nbsp;156)
+   will transform to the G<small>NU</small> C type <tt>jmp_buf,</tt>
+   whose alignment is 4, and whose size is 156.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; G<small>NU</small> C types created in
+   this way are subtypes of <i>mut,</i> so they can be the base types of
+   variables. One G<small>NU</small> C type is a subtype of another if
+   their strings are lexicographically equal, their alignments are equal, and
+   their sizes are equal. These facts are expressed by rules
+   <b><small>I</small></b> and <b><small>II</small>.</b>
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <table cellpadding="0" cellspacing="0">
+       <tr>
+        <td>
+         <table align="center" cellpadding="0" cellspacing="0">
+          <tr valign="bottom">
+           <td>
+            <p align="center">
+             <i>c</i>'<i>s</i>(<i>l, m, r</i>) &#8838;
+             <i>mut</i>
+            </p>
+           </td>
+           <td>
+           </td>
+          </tr>
+          <tr valign="bottom">
+           <td>
+            <hr />
+           </td>
+           <td>
+            <p>
+             &nbsp;<b><small>I</small></b>
+            </p>
+           </td>
+          </tr>
+          <tr valign="bottom">
+           <td>
+            <p align="center">
+             <i>true</i>
+            </p>
+           </td>
+          </tr>
+         </table>
+        </td>
+       </tr>
+      </table>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <table cellpadding="0" cellspacing="0">
+       <tr>
+        <td>
+         <table align="center" cellpadding="0" cellspacing="0">
+          <tr valign="bottom">
+           <td>
+            <p align="center">
+             <i>c</i>'<i>s</i>(<i>l, m, r</i>) &#8838;
+             <i>c</i>'<i>s</i>(<i>L, M, R</i>)
+            </p>
+           </td>
+           <td>
+           </td>
+          </tr>
+          <tr valign="bottom">
+           <td>
+            <hr />
+           </td>
+           <td>
+            <p>
+             &nbsp;<b><small>II</small></b>
+            </p>
+           </td>
+          </tr>
+          <tr valign="bottom">
+           <td>
+            <p align="center">
+             <i>l</i> = <i>L, m</i> = <i>M, r</i> =
+             <i>R</i>
+            </p>
+           </td>
+          </tr>
+         </table>
+        </td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   The alignment and size constants are used to compute the alignments and
+   sizes of Orson types that contain G<small>NU</small> C types as parts.
+   These constants may depend on the version of <small>GCC</small> in use,
+   the operating system on which <small>GCC</small> runs, and the computer
+   on which the operating system runs. The alignment and size of a
+   G<small>NU</small> C type <i>t</i> may be determined by a
+   G<small>NU</small> C program similar to this one.
+  </p>
+  <blockquote>
+   <p>
+    <tt>#include&nbsp;&lt;stdio.h&gt;&nbsp;</tt>
+    <br />
+    <tt>int&nbsp;main()&nbsp;</tt>
+    <br />
+    <tt>{&nbsp;</tt>
+    <br />
+    <font color="#FFFFFF"><tt>{&nbsp;</tt>&nbsp;</font><tt>fprintf(stdout,&nbsp;"alignment&nbsp;=&nbsp;%i\n",&nbsp;__alignof__(</tt><i>t</i><tt>));&nbsp;</tt>
+    <br />
+    <font color="#FFFFFF"><tt>{&nbsp;</tt>&nbsp;</font><tt>fprintf(stdout,&nbsp;"size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;%i\n",&nbsp;sizeof(</tt><i>t</i><tt>));&nbsp;</tt>
+    <br />
+    <tt>}</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Orson is distributed with a program <i>gas</i> that can show the
+   alignment and size of any named G<small>NU</small> C type. For example,
+   if you type the command
+   <tt>gas</tt>&nbsp;<tt>FILE</tt>&nbsp;<tt>stdio.h</tt> to the
+   shell, you will see the alignment and size of the type <tt>FILE</tt> as
+   defined by the header file <tt>stdio.h</tt>. It works by making a
+   G<small>NU</small> C program similar to the one shown above, then
+   compiling and executing it behind the scenes. Type
+   <tt>man</tt>&nbsp;<tt>gas</tt> to the shell for more information.
+  </p>
+  <p>
+   <b>3.3. G<small>NU</small> C calls.</b>
+  </p>
+  <p align="justify">
+   The third and fourth members of <i>c</i>'<i>s</i> allow
+   calling a G<small>NU</small> C function or macro in an Orson program.
+   The execution type <i>l</i> is the type of the object that will be
+   returned by the call. The string constant <i>m</i> names the function
+   or macro. The elements of the list <i>r</i> are the arguments of the
+   function or macro. For example,
+   <i>c</i>'<i>s</i>(<i>real,</i>&nbsp;''<tt>sin</tt>'':&nbsp;&#960;&nbsp;/&nbsp;2.0)
+   calls the G<small>NU</small> C function <tt>sin</tt> on the
+   argument that results from evaluating &#960;&nbsp;/&nbsp;2.0. It will return
+   an object of type <i>real.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The argument list <i>r</i> is flattened
+   before the function or macro is called. For example, suppose that <i>a, b,
+   c,</i> and <i>d</i> are assignments. Also suppose that <i>r</i>
+   is equivalent to the list clause
+   (:&nbsp;<i>a,</i>&nbsp;(:&nbsp;<i>b,</i>&nbsp;<i>c</i>),&nbsp;<i>d</i>).
+   Then the flattened version of <i>r</i> is equivalent to the list clause
+   (:&nbsp;<i>a,</i>&nbsp;<i>b,</i>&nbsp;<i>c,</i>&nbsp;<i>d</i>).
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The expressions in the argument list are
+   evaluated by Orson in its usual way. Orson does not check if the
+   G<small>NU</small> C function or macro denoted by <i>m</i> is
+   called with the correct number of arguments, or if it really returns an
+   object of type <i>l.</i> G<small>CC</small> may issue error
+   messages if the function or macro is used incorrectly.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Most calls are handled by the fourth member
+   of <i>c</i>'<i>s.</i> The third member is a special case
+   to handle G<small>NU</small> C functions or macros that return
+   <i>void.</i> This is because the Orson type <i>void</i> describes
+   a dummy object <i>skip,</i> but the C type <tt>void</tt> describes
+   no object at all
+   <a href="#ker1988">
+    [<small>KER</small> 1988].
+   </a>
+   The special case makes sure that a function or macro that returns no object
+   in G<small>NU</small> C will appear to return <i>skip</i> in
+   Orson.
+  </p>
+  <hr />
+  <p align="center">
+   <b>References</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="gil1936">
+      </a>
+      [<small>GIL</small>&nbsp;1936]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      William S. Gilbert, Arthur Sullivan. &lsquo;&lsquo;The Grand Duke, or,
+      The Statutory Duel.&rsquo;&rsquo; In <i>The Complete Plays of Gilbert
+      and Sullivan.</i> The Modern Library. Random House, Inc. New York, New
+      York. 1936. Page 655.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="ker1988">
+      </a>
+      [<small>KER</small>&nbsp;1988]&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Brian W. Kernighan, Dennis M. Ritchie. <i>The C Programming
+      Language.</i> Second Edition. Prentice-Hall. Upper Saddle River, New
+      Jersey. 1988.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2013">
+      </a>
+      [<small>MOE</small>&nbsp;2013]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;Revised&#8315;&#185; Report on the
+      Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
+      2013.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="sta2008">
+      </a>
+      [<small>STA</small>&nbsp;2008]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Richard M. Stallman, the G<small>CC</small> Developer Community.
+      &lsquo;&lsquo;Using and Porting the G<small>NU</small> Compiler
+      Collection.&rsquo;&rsquo; Free Software Foundation. Boston,
+      Massachusetts. 2008.
+     </p>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

@@ -1,0 +1,177 @@
+!
+!  EG\ECONOMY. Generate sentences that might be spoken by economists.
+!
+!  Copyright © 2014 James B. Moen.
+!
+!  This  program is free  software: you  can redistribute  it and/or  modify it
+!  under the terms  of the GNU General Public License as  published by the Free
+!  Software Foundation,  either version 3 of  the License, or  (at your option)
+!  any later version.
+!
+!  This program is distributed in the  hope that it will be useful, but WITHOUT
+!  ANY  WARRANTY;  without even  the  implied  warranty  of MERCHANTABILITY  or
+!  FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU General  Public License for
+!  more details.
+!
+!  You should have received a copy of the GNU General Public License along with
+!  this program.  If not, see <http://www.gnu.org/licenses/>.
+!
+
+start →
+ phrases ".".
+
+phrases →
+ "even though " phrase ", " phrase |
+ "when " phrase " then " phrase |
+ introduction? phrase |
+ phrase " and " phrase |
+ phrase " because " phrase | 
+ phrase ", but " phrase |
+ phrase ", however " phrase |
+ phrase " while " phrase.
+
+phrase →
+ person " announced that " thing " is " direction |
+ person " believes that " thing " is " direction |
+ person " claims that " thing " is " direction |
+ persons " believe that " thing " is " direction |
+ persons " claim that " thing " is " direction |
+ "the interest of " person " in " thing " is " direction |
+ "the relationship between " thing " and " thing " is " direction.
+
+person →
+ "a " party " think tank" |
+ "a " party " senator" |
+ "detroit" |
+ "facebook" |
+ "fannie mae" |
+ "freddie mac" |
+ "google" |
+ "hollywood" |
+ "microsoft" |
+ "the administration" |
+ "the automobile industry" |
+ "the banking industry" |
+ "the european union" |
+ "the federal reserve" |
+ "the king of " where |
+ "the middle class" |
+ "the new york stock exchange" |
+ "the " party " party" |
+ "the president" |
+ "the " party " president" |
+ "the " party " speaker of the house" |
+ "the premier of " where |
+ "the prime minister of " where |
+ "the queen of " where |
+ "the speaker of the house" |
+ "the squeaker of the mouse" |
+ "the supreme court" |
+ "the world monetary fund" |
+ "washington".
+
+party →
+ "democratic" |
+ "communist" |
+ "conservative" |
+ "green" |
+ "liberal" |
+ "libertarian" |
+ "republican" |
+ "socialist" |
+ "tory" |
+ "whig".
+
+where →
+ "canada" |
+ "china" |
+ "france" |
+ "germany" |
+ "great britain" |
+ "iran" |
+ "iraq" |
+ "japan" |
+ "russia" |
+ "saudi arabia" |
+ "singapore" |
+ "spain".
+
+thing →
+ "consumer confidence" |
+ "global warming" |
+ "inflation" |
+ "new job creation" |
+ "new home construction" |
+ "real estate" |
+ "social security" |
+ "the balance of trade" |
+ "the depression" |
+ "the economic stimulus" |
+ "the gross domestic product" |
+ "the money supply" |
+ "the price of oil" |
+ "the prime interest rate" |
+ "the recession" |
+ "the employment rate" |
+ "unemployment" |
+ "war".
+
+direction →
+ "a going concern" |
+ "contracting" |
+ "decreasing" |
+ "expanding" |
+ "falling" |
+ "improving" |
+ "increasing" |
+ "irrelevant" |
+ "on the go" |
+ "on the rise" |
+ "rising" |
+ "stagnant" |
+ "unchanging" |
+ "unsteady".
+
+persons →
+ "attorneys" |
+ "economic advisers" |
+ "democrats" |
+ "economists" |
+ "fortune 500 ceo's" |
+ "leading economic indicators" |
+ "libertarians" |
+ "pundits" |
+ "republicans" |
+ "spin doctors" |
+ "spokesmen for " where |
+ "spokesmen for the " party " party" |
+ "spokeswomen for " where |
+ "spokeswomen for the " party " party" |
+ "the poor" |
+ "the wealthy" |
+ "wall street traders".
+
+introduction →
+ "at a news conference, " person " said that " |
+ "because of " reason ", " |
+ "despite " reason ", " |
+ "even though " reason ", " |
+ "during an interview in " where ", " person " said " |
+ "it is believed that " |
+ person " said that " |
+ person " announced that " |
+ persons " announced that " |
+ "today, " |
+ "yesterday, ".
+
+reason →
+ "the auto industry" |
+ "the banking crisis" |
+ "the " direction " cost of health care" |
+ "the " direction " gross domestic product" |
+ "the " direction " money supply" |
+ "the economic stimulus" |
+ "the internet" |
+ "the money supply" |
+ direction " durable goods" |
+ direction? " consumer confidence".

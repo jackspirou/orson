@@ -1,0 +1,236 @@
+{title An Orson Logo}
+
+{center
+ {b An Orson Logo}
+
+ James B. Moen
+ January 28, 2014}
+
+{justify
+  Copyright © 2014 James B. Moen.
+  Permission is granted to copy, distribute, and/or modify this document under
+  the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
+  version published by the Free Software Foundation; with no Invariant
+  Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license may be obtained at
+  {goto http://fsf.org/ {t <http://fsf.org/>.}}}
+
+{rule}
+
+{left {b 1. A joker logo.}}
+
+{narrow
+ {justify
+   ``Your logo,'' Ogle said.
+   ``You designed your logo yourself.''
+
+   Again Aaron's face reddened.
+   He had, in fact, designed it himself.
+   But he thought it was fairly professional, a lot more than the typical
+   home-brewed logo.
+   ``Yeah, so what?'' he said.
+   ``It works.
+   And it was free.''}
+ {right
+  {goto bur1995 {c [bur 1995]}}}}
+
+{justify
+  Every free software project needs a funny logo.
+  Linux has Tux the Penguin, {c bsd} Unix has a little dæmon, and {c Gnu} has a
+  Gnu.
+  I thought the Orson programming language {goto moe2014 {c [moe 2014]}} needed
+  a logo too, so I drew one.
+  Here it is, in three different versions.
+  You can click on any of them to see it in a larger size.}
+
+{insert logos.html}
+
+{justify
+  The Orson logo is a joker, intended to look like the jokers found in decks
+  of playing cards.
+  (Maybe his name is Orson.)
+  I chose a joker because Orson uses types called {i jokers,} each of which
+  describes an infinite set of objects with some property in common.
+  The joker balances two balls on the tips of his fingers.
+  The ball on the left has a pair of parentheses to represent Orson's
+  transformation phase, in which computation is performed in an applicative
+  style.
+  The ball on the right has a colon-equal to represent Orson's execution phase,
+  in which computation is performed in an imperative style.
+
+  I drew the original joker in India ink on white paper, then scanned it, and
+  cleaned up the lines with Gimp {goto kyl1999 {c [kyl\ 1999].}}
+  The result is the first joker that appears above.
+  Then I added colors and the two balls with Gimp, resulting in the second
+  joker.
+  The third joker is like the second, but without a background.
+  That may not be apparent if you look at it with a browser.}
+
+{left {b 2. Other logos.}}
+
+{justify
+  Here are more ideas for Orson logos.
+  I haven't drawn them, but maybe I will someday.
+  I don't know if they would conflict with anyone else's logos.}
+
+{bullet
+ {justify
+   Someone said that the programming language C++ {goto str1994 {c [str 1994]}}
+   is ``an octopus made by nailing extra legs onto a dog.''
+   I don't know the source of that quote, so I didn't reference it, but I guess
+   the dog is the programming language C {goto ker1988 {c [ker 1988].}}
+   Orson is like C with more abstraction, so maybe the Orson logo should be a
+   flying dog, or a flying cow, or a flying pig.}
+ {justify
+   Plato proposed a theory of knowledge based on what he called {i forms}
+   {goto rus1945 {c [rus 1945].}}
+   Of course Orson is based on control structures that are also called
+   {i forms.}
+   Maybe the Orson logo should be an ancient Greek philosopher.
+   He'd be a bearded sage in a toga, with a band of laurel leaves on his head.}
+ {justify
+   Charles Dickens wrote a novel called {i Little Dorrit} that involves a
+   bureaucracy in which people fill out forms {goto dic1970 {c [dic 1970].}}
+   Maybe the Orson logo should be a stuffy, nineteenth-century Dickensian
+   character in a top hat.
+   He'd sit at a tall writing desk, with a bottle of ink and a pen.}
+ {justify
+   The French word {i ours} means {i bear} {goto ohf2005 {c [ohf 2005],}} so an
+   {i Orson} is a son of a bear.
+   Maybe the Orson logo should be a bear cub.}
+ {justify
+   {i Valentine and Orson} is a French medieval story about twin brothers,
+   abandoned in infancy.
+   Valentine is brought up as a knight, while Orson is raised by bears in the
+   woods.
+   An engraving by Peter Bruegel the Elder depicts a scene from the story, in
+   which the brothers are reuinted {goto kle1963 {c [kle 1963].}}
+   It shows a hairy, bearlike man that might be a good logo, but it's not clear
+   if he's intended to be Orson.}}
+
+{justify
+  I've avoided logos based on famous people called Orson, because the language
+  isn't named after anyone.
+  I also don't want trouble with them or their estates.}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label bur1995}
+   {c [bur\ 1995]\ \ }}
+  {justify
+    Stephen Bury.
+    {i Interface.}
+    Bantam Books.
+    New York, New York.
+    1995.
+    Page 32.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label dic1970}
+   {c [dic\ 1970]\ \ }}
+  {justify
+    Charles Dickens.
+    {i Little Dorrit.}
+    Oxford University Press.
+    London, United Kingdom.
+    1970.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label ker1988}
+   {c [ker\ 1988]\ \ }}
+  {justify
+    Brian W. Kernighan, Dennis M. Ritchie.
+    {i The C Programming Language.}
+    Prentice Hall.
+    Upper Saddle River, New Jersey.
+    1988.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label kle1963}
+   {c [kle\ 1963]\ \ }}
+  {justify
+    H. Arthur Klein.
+    {i Graphic Worlds of Peter Bruegel the Elder.}
+    Dover Publications, Inc.
+    New York, New York.
+    1963.
+    Pages 119–120.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label kyl1999}
+   {c [kyl\ 1999]\ \ }}
+  {justify
+    Olof S. Kylander, Karin Kylander. {i {c Gimp:} The Official Handbook.}
+    The Coriolis Group. Scottsdale, Arizona. 1999.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label moe2014}
+   {c [moe\ 2014]\ \ }}
+  {justify
+    James B. Moen.
+    ``The Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2014.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label ohf2005}
+   {c [ohf\ 2005]\ \ }}
+  {justify
+    {i Pocket Oxford-Hachette French Dictionary.}
+    Third Edition.
+    Marie-Hélène Corréard, editor.
+    Oxford University Press.
+    Oxford, United Kingdom.
+    2005.
+    Pages 303, 546.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label rus1945}
+   {c [rus\ 1945]\ \ }}
+  {justify
+    Bertrand Russell.
+    {i A History of Western Philosophy.}
+    Simon and Schuster.
+    New York, New York.
+    1945.
+    Pages 121–122.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label str1994}
+   {c [str\ 1994]\ \ }}
+  {justify
+    Bjarne Stroustrup.
+    {i The C++ Programming Language.}
+    Second edition.
+    Addison-Wesley Publishing Company.
+    Reading, Massachusetts.
+    1994.}}}

@@ -1,0 +1,77 @@
+                                 APPLICATIONS
+
+                                 James B. Moen
+                               January 23, 2014
+
+0. Overview.
+
+This directory  contains source  files for some  application programs.  All are
+available  under the  terms of  the GNU  General Public  License  (GPL) version
+3.  Some  of these  files  use  special  characters. Without  proper  rendering
+support, you may see question marks,  boxes, or other symbols in place of these
+characters.
+
+1. Contents.
+
+The  files in this  directory are  in three  groups. Files  in the  first group
+contain Orson  sources for utility  programs that can  be installed and  run as
+Unix shell commands.
+
+    gas.os        Show the alignment and size of a GNU C type.
+    hb.os         Write simple statistics about source files.
+    jc.os         Justify comments with a given prefix.
+    nsurt.os      Copy a file, inserting the contents of other files.
+    olf.os        Write the titles of Orson library files.
+    prescript.os  Preprocess Unicode characters for GNU Enscript.
+    series.os     Write a finite series of integers.
+    tabu.os       Write a series of names as a rectangular table.
+    urus.os       Obsolete cross reference generator for Orson sources.
+
+The program GNU Enscript converts text files to PostScript for printing, but it
+currently supports only seven- and eight-bit character sets, like ASCII and ISO
+Latin-1. Prescript  is a  preprocessor that lets  Enscript print some  (but not
+all) of the Unicode characters that can appear in Orson sources.
+
+The current  Orson cross reference generator  for Orson source  files is called
+Ox. The  program Urus  is an obsolete  earlier version  of Ox. Unlike  Ox, Urus
+cross-references  only plain, quoted,  reserved, and  secret names.  It doesn’t
+treat   operator    symbols   as   quoted    names   that   should    also   be
+cross-referenced.  Urus is  included here  only  as an  example of  how to  use
+predefined data structures from the Orson library. (A urus is an extinct bovine
+mammal, Bos taurus  primigenius, of Northern Africa, Europe,  and Western Asia,
+believed to be the ancestor of domestic cattle.)
+
+Files  in   the  second  group  contain   Orson  sources  that   are  tests  or
+demonstrations.  Some test  data  structures  that are  provided  by the  Orson
+library.
+
+    chainsaw.os   Sort a linked chain of tuples.
+    hello.os      Write Hello, world!
+    parser.os     Recursive descent parser for Orson.
+    partition.os  Write the partitions of a set.
+    permute.os    Write the permutations of an array.
+    sieve.os      The Sieve of Eratosthenes.
+    tak.os        Takeuchi function as a form.
+
+The  program  Parser might  be  used  as a  starting  point  for programs  like
+cross-referencers or pretty-printers that must parse Orson source programs. For
+example, the program Ox was written by modifying Parser.
+
+Files in the third group contain documentation, and some other things. Most are
+Unix manual pages for the Orson utility programs.
+
+    README        What you're reading now.
+    Readme.by     Bracy source for Readme.html.
+    Readme.html   Long HTML version of README.
+    dotEmacs      Customization file for GNU Emacs.
+    gas.1         Manual page for Gas.
+    hb.1          Manual page for HB.
+    jc.1          Manual page for JC.
+    prescript.1   Manual page for Prescript.
+    series.1      Manual page for Series.
+    tabu.1        Manual page for Tabu.
+    urus.1        Manual page for Urus.
+
+As mentioned before,  Orson source programs can use  some Unicode characters as
+operators. The file  dotEmacs makes it allegedly easy  to enter such characters
+from a standard US keyboard, using the GNU Emacs text editor.

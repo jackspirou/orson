@@ -1,0 +1,34 @@
+                                      EG
+
+                                 James B. Moen
+                               January 17, 2014
+
+This directory contains source code  for EG (pronounced ee-jee), a program that
+generates example strings described by a context-free grammar. EG is written in
+Orson, and is intended to run under Unix-like systems, such as GNU/Linux. These
+files contain Orson source code for EG.
+
+    char.os      Read characters and report errors.
+    codon.os     Objects that represent grammar rules.
+    debug.os     Write grammar fragments for debugging.
+    eg.os        Write random strings from a context-free grammar.
+    generate.os  Generate strings.
+    parse.os     Translate grammar rules to internal form.
+    token.os     Read tokens.
+
+These  files  contain  documentation,  sample grammars,  and  other  supporting
+material for EG.
+
+    Makefile     Compile, install, uninstall EG.
+    Manual.by    Bracy source code for Manual.html.
+    Manual.html  The EG manual.
+    README       What you're reading now.
+    Readme.by    Bracy source for Readme.html.
+    Readme.html  Long HTML version of README.
+    case.eg      Generate example Orson case clauses.
+    economy.eg   Generate sentences that might be spoken by economists.
+    grammar.eg   Generate example EG grammars.
+    string.eg    Generate example Orson string tokens.
+
+EG is available under the terms of the GNU General Public License (GPL) version
+3. An Orson compiler is also available from the author under the same terms.

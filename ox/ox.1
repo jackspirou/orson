@@ -1,0 +1,189 @@
+.TH OX 1 "December 7, 2013"
+.DD December 7, 2013
+
+.SH NAME
+ox - Orson cross-reference generator
+
+.SH SYNOPSIS
+.B ox\c
+ [\c
+.B -a\c
+] [\c
+.BI -c \ count\c
+] [\c
+.BI -l \ count\c
+] [\c
+.BI -n \ count\c
+] [\c
+.B -v\c
+] [\c
+.B -z\c
+]
+.RI [ file ...]
+
+.SH DESCRIPTION
+.B Ox
+first writes a series of UTF-8 Orson source files to stdout.
+Each source file must have the suffix
+.B .op
+or
+.B .os\c
+\&.
+Lines of the source files are prefixed by unique identifying numbers; the last
+line of each file is followed by an ASCII formfeed character (U+000C).
+
+.B Ox
+then writes to stdout a table of the names in the files, and the numbers of the
+lines where they appear.
+Hooks, plain names, quoted names, reserved names (keywords), and secret names
+are included in the table.
+Logical AND (U+2227) and logical OR (U+2228) operators are treated as names.
+Operators that abbreviate method calls are treated as quoted names.
+For example, the expression
+.I a\ \c
++\ \c
+.I b
+is treated as if it contains the quoted name "+".
+Similarly, the expression
+.I a\ \c
+<\ \c
+.I b\ \c
+<\ \c
+.I c
+is treated as if it contains "<\ <", the expression [\ \c
+.I a\ \c
+]\ \c
+.I b
+is treated as if it contains "[]\ ", and the expression
+.I a\ \c
+[\ \c
+.I b\ \c
+] is treated as if it contains "\ []".
+
+.PP
+.B Ox
+assumes that files contain syntactically correct Orson source programs.
+It reads them using a simplified version of Orson's recursive descent parser,
+and it terminates with an error message if the parse fails.
+
+.PP
+.B Ox
+recognizes the following options.
+Arguments to any option may be separated from it by blanks.
+If an option doesn't appear on the command line, then the option's default
+takes effect.
+If no file names appear on the command line, then
+.B ox
+does nothing (with one exception, noted below).
+
+.TP
+.BI -a
+ASCII.
+Write only 7-bit ASCII characters.
+When this option is in effect, characters not between blank (U+0020) and
+tilde '~' (U+007E) will be shown as underscores '_' (U+005F).
+This option may be useful on systems that do not support UTF-8 characters.
+The default is to use UTF-8 characters.
+
+.TP
+.BI -c \ count
+Characters per name.
+Display the first
+.I count
+Unicode characters of each name in the cross-reference table.
+The default is 32.
+
+.TP
+.BI -l \ count
+(Ell.) Digits per line number.
+Display line numbers using
+.I count
+digits, with leading zeroes.
+The default is 5.
+
+.TP
+.BI -n \ count
+Numbers per line.
+Display
+.I count
+line numbers on each line of the cross-reference table.
+The default is 8.
+If n is 0, then the cross-reference table shows names, but not line numbers.
+
+.TP
+.B -v
+Version.
+Print a short string on stderr that gives information about
+.B ox\c
+\&,
+including its version number.
+The string is printed before any source file is processed.
+This is the exception mentioned above: it works even if no file names appear
+on the command line.
+The default is not to print version information.
+
+.TP
+.B -z
+Zero width characters.
+Write each zero-width Unicode character (such as an accent) so that it appears
+in the same column as the previous character.
+The default is to write each zero-width character in a column of its own, as if
+it has width 1.
+
+.PP
+The defaults for
+.B -c\c
+\&,
+.B -l\c
+\&,
+and
+.B -n
+result in a cross-reference table that fits on 79-character lines.
+The glyphs for Unicode characters have varying widths.
+.B Ox
+takes this into account when it formats the cross-reference table, determining
+glyph widths according to the C library function
+.B wcwidth\c
+\&.
+
+.SH COPYING
+Copyright (C) 2013 James B. Moen.
+Permission is granted to copy, distribute, and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.3 or any later
+version published by the Free Software Foundation; with no Invariant
+Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license may be obtained at <http://fsf.org/>.
+
+.SH VERSION
+Version 0.99.
+
+.SH REFERENCES
+
+.PP
+James B. Moen.
+"The Unrevised Report on the Algorithmic Language Orson."
+Unpublished technical report.
+2012.
+
+.PP
+The Unicode Consortium.
+.I The Unicode Standard, Version 5.0.
+Fifth Edition.
+Addison-Wesley Professional.
+Reading, Massachusetts.
+2006.
+
+.SH AUTHOR
+James B. Moen
+
+.SH SEE ALSO
+.B ascii\c
+(7),
+.B orson\c
+(1),
+.B unicode\c
+(7),
+.B utf-8\c
+(7),
+.B wcwidth\c
+(3).

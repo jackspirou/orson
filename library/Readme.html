@@ -1,0 +1,1655 @@
+<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:30 PM CST -->
+<html>
+ <head>
+  <title>
+   An Orson Library
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>An Orson Library</b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   January 20, 2014
+  </p>
+  <blockquote>
+   <p align="justify">
+    The impious assert that absurdities are the norm in the Library and that
+    anything reasonable (even humble and pure coherence) is an almost
+    miraculous exception.
+   </p>
+   <p align="right">
+    <a href="#bor1962">
+     [<small>BOR</small> 1962]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The Orson source files in this directory implement an Orson library. It is
+   not intended to be a standard library, but rather a collection of methods
+   (mostly forms) that may be helpful or interesting. Some library files were
+   written to help find bugs in the Orson compiler. Others were written as
+   parts of programs, then moved to the library if it was felt they might be of
+   general use.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Most of the Orson library is written in Orson
+   <a href="#moe2013a">
+    [<small>MOE</small> 2013<small>A</small>],
+   </a>
+   although some files (like <tt>file.os</tt>) are simply false beards for
+   functions from the G<small>NU</small> C library. A few files (like
+   <tt>width.os</tt>) use code written in G<small>NU</small> C
+   <a href="#sta1988">
+    [<small>STA</small> 1988].
+   </a>
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="action.os">
+        <tt>action.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Operations on actions associated with Unix signals.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="array.os">
+        <tt>array.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Make arrays with specified elements.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="ascii.os">
+        <tt>ascii.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Operations on <small>ASCII</small> characters.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="assert.os">
+        <tt>assert.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Report an error if an expression is false.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="bht.os">
+        <tt>bht.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Bucketed hash tables.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="bitset.os">
+        <tt>bitset.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Finite sets of small integers.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="break.os">
+        <tt>break.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Terminate an iterator.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="buffer.os">
+        <tt>buffer.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Fixed length linear queues.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="cdlc.os">
+        <tt>cdlc.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Circular doubly linked chains.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="cell.op">
+        <tt>cell.op</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Operations on cells.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="chain.os">
+        <tt>chain.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Visit nodes in a linear linked chain.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="chainsort.os">
+        <tt>chainsort.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Sort a linear linked chain of execution objects.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="char.os">
+        <tt>char.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Operations on characters.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="command.os">
+        <tt>command.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Process Unix command line arguments.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="complex.os">
+        <tt>complex.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Complex arithmetic.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="convert.os">
+        <tt>convert.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Convert a string to an integer or a real.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="count.os">
+        <tt>count.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Counting loops with breakers.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="cxr.op">
+        <tt>cxr.op</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Compositions of <i>car</i>s and <i>cdr</i>s.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="decode.os">
+        <tt>decode.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Decode a string to a series of characters.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="default.os">
+        <tt>default.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Default values of given types.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="delimit.os">
+        <tt>delimit.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Visit delimited substrings of a string.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="directory.os">
+        <tt>directory.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Operations on Unix directories.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="dotref.os">
+        <tt>dotref.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Dereference pointers to tuples using dots.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="dump.os">
+        <tt>dump.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Dynamic memory allocation with garbage collection.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="dynamic.os">
+        <tt>dynamic.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Dynamic memory allocation with explicit release.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="empty.os">
+        <tt>empty.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       An empty program.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="encode.os">
+        <tt>encode.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Encode a character as a string.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="environ.op">
+        <tt>environ.op</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Communicate with the operating system.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="exchange.os">
+        <tt>exchange.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Suzuki generalized variable exchanges.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="fail.os">
+        <tt>fail.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Terminate a program with an error message.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="file.os">
+        <tt>file.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Input and output on file streams.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="flq.os">
+        <tt>flq.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Fixed length queues.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="fls.os">
+        <tt>fls.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Fixed length stacks.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="formif.os">
+        <tt>formif.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Simulate transformation-time <i>if</i>s using forms.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="headtail.os">
+        <tt>headtail.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Traverse arrays using pointers.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="krig.os">
+        <tt>krig.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Knuth&rsquo;s random <i>int</i> generator.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="library.os">
+        <tt>library.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Get a string of library directory paths.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="list.os">
+        <tt>list.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Operations on lists.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="lslc.os">
+        <tt>lslc.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Linear singly linked chains.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="making.os">
+        <tt>making.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Allocate an object from the heap and initialize it.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="match.os">
+        <tt>match.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Test if a string is a member of a list of strings.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="math.os">
+        <tt>math.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Mathematical constants and functions.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="methcast.os">
+        <tt>methcast.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Cast forms to procedures and vice versa.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="multi.os">
+        <tt>multi.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Multi-dimensional arrays.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="path.os">
+        <tt>path.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Operations on Unix pathnames.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="plain.os">
+        <tt>plain.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Operations on Orson plain names.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="pmrig.os">
+        <tt>pmrig.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Park-Miller Random <i>int</i> Generator.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="prelude.op">
+        <tt>prelude.op</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       A standard prelude for Orson (version <i>Burbot</i>).
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="prime.os">
+        <tt>prime.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Test if an integer constant is prime.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="primes.os">
+        <tt>primes.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Generate a series of prime <i>int</i>s.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="quicksort.os">
+        <tt>quicksort.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Quicksort the elements of an array.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="roman.os">
+        <tt>roman.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Convert small positive <i>int</i>s to Roman numerals.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="seed.os">
+        <tt>seed.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Initialize a random number generator.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="select.os">
+        <tt>select.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Simulate a <i>case</i> clause whose labels are strings.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="sequence.op">
+        <tt>sequence.op</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Iterators that transform to sequences.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="shell.os">
+        <tt>shell.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Execute Unix shell commands.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="signal.os">
+        <tt>signal.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Operations on Unix signals and sets of signals.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="skolem.os">
+        <tt>skolem.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Make Skolem types for debugging Orson.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="string.op">
+        <tt>string.op</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Operations on strings.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="subsup.os">
+        <tt>subsup.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Write integers using subscript and superscript digits.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="text.os">
+        <tt>text.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Read characters and lines from a text file.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="throw.os">
+        <tt>throw.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Throw exceptions in response to Unix signals.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="time.os">
+        <tt>time.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Operations on dates and times.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="twirl.os">
+        <tt>twirl.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Write a twirling baton during a loop.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="ubst.os">
+        <tt>ubst.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Unbalanced binary search trees.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="uncaught.os">
+        <tt>uncaught.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Catch otherwise uncaught exceptions.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="vlq.os">
+        <tt>vlq.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Variable length queues.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="vls.os">
+        <tt>vls.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Variable length stacks.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="width.os">
+        <tt>width.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Determine columns to write simple objects.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="withify.os">
+        <tt>withify.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Transform a list of terms into a <i>with</i> clause.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   Some library files use G<small>NU</small> C types that are created by
+   calling the form <i>c</i>'<i>s</i>
+   <a href="#moe2013b">
+    [<small>MOE</small> 2013<small>B</small>].
+   </a>
+   When <i>c</i>'<i>s</i> creates a G<small>NU</small>
+   C type, it must be given the alignment and size of that type, since Orson
+   cannot determine these for itself. Unfortunately, type alignments and sizes
+   can vary from one system to another, and those used here may not be correct
+   for your system. Orson is distributed with a program <i>gas</i> that
+   can show the alignment and size of any named G<small>NU</small> C type.
+   If there are problems, you should use it to check type alignments and sizes.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Orson library also contains a few files
+   that do not define methods for use in other programs. Some (like
+   <tt>makecxr.os</tt> and <tt>ranger.os</tt>) automatically
+   construct source files for the library.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./C">
+        <tt>C/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       A directory that contains G<small>NU</small> C code. Boring.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./README">
+        <tt>README</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Short text version of <tt>Readme.html</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="Readme.by">
+        <tt>Readme.by</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Bracy source for <tt>Readme.html</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="Readme.html">
+        <tt>Readme.html</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       What you&rsquo;re reading now.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="makecxr.os">
+        <tt>makecxr.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Generate the Orson library file <tt>cxr.op</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="ranger.os">
+        <tt>ranger.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Make arrays that clone G<small>NU</small> C&rsquo;s
+       <tt>wcwidth</tt> function.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   The Orson library is available for free, under the terms of the
+   G<small>NU</small> General Public License version 3, so it may be used
+   by free Orson programs. People bothered by this are invited to make their
+   Orson programs free, or to write their own libraries.
+  </p>
+  <hr />
+  <p align="center">
+   <b>References</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="bor1962">
+      </a>
+      [<small>BOR</small>&nbsp;1962]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Jorge Luis Borges. &lsquo;&lsquo;The Library of Babel.&rsquo;&rsquo; In
+      <i>Ficciones.</i> Anthony Kerrigan, editor and translator. Grove
+      Press. New York, New York. 1962. Page 86.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2013a">
+      </a>
+      [<small>MOE</small>&nbsp;2013<small>A</small>]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;Revised&#8315;&#185; Report on the
+      Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
+      2013.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2013b">
+      </a>
+      [<small>MOE</small>&nbsp;2013<small>B</small>]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;Orson&rsquo;s Interface to
+      G<small>NU</small> C.&rsquo;&rsquo; Unpublished technical report.
+      2013.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="sta2008">
+      </a>
+      [<small>STA</small>&nbsp;2008]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Richard M. Stallman, the G<small>CC</small> Developer Community.
+      &lsquo;&lsquo;Using and Porting the G<small>NU</small> Compiler
+      Collection.&rsquo;&rsquo; Free Software Foundation. Boston,
+      Massachusetts. 2008.
+     </p>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

@@ -1,0 +1,109 @@
+{title Ox}
+
+{center
+ {b Ox}
+
+ James B. Moen
+ January 28, 2014}
+
+{narrow
+ {justify
+   How shall we find the concord of this discord?}
+ {right
+  {goto sha1936 {c [sha 1936]}}}}
+
+{justify
+  This directory contains source code for {i Ox,} a cross-reference generator
+  (also called a concordance generator) for Orson source files.
+  Ox reads a series of source files, recording the names in those files.
+  It then writes a table that lists the names in lexicographic order, and the
+  numbers of the lines where they appear.
+  Ox is written in Orson {goto moe2014 {c [moe 2014],}} and is intended to run
+  under Unix-like systems, such as {c Gnu}/Linux.
+  These files contain Orson source code for Ox.}
+
+{narrow
+ {layout
+  {row
+   {left {goto {t char.os}}\ }
+   {left Read characters from a source file.}}
+  {row
+   {left {goto {t main.os}}\ }
+   {left Main program.}}
+  {row
+   {left {goto {t ox.os}}\ }
+   {left Write a cross-referenced list of names in a source file.}}
+  {row
+   {left {goto {t parse.os}}\ }
+   {left Recursive descent parser.}}
+  {row
+   {left {goto {t record.os\ \ }}\ }
+   {left Record a name and its line numbers.}}
+  {row
+   {left {goto {t report.os}}\ }
+   {left Write names and their line numbers.}}
+  {row
+   {left {goto {t token.os}}\ }
+   {left Group characters into tokens.}}}}
+
+{justify
+  These files contain documentation and other supporting material.}
+
+{narrow
+ {layout
+  {row
+   {left {goto ./README {t README}}}
+   {left Short text version of {t Readme.html}.}}
+  {row
+   {left {goto {t Readme.by}}\ }
+   {left Bracy source for {t Readme.html.}}}
+  {row
+   {left {goto {t Readme.html}}\ }
+   {left What you're reading now.}}
+  {row
+   {left {goto ./Makefile {t Makefile}}\ }
+   {left Compile, install, uninstall Ox.}}
+  {row
+   {left {goto {t ox.1}}\ }
+   {left Manual page for Ox.}}}}
+
+{justify
+  Ox is available under the terms of the {c Gnu} General Public License
+  ({c gpl}) version 3.
+  An Orson compiler is also available from the author under the same terms.}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label moe2014}
+   {c [moe\ 2014]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2014.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label sha1936}
+   {c [sha\ 1936]\ \ }}
+  {justify
+    William Shakespeare.
+    {i A Midsummer Night's Dream.}
+    Act {c v.}
+    Scene {c i.}
+    In {i The Complete Works of William Shakespeare.}
+    William Aldis Wright, editor.
+    Garden City Publishing Company, Inc.
+    Garden City, New York.
+    Page 407.
+    1936.}}}
+

@@ -1,0 +1,93 @@
+.TH HB 1 "December 13, 2013"
+.DD December 13, 2013
+
+.SH NAME
+hb - Write simple statistics about source files.
+
+.SH SYNOPSIS
+.B hb\c
+ [\c
+.BI -c \ prefix\c
+] [\c
+.I file\c
+\&...]
+.RE
+
+.SH DESCRIPTION
+.B Hb
+(How Big) reads source files whose pathnames appear on the command line.
+It writes statistics to stdout about how big the source files are.
+For each file,
+.B hb
+writes how many blank lines it has, how many comment lines it has, how many
+code lines it has, the length of its shortest nonblank line, the length of its
+longest nonblank line, and how many pages it has.
+.B Hb
+ignores directories.
+
+A code line is a line that is not a blank line and not a comment line.
+A line's length is the number of 
+.B utf-8
+encoded Unicode characters that it has.
+A page is assumed to have 60 lines.
+If no pathnames appear on the command line, then
+.B hb
+does nothing.
+
+.PP
+.B Hb
+recognizes the following options.
+Options must precede pathnames on the command line.
+Arguments to any option may be separated from it by blanks.
+If an option doesn't appear on the command line, then its default takes effect.
+
+.TP
+.BI -c \ prefix
+Comment.
+The
+.B -c
+option directs
+.B hb
+to treat any line that begins with the string
+.I prefix
+as a comment line.
+The default is "!" (comments in the programming language Orson begin with
+this).
+
+.SH COPYING
+Copyright (C) 2013 James B. Moen.
+Permission is granted to copy, distribute, and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.3 or any later
+version published by the Free Software Foundation; with no Invariant
+Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license may be obtained at <http://fsf.org/>.
+
+.SH VERSION
+Version 0.1.
+
+.SH REFERENCES
+James B. Moen.
+"The Unrevised Report on the Algorithmic Language Orson."
+Unpublished technical report.
+2013.
+
+.PP
+The Unicode Consortium.
+.I The Unicode Standard, Version 5.0.
+Fifth Edition.
+Addison-Wesley Professional.
+Reading, Massachusetts.
+2006.
+
+.SH AUTHOR
+James B. Moen
+
+.SH SEE ALSO
+.B orson\c
+(1),
+.B wc\c
+(1),
+.B unicode\c
+(7),
+.B utf-8\c
+(7).

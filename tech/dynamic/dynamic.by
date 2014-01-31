@@ -1,0 +1,576 @@
+{title Dynamic allocation in Orson}
+
+{center
+  {b Dynamic Memory in Orson: The Heap, the Stack, and the Dump}
+
+  James B. Moen
+  November 15, 2013}
+
+{justify
+  Copyright © 2013 James B. Moen.
+  Permission is granted to copy, distribute, and/or modify this document under
+  the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
+  version published by the Free Software Foundation; with no Invariant
+  Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license may be obtained at
+  {goto http://fsf.org/ {t <http://fsf.org/>.}}
+
+  This document uses special characters.
+  Without proper rendering support, you may see question marks, boxes, or other
+  symbols in place of these characters.
+  This document must be rendered in a font where an italic quote `\ {i "}\ '
+  looks different from two apostrophes `\ {q ''}\ '.}
+
+{rule}
+
+{center {b Contents}}
+
+{layout
+ {row
+  {left {goto introduction 0.} \ }
+  {left Introduction.}}
+ {row
+  {left {goto heap 1.} \ }
+  {left The heap.}}
+ {row
+  {left \ }
+  {layout
+   {row
+    {left {goto fromHeap 1.1.} \ }
+    {left {i fromHeap.}}}
+   {row
+    {left {goto toHeap 1.2.} \ }
+    {left {i toHeap.}}}}}
+ {row
+  {left {goto stack 2.} \ }
+  {left The stack.}}
+ {row
+  {left {goto dump 3.} \ }
+  {left The dump.}}
+ {row
+  {left \ }
+  {layout
+   {row
+    {left {goto initDump 3.1.} \ }
+    {left {i initDump.}}}
+   {row
+    {left {goto disp 3.2.} \ }
+    {left {i disp.}}}
+   {row
+    {left {goto makeTag 3.3.} \ }
+    {left {i makeTag.}}}
+   {row
+    {left {goto fromDump 3.4.} \ }
+    {left {i fromDump.}}}
+   {row
+    {left {goto fromHeap1 3.5.} \ }
+    {left {i fromHeap.}}}
+   {row
+    {left {goto toDump 3.6.} \ }
+    {left {i toDump.}}}}}
+ {row
+  {left {goto references 4.} \ }
+  {left References.}}
+ {row
+  {left \ }
+  {left \ }}}
+
+{rule}
+
+{label introduction}
+{left {b 0. Introduction.}}
+
+{narrow
+ {layout
+  {row
+   {justify
+    {b heap} {i n.}{+ 1} {b 1} [mid-17C–18C;19C+] a large amount, often of
+    money.}}
+  {row
+   {justify
+    {b stack} {i n.}{+ 1} [late 19C+] (orig. US) a large amount of money.}}
+  {row
+   {justify
+    {b dump} {i n.}{+ 1} [19C] (Aus./US) {b 1} A small coin or small sum of
+    money.}}}
+ {right
+  {goto gre2000 {c [gre 2000]}}}}
+
+{justify
+  Some Orson {goto moe2013 {c [moe 2013]}} programs call an {i allocator} form
+  to request objects from a pool of available memory.
+  Each call takes an execution type as its argument.
+  It allocates an object of this type from the pool, then evaluates to a
+  pointer that references the object.
+  After the program is finished with the object, it calls a {i deallocator}
+  method on the pointer.
+  This call sends the memory used by the object back to the pool, so it can be
+  reused by later calls to the allocator form.
+
+  The Orson library files {i lib.dynamic} and {i lib.dump} provide several
+  forms that dynamically allocate and deallocate objects in this way.
+  Some forms allocate and deallocate from a global pool of memory called the
+  {goto heap heap.}
+  Others allocate and deallocate from the {goto stack stack,} which also stores
+  objects created by procedures and {i with} clauses.
+  Still others allocate and deallocate from the {goto dump dump,} which is like
+  the heap except that objects are automatically deallocated when no pointers
+  reference them.
+  Using the dump may be safer than using the heap, because an object cannot be
+  mistakenly deallocated while pointers still reference it.}
+
+{label heap}
+{left {b 1. The heap.}}
+
+{justify
+  Loading the library file {i lib.dynamic} defines a form {goto {i fromHeap}}
+  that allocates objects from the heap, and a form {goto {i toHeap}} that
+  deallocates these objects.}
+
+{label fromHeap}
+{left {b 1.1. {i fromHeap.}}}
+
+{justify
+  The library file {i lib.dynamic} binds the name {i fromHeap} like this.}
+
+{narrow{orson
+fromHeap :−
+ (alt
+  (gen (type exe tType)
+    form (type tType t) ref tType:
+     ...),
+  (gen (type exe tType)
+    form (inj l, type tType t) row tType:
+     ...))
+
+inj "allocator failed" :− except()
+inj "negative length" :− except()}}
+
+{justify
+  If {i t} transforms to an execution type without jokers, then the call
+  {i fromHeap}({i t}) evaluates to a pointer of type {b ref}\ {i t.}
+  The pointer references an object of type {i t} that resides in the
+  {goto heap heap.}
+
+  If {i l} evaluates to an integer greater than 0, and {i t} transforms to an
+  execution type without jokers, then the call {i fromHeap}({i l,}\ {i t})
+  evaluates to a pointer of type {b row}\ {i t.}
+  The pointer references the 0th element of an array that resides in the heap.
+  The array's length is {i l,} and its base type is {i t.}
+
+  If {i l} evaluates to 0, then the call {i fromHeap}({i l,}\ {i t}) evaluates
+  to a pointer of type {b row}\ {i t} that references an unspecified object.
+  If {i l} transforms to an integer constant less than 0, then {i fromHeap}
+  reports an error.
+  If {i l} evaluates to an integer less than 0, but not a constant, then
+  {i fromHeap} throws the exception {i "}negative\ length{i ".}
+
+  The form {i fromHeap} may place an upper limit on the size of an object that
+  it can allocate.
+  If {i fromHeap} can't allocate an object, either because it's too large, or
+  because there's not enough memory left in the heap, then it throws the
+  exception {i "}allocator\ failed{i ".}
+
+  Currently, the form {i fromHeap} is implemented using the C function
+  {t malloc} {goto ker1988 {c [ker 1988].}}
+  For more information, consult the Unix manual pages.}
+
+{label toHeap}
+{left {b 1.2. {i toHeap.}}}
+
+{justify
+  The library file {i lib.dynamic} binds the name {i toHeap} like this.}
+
+{narrow{orson
+toHeap :−
+ (form (row exe p) void:
+   ...)}}
+
+{justify
+  If {i p} evaluates to a pointer that references an object allocated by
+  {goto fromHeap {i fromHeap,}} then the call {i toHeap}({i p}) deallocates the
+  object
+  If {i p} evaluates to {i nil,} then the call {i toHeap}({i p}) does nothing.
+  If {i p} evaluates to some other pointer that was not obtained by calling
+  {i fromHeap,} then the call {i toHeap}({i p}) has undefined results.
+  After the object is deallocated, it becomes undefined, even though pointers
+  may still reference it.
+  It is undefined to dereference such pointers.
+
+  Currently, the form {i toHeap} is implemented using the C function {t free}
+  {goto ker1988 {c [ker 1988].}}
+  For more information, consult the Unix manual pages.}
+
+{label stack}
+{left {b 2. The stack.}}
+
+{justify
+  The library file {i lib.dynamic} binds the name {i fromStack} like this.}
+
+{narrow{orson
+fromStack :−
+ (alt
+  (gen (type exe tType)
+    form (type tType t) ref tType:
+     ...),
+  (gen (type exe tType)
+    form (inj l, type tType t) row tType:
+     ...))}}
+
+{justify
+  The form {i fromStack} is like the form {goto fromHeap {i fromHeap,}} but it
+  allocates objects from the stack instead of the {goto heap heap.}
+  However, there is no deallocation form corresponding to {i fromStack.}
+  Instead, if {i fromStack} is called inside the body of a procedure, then the
+  object it allocates is automatically deallocated at the end of that
+  procedure.
+  If {i fromStack} is called anywhere else, then the object it allocates is
+  automatically deallocated at the end of the current {i proc} clause.
+  After the object is deallocated, it becomes undefined, even though pointers
+  may still reference it.
+  It is undefined to dereference such pointers.
+
+  Currently, the form {i fromStack} is implemented using the C function
+  {t alloca} {goto ker1988 {c [ker 1988].}}
+  For more information, consult the Unix manual pages.}
+
+{label dump}
+{left {b 3. The dump.}}
+
+{justify
+  Loading the library file {i lib.dump} also loads {i lib.dynamic,} so it
+  defines all the forms that allocate objects from the {goto heap} and the
+  {goto stack stack.}
+  It also defines the forms
+  {goto disp {i disp,}}
+  {goto fromDump {i fromDump,}}
+  {goto fromHeap1 {i fromHeap,}}
+  {goto initDump {i initDump,}}
+  {goto makeTag {i makeTag,}} and
+  {goto {i toDump}}
+  that allow allocating and deallocating objects from the dump.
+
+  Currently, only small tuples can be allocated from the dump.
+  They are allocated using an algorithm called {i Quick Fit}
+  {goto wei1988 {c [wei 1988],}} which is optimized for handling large numbers
+  of small objects, such as might be required in a compiler or an interpreter.
+  (The Orson compiler uses Quick Fit internally.)
+  The maximum size of an allocated tuple is 127 bytes, the largest integer that
+  can be represented as an {i int}0.
+
+  If a tuple is requested from the dump, but not enough memory remains to
+  satisfy the request, then the dump uses a {i mark-sweep} garbage collector
+  {goto jon1997 {c [jon 1997]}} to deallocate tuples that are no longer
+  referenced by pointers.
+  As its name suggests, the mark-sweep collector works in two phases.
+  It first {i marks} all tuples that are accessible, directly or indirectly,
+  from a few {i base pointers,} using Orson's {i refs} iterator
+  {goto moe2013 {c [moe 2013]}} and a nonrecursive traversal procedure
+  {goto sch1967 {c [sch 1967].}}
+  It then {i sweeps} through all tuples that were allocated from the dump,
+  unmarking those that are marked, and deallocating those that are not marked.}
+
+{label initDump}
+{left {b 3.1. {i initDump.}}}
+
+{justify
+  The library file {i lib.dump} binds the name {i initDump} like this.}
+
+{narrow{orson
+initDump :−
+ (alt
+  (form () void:
+    initDump(1)),
+  (form (int c) void:
+    ...))}}
+
+{justify
+  The {goto dump} is made up of zero or more chunks of memory called
+  {i heaplets,} each of which is allocated from the {goto heap} by calling the
+  form {goto fromHeap {i fromHeap.}}
+  Currently, each heaplet is about a megabyte in size.
+  The call {i initDump}() initializes the dump with one heaplet.
+  If {i c} evaluates to a nonnegative integer, then the call
+  {i initDump}({i c}) initializes it with {i c} heaplets.
+  It is an error if {i c} evaluates to a negative integer.
+
+  The dump must be initialized once, before calls to the forms
+  {goto {i fromDump}} or {goto {i toDump}} are evaluated.
+  It is undefined if calls to these forms are evaluated before the heap is
+  initialized.
+  It is also undefined if a call to {i initDump} is evaluated more than once.}
+
+{label disp}
+{left {b 3.2. {i disp.}}}
+
+{justify
+  The library file {i lib.dump} binds the name {i disp} like this.}
+
+{narrow{orson
+disp :−
+ (form (type tup t) type tup:
+   ...)}}
+
+{justify
+  A call to the form {i disp} (short for {i disposable}) transforms to the type
+  of a tuple that can be allocated from the {goto dump dump.}
+  If {i t} is a tuple type without jokers, then the call {i disp}({i t})
+  transforms to a new tuple type with the same slots as {i t,} along with extra
+  slots that are used by the dump.
+  For example, the following equate binds the name {i pair} to the type of a
+  tuple that might be used to implement a binary search tree
+  {goto wir1976 {c [wir 1976]}} whose keys are strings.}
+
+{narrow{orson
+pair :−
+ disp(
+  (tuple
+     var ref pair left,
+     var ref pair right,
+     var string key))}}
+
+{justify
+  If {i p} evaluates to a pointer that references a {i pair,} then the units
+  {i p}↑.{i left,} {i p}↑.{i right,} and {i p}↑.{i key} respectively evaluate
+  to the {i pair}'s {i left,} {i right,} and {i key} slots in the usual way.
+  The unit {i p}↑.{i tag} also evaluates to the {i pair}'s {i tag} slot, which
+  is described later along with the form {goto makeTag {i makeTag.}}
+
+  A tuple that is allocated from the dump may be {goto dump marked} during
+  garbage collection, and is said to be {i markable.}
+  Suppose that a tuple of type {i t} has pointer slots that reference markable
+  tuples.
+  Then those pointer slots must appear in {i t} before its other slots.
+  The number of slots that reference markable tuples is called {i t}'s
+  {i degree.}
+  For example, {i pair} has degree 2, because it has two pointer slots,
+  {i left} and {i right,} that reference markable tuples.
+  These slots must appear before the slot {i key,} which does not reference a
+  markable tuple.
+
+  If {i t} is a tuple type with jokers, then the call {i disp}({i t})
+  transforms to a joker that describes a tuple which can be allocated from the
+  dump.
+  For example, the call {i disp}({i tup}) transforms to a joker that describes
+  any tuple which can be allocated from the dump, no matter what slots it has.}
+
+{label makeTag}
+{left {b 3.3. {i makeTag.}}}
+
+{justify
+  The library file {i lib.dump} binds the name {i makeTag} like this.}
+
+{narrow{orson
+makeTag :− enum(high(int0))}}
+
+{justify
+  Tuple types created by the form {goto {i disp}} have extra slots that are
+  used by the {goto dump dump.}
+  All these slots have secret names, except for one whose name is {i tag.}
+  The {i tag} slot has the type {b var}\ {i int}0, and its value is a small
+  nonnegative integer that identifies the tuple's type.
+
+  The form {i makeTag} generates {i int}0 constants that may be used as the
+  values of {i tag} slots.
+  Each call {i makeTag}() transforms to the next {i int}0 constant in a series.
+  The first call transforms to 0.
+  The next call transforms to 1, and the next transforms to 2, etc.
+  The final call transforms to 127, the largest integer constant that can be
+  represented as an {i int}0.
+  It is an error to call {i makeTag} after that.}
+
+{label fromDump}
+{left {b 3.4. {i fromDump.}}}
+
+{justify
+  The library file {i lib.dump} binds the name {i fromDump} like this.}
+
+{narrow{orson
+fromDump :−
+ (gen (type disp(tup) tType)
+   form (type tType t, int0 d, int0 g) ref tType:
+    ...)}}
+
+{justify
+  Suppose that {i t} transforms to a tuple type which was created by calling
+  the form {goto disp {i disp.}}
+  Also suppose that {i d} transforms to a nonnegative {i int}0 constant that is
+  the {goto disp degree} of the tuple to be allocated, and that {i g}
+  transforms to a nonnegative {i int}0 constant that is the tuple's
+  {goto makeTag tag.}
+  Then the call {i fromDump}({i t,}\ {i d,}\ {i g}) evaluates to a pointer of
+  type {b ref}\ {i t.}
+  The pointer references an tuple of type {i t} that resides in the
+  {goto dump dump.}
+  Its {i tag} slot is preset to {i g,} and its {goto disp markable} pointer
+  slots are preset to {i nil.}
+  For example, the call {i fromDump}({i pair,}\ 2,\ 0) evaluates to a pointer
+  that references a {i pair} with 2 markable slots, and with the tag 0.
+
+  It is an error if the size of {i t} is larger than 127 bytes, or if {i t}
+  has jokers.
+  It is an error if {i d} is not a constant, or is negative.
+  It is also an error if {i g} is not a constant, or is negative.
+  If there is not enough memory in the dump to allocate a tuple of type {i t,}
+  then {i fromDump} collects garbage in an attempt to obtain more.
+  If there is still not enough memory after garbage collection, then
+  {i fromDump} throws the exception {i "}allocator\ failed{i ".}}
+
+{label fromHeap1}
+{left {b 3.5. {i fromHeap.}}}
+
+{justify
+  The library file {i lib.dump} binds the name {i fromHeap} like this.}
+
+{narrow{orson
+fromHeap :−
+ (gen (type disp(tup) tType)
+   form (type tType t, int0 d, int0 g) ref tType:
+    ...)}}
+
+{justify
+  This equate gives the form {goto {i fromHeap}} a new member.
+  The new member acts like {goto fromDump {i fromDump,}} but it allocates a
+  tuple from the {goto heap} instead of the {goto dump dump.}
+  A tuple allocated in this way can be referenced by tuples allocated from the
+  dump, and may be visited during the mark phase of garbage collection.
+  However, it cannot be deallocated by the garbage collector, even if no
+  pointers reference it, because it is never visited during the sweep phase.}
+
+{label toDump}
+{left {b 3.6. {i toDump.}}}
+
+{justify
+  The library file {i lib.dump} binds the name {i toDump} like this.}
+
+{narrow{orson
+toDump :−
+ (form (ref disp(tup) p) void:
+   ...)}}
+
+{justify
+  If {i p} is a pointer to a tuple that was allocated by {i fromDump,} then the
+  call {i toDump}({i p}) deallocates the tuple immediately, without involving
+  the garbage collector.
+  If {i p} evaluates to {i nil,} then the call {i toDump}({i p}) does nothing.
+  If {i p} evaluates to some other pointer that was not obtained by calling
+  {i fromDump,} then the call {i toDump}({i p}) has undefined results.
+  After the tuple is deallocated, it becomes undefined, even though pointers
+  may still reference it.
+  It is undefined to dereference such pointers.
+  It is also undefined if a tuple deallocated by {i toDump} is visited by the
+  garbage collector.
+
+  If it is known that a tuple will eventually be deallocated by the garbage
+  collector, then {i toDump} can be called to deallocate it instead.
+  This may reduce the number of garbage collections required by a program.
+  However, it is never necessary to call {i toDump.}}
+
+{rule}
+
+{label references}
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label gre2000}
+   {c [gre\ 2000]\ \ }}
+  {justify
+    Jonathon Green.
+    {i Cassell's Dictionary of Slang.}
+    Cassell and Company.
+    London, United Kingdom.
+    2000.
+    Pages 380, 582, 1131.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label jon1997}
+   {c [jon\ 1997]\ \ }}
+  {justify
+    Richard Jones, Rafael Lins.
+    {i Garbage Collection: Algorithms for Automatic Dynamic Memory Management.}
+    John Wiley & Sons.
+    Chichester, United Kingdom.
+    1997.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label ker1988}
+   {c [ker\ 1988]\ \ }}
+  {justify
+    Brian W. Kernighan, Dennis M. Ritchie.
+    {i The C Programming Language.}
+    Second Edition.
+    Prentice-Hall.
+    Upper Saddle River, New Jersey.
+    1988.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2013}
+   {c [moe\ 2013]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2013.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label sch1967}
+   {c [sch\ 1967]\ \ }}
+  {justify
+    H. Schorr, W. M. Waite.
+    ``An Efficient Machine-Independent Procedure for Garbage Collection in
+    Various List Structures.''
+    {i Communications of the {c Acm.}}
+    Volume 10, Number 8, August 1967.
+    Pages 501–506.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label wir1976}
+   {c [wir\ 1976]\ \ }}
+  {justify
+    Niklaus Wirth.
+    {i Algorithms + Data Structures = Programs.}
+    Prentice-Hall.
+    Englewood Cliffs, New Jersey.
+    1976.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label wei1988}
+   {c [wei\ 1988]\ \ }}
+  {justify
+    C. B. Weinstock, W. A. Wulf.
+    ``An Efficient Algorithm for Heap Storage Allocation.''
+    {i {c Acm} {c Sigplan} Notices.}
+    Volume 23, Number 10, October 1988.
+    Pages 141–146.}}}

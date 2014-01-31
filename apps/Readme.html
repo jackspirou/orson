@@ -1,0 +1,833 @@
+<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:28 PM CST -->
+<html>
+ <head>
+  <title>
+   Applications
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Applications</b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   January 23, 2014
+  </p>
+  <blockquote>
+   <p align="justify">
+    You know my methods. Apply them!
+   </p>
+   <p align="right">
+    <a href="#doy1982">
+     [<small>DOY</small> 1982]
+    </a>
+   </p>
+  </blockquote>
+  <p>
+   <b>0. Overview.</b>
+  </p>
+  <p align="justify">
+   This directory contains source files for some application programs. All are
+   available under the terms of the G<small>NU</small> General Public
+   License (<small>GPL</small>) version 3. Some of these files use special
+   characters. Without proper rendering support, you may see question marks,
+   boxes, or other symbols in place of these characters.
+  </p>
+  <p>
+   <b>1. Contents.</b>
+  </p>
+  <p align="justify">
+   The files in this directory are in three groups. Files in the first group
+   contain Orson sources
+   <a href="#moe2014">
+    [<small>MOE</small> 2014]
+   </a>
+   for utility programs that can be installed and run as Unix shell commands.
+   Section
+   <a href="#install">
+    2
+   </a>
+   explains how to install them.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="gas.os">
+        <tt>gas.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Show the alignment and size of a
+       G<small>NU</small> C type.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="hb.os">
+        <tt>hb.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Write simple statistics about source files.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="jc.os">
+        <tt>jc.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Justify comments with a given prefix.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="nsurt.os">
+        <tt>nsurt.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Copy a file, inserting the contents of other files.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="olf.os">
+        <tt>olf.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Write the titles of Orson library files.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="prescript.os">
+        <tt>prescript.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Preprocess Unicode characters for
+       <small>GNU</small> Enscript.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="series.os">
+        <tt>series.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Write a finite series of integers.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="tabu.os">
+        <tt>tabu.os</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Write a series of names as a rectangular table.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="urus.os">
+        <tt>urus.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Obsolete cross reference generator for Orson sources.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   The program <i>G<small>NU</small> Enscript</i> converts text files
+   to PostScript for printing, but it currently supports only seven- and
+   eight-bit character sets, like <small>ASCII</small> and
+   <small>ISO</small> Latin-1. <i>Prescript</i> is a preprocessor
+   that lets Enscript print some (but not all) of the Unicode
+   <a href="#uni2006">
+    [<small>UNI</small> 2006]
+   </a>
+   characters that can appear in Orson sources.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The current Orson cross reference generator
+   for Orson source files is called <i>Ox.</i> The program
+   <i>Urus</i> is an obsolete earlier version of Ox. Unlike Ox, Urus
+   cross-references only plain, quoted, reserved, and secret names. It
+   doesn&rsquo;t treat operator symbols as quoted names that should also be
+   cross-referenced. Urus is included here only as an example of how to use
+   predefined data structures from the Orson library. (A <i>urus</i> is an
+   extinct bovine mammal, <i>Bos taurus primigenius,</i> of Northern
+   Africa, Europe, and Western Asia
+   <a href="#ahd1973">
+    [<small>AHD</small> 1973],
+   </a>
+   believed to be the ancestor of domestic cattle.)
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Files in the second group contain Orson
+   sources that are tests or demonstrations. Some test data structures that are
+   provided by the Orson library.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="chainsaw.os">
+        <tt>chainsaw.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Sort a linked chain of tuples.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="hello.os">
+        <tt>hello.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Write <i>Hello, world!</i>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="parser.os">
+        <tt>parser.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Recursive descent parser for Orson.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="partition.os">
+        <tt>partition.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Write the partitions of a set.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="permute.os">
+        <tt>permute.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Write the permutations of an array.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="sieve.os">
+        <tt>sieve.os</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;The Sieve of Eratosthenes.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="tak.os">
+        <tt>tak.os</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Takeuchi function as a form.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   The program <i>Parser</i> might be used as a starting point for
+   programs like cross-referencers or pretty-printers that must parse Orson
+   source programs. For example, the program Ox was written by modifying
+   Parser.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Files in the third group contain
+   documentation, and some other things. Most are Unix manual pages for the
+   Orson utility programs.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./Makefile">
+        <tt>Makefile</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Compile, install, uninstall applications.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./README">
+        <tt>README</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Short text version of <tt>Readme.html</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="Readme.by">
+        <tt>Readme.by&nbsp;&nbsp;&nbsp;</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Bracy source for <tt>Readme.html</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="Readme.html">
+        <tt>Readme.html</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;What you&rsquo;re reading now.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./dotEmacs">
+        <tt>dotEmacs</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Customization file for G<small>NU</small> Emacs.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="gas.1">
+        <tt>gas.1</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Manual page for Gas.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="hb.1">
+        <tt>hb.1</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Manual page for H<small>B</small>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="jc.1">
+        <tt>jc.1</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Manual page for J<small>C</small>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="prescript.1">
+        <tt>prescript.1</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Manual page for Prescript.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="series.1">
+        <tt>series.1</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Manual page for Series.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="tabu.1">
+        <tt>tabu.1</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Manual page for Tabu.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="urus.1">
+        <tt>urus.1</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Manual page for Urus.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   As mentioned before, Orson source programs can use some Unicode characters
+   as operators. The file <i>dotEmacs</i> makes it allegedly easy to enter
+   such characters from a standard <small>US</small> keyboard, using the
+   G<small>NU</small> Emacs text editor
+   <a href="#lew2000">
+    [<small>LEW</small> 2000].
+   </a>
+  </p>
+  <a name="install">
+  </a>
+  <p>
+   <b>2. Installing.</b>
+  </p>
+  <p align="justify">
+   All the programs in this directory are installed by a single Unix
+   <i>makefile</i>
+   <a href="#sta2010">
+    [<small>STA</small> 2010].
+   </a>
+   The next few sections explain how this makefile compiles, installs, and
+   uninstalls programs. I assume only a minimal knowledge of Unix, and that an
+   Orson compiler is already installed. Readers who are familiar with Unix can
+   skip section
+   <a href="#root">
+    2.1
+   </a>
+   and skim the rest.
+  </p>
+  <a name="root">
+  </a>
+  <p>
+   <b>2.1. Root.</b>
+  </p>
+  <p align="justify">
+   Unix systems have a special user (sometimes called the
+   <i>superuser</i>) whose name is <i>root.</i> The root user can do
+   almost anything without the system objecting. If you&rsquo;re root, you can
+   read any file, write any file, delete any file, and make files in any
+   directory. You can become root if you have the right password. This is
+   potentially dangerous, so you shouldn&rsquo;t become root unless you must,
+   and even then you should stay root for as short a time as you can.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; You must become root to install the programs
+   in this directory. This is because these programs must be placed in
+   directories that you ordinarily aren&rsquo;t allowed to make files in. If
+   you can&rsquo;t become root for some reason, or you don&rsquo;t want to,
+   then you can still experiment with these programs without installing them.
+   I&rsquo;ll explain how to do that in section
+   <a href="#compile">
+    2.4.
+   </a>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; There are at least two different ways to
+   become root. On some systems, you become root only for the duration of a
+   single command. Suppose you want to execute the command <tt>tenhut</tt>
+   as root. Then you type <tt>sudo</tt>&nbsp;<tt>tenhut</tt> to the
+   shell, and type a password. (I guess <tt>sudo</tt> stands for <i>su
+   do,</i> or maybe it&rsquo;s a pun on the word <i>pseudo.</i>) The
+   command <tt>sudo</tt> doesn&rsquo;t explicitly put you into a new
+   shell, it just executes <tt>tenhut</tt> as if you&rsquo;re root.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; On other systems, you type <tt>su</tt>
+   to the shell, then type a password. (I guess <tt>su</tt> stands for
+   <i>superuser.</i>) On others, you type
+   <tt>su</tt>&nbsp;<tt>root</tt>, or
+   <tt>sudo</tt>&nbsp;<tt>su</tt>, or
+   <tt>sudo</tt>&nbsp;<tt>su</tt>&nbsp;<tt>root</tt>. This puts
+   you into a new shell where you can type commands that are executed as if
+   you&rsquo;re root. When you&rsquo;re done, you exit the new shell by typing
+   the command <tt>exit</tt> or by typing the character
+   <i>control-D.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The commands <tt>sudo</tt> and
+   <tt>su</tt> may remember the root password for a short time, so you
+   don&rsquo;t have to keep typing it if you do several
+   <tt>sudo</tt>&rsquo;s or <tt>su</tt>&rsquo;s one after the other.
+   You can get more information about <tt>sudo</tt> and <tt>su</tt>
+   by typing the commands <tt>man</tt>&nbsp;<tt>sudo</tt> and
+   <tt>man</tt>&nbsp;<tt>su</tt> to the shell.
+  </p>
+  <p>
+   <b>2.2. Installing.</b>
+  </p>
+  <p align="justify">
+   To install a program from this directory, first read <tt>Makefile</tt>,
+   and satisfy yourself that it won&rsquo;t do anything bad. Then execute the
+   command
+   <tt>make</tt>&nbsp;<tt>install</tt>&nbsp;<tt>program=</tt><i>p</i>
+   as root. (See section
+   <a href="#root">
+    2.1
+   </a>
+   if you don&rsquo;t know how to do that.) Here <i>p</i> is the name of
+   the program you want to install, without its suffix. For example, if you
+   want to install the program <tt>gas.os</tt>, then you&rsquo;d type the
+   command
+   <tt>make</tt>&nbsp;<tt>install</tt>&nbsp;<tt>program=gas</tt>.
+   The <tt>make</tt> command will write a list of the things it&rsquo;s
+   doing to install the program <i>p.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; After the program is installed, you can run
+   it. Just type its name to the shell, maybe followed by some options. If you
+   don&rsquo;t know what its options are, then you can type
+   <tt>man</tt>&nbsp;<i>p,</i> where <i>p</i> is the name of the
+   program. Some programs in this directory don&rsquo;t have their own manual
+   pages. If you can&rsquo;t run the program, then something has gone wrong.
+  </p>
+  <p>
+   <b>2.3. Uninstalling.</b>
+  </p>
+  <p align="justify">
+   If something did go wrong, or if you decide you didn&rsquo;t want to install
+   the program after all, then you can uninstall it. Execute the command
+   <tt>make</tt>&nbsp;<tt>uninstall</tt>&nbsp;<tt>program=</tt><i>p</i>
+   as root. As before, <i>p</i> is the name of the program you want to
+   uninstall, without its <tt>.os</tt> suffix. For example, if you want to
+   uninstall the program <tt>gas.os</tt>, then you&rsquo;d type the
+   command
+   <tt>make</tt>&nbsp;<tt>uninstall</tt>&nbsp;<tt>program=gas</tt>.
+   The <tt>make</tt> command will write a list of the things it&rsquo;s
+   doing to uninstall the program <i>p.</i>
+  </p>
+  <a name="compile">
+  </a>
+  <p>
+   <b>2.4. Rootlessness.</b>
+  </p>
+  <p align="justify">
+   What if you can&rsquo;t become root? Maybe you&rsquo;re a student working in
+   a school lab, and you don&rsquo;t have the root password for the computer
+   you&rsquo;re using. You can still compile and run these programs. Just type
+   the command
+   <tt>make</tt>&nbsp;<tt>compile</tt>&nbsp;<tt>program=</tt><i>p,</i>
+   without becoming root first. For example, if you want to compile the program
+   <tt>gas.os</tt>, then you&rsquo;d type the command
+   <tt>make</tt>&nbsp;<tt>install</tt>&nbsp;<tt>program=gas</tt>.
+   The <tt>make</tt> command will write a list of the things it&rsquo;s
+   doing to compile the program <i>p.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Now you can run the program by typing
+   <tt>./</tt><i>p</i> (that&rsquo;s <i>dot slash pee</i>),
+   maybe followed by some options. You can also read the manual page for the
+   program <i>p</i> by typing the command
+   <tt>man</tt>&nbsp;<tt>-l</tt>&nbsp;<i>p</i><tt>.1</tt>
+   (that&rsquo;s <i>man space dash ell space pee dot one</i>). Some
+   programs in this directory don&rsquo;t have their own manual pages.
+  </p>
+  <hr />
+  <p align="center">
+   <b>References</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="ahd1973">
+      </a>
+      [<small>AHD</small>&nbsp;1973]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      <i>American Heritage Dictionary.</i> William Morris, Editor.
+      American Heritage Publishing Company. New York, New York. 1973. Pages 87,
+      1409.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="doy1982">
+      </a>
+      [<small>DOY</small>&nbsp;1982]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Arthur Conan Doyle. <i>The Hound of the Baskervilles.</i> In
+      <i>The Original Illustrated Sherlock Holmes.</i> Castle. Secaucus,
+      New Jersey. 1982. Page 344.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="lew2000">
+      </a>
+      [<small>LEW</small>&nbsp;2000]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Bill Lewis, Dan LaLiberte, Richard Stallman, the G<small>NU</small>
+      Manual Group. <i>G<small>NU</small> Emacs Lisp Reference
+      Manual.</i> Free Software Foundation. Boston, Massachusetts. 2000.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2014">
+      </a>
+      [<small>MOE</small>&nbsp;2014]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;Revised&#8315;&#185; Report on the
+      Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
+      2014.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="sta2010">
+      </a>
+      [<small>STA</small> 2010]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Richard M. Stallman, Ronald McGrath, Paul D. Smith.
+      &lsquo;&lsquo;G<small>NU</small> Make: A Program for Directing
+      Recompilation.&rsquo;&rsquo; Edition 0.71. Free Software Foundation.
+      Boston, Massachusetts. July 19, 2010.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="uni2006">
+      </a>
+      [<small>UNI</small>&nbsp;2006]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      The Unicode Consortium. <i>The Unicode Standard, Version 5.0.</i>
+      Fifth Edition. Addison-Wesley Professional. Reading, Massachusetts. 2006.
+     </p>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

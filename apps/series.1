@@ -1,0 +1,115 @@
+.TH SERIES 1 "December 13, 2013"
+.DD December 13, 2013
+
+.SH NAME
+series - Write a series of integers.
+
+.SH SYNOPSIS
+.B series \c
+.I format\c
+ [\c
+.I begin\c
+] \c
+.I end\c
+ [\c
+.I step\c
+]
+.RE
+
+.SH DESCRIPTION
+.B Series
+writes a series of integers to stdout, one per line.
+It is similar to
+.B seq\c
+\&,
+but it uses integers instead of reals.
+The series starts with the integer
+.I begin\c
+\&, and ends with the integer
+.I end\c
+\&, in steps of
+.I step\c
+\&.
+The string
+.I format
+is a
+.B printf\c
+-style format string, used to write the integers.
+For example, the command
+.B series\ "%i"\ 0\ 3\ 1
+writes the integers 0, 1, 2, and 3.
+
+If
+.I begin
+and
+.I end
+appear, but
+.I step
+is missing, then
+.B series
+writes a series of integers from
+.I begin
+to
+.I end
+in steps of 1.
+For example, the command
+.B series\ "%i"\ 0\ 3
+writes the integers 0, 1, 2, and 3.
+
+If
+.I end
+appears, but
+.I begin
+and
+.I step
+are missing, then
+.B series
+writes a series of integers from 0 to
+.I end\c
+-1, in steps of 1.
+For example, the command
+.B series\ "%i"\ 4
+writes the integers 0, 1, 2, and 3.
+
+If
+.I begin\c
+\&,
+.I end\c
+\&, and
+.I step
+are chosen in an attempt to make a nonterminating series, then
+.B series
+writes nothing to stdout, and issues an error message to stderr.
+The results of
+.B series
+are undefined if an arithmetic overflow or underflow occurs, or if
+.I format
+does not match its integer argument.
+
+.B Series
+may be useful for generating repetitive parts of some programs.
+For example, the command
+.B series\ "case\ '%c':"\ 33\ 126
+generates switch-statement labels for use in a C program.
+The labels range from '!' (U+0021), whose decimal code is 33, to '~'
+(U+007E), whose decimal code is 126.
+
+.SH COPYING
+Copyright (C) 2013 James B. Moen.
+Permission is granted to copy, distribute, and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.3 or any later
+version published by the Free Software Foundation; with no Invariant
+Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license may be obtained at <http://fsf.org/>.
+
+.SH VERSION
+Version 0.1.
+
+.SH AUTHOR
+James B. Moen
+
+.SH SEE ALSO
+.B printf\c
+(3),
+.B seq\c
+(1).

@@ -1,0 +1,2472 @@
+{title FAQ's About Orson}
+
+{center
+ {b {c Faq}'s About Orson}
+
+ James B. Moen
+ January 19, 2014}
+
+{justify
+  Copyright © 2014 James B. Moen.
+  Permission is granted to copy, distribute, and/or modify this document under
+  the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
+  version published by the Free Software Foundation; with no Invariant
+  Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license may be obtained at
+  {goto http://fsf.org/ {t <http://fsf.org/>.}}
+
+  This document uses special characters.
+  Without proper rendering support, you may see question marks, boxes, or other
+  symbols in place of these characters.
+  This document must be rendered using a font where a quote `\ "\ ', an italic
+  quote `\ {i "}\ ', and two apostrophes `\ {q ''}\ ' all look different.}
+
+{rule}
+
+{left {b 0. Introduction.}}
+
+{narrow
+ {justify
+   {c Faq}: Free at Quay.}
+ {right {goto des1967 {c [des 1967]}}}}
+
+{justify
+  {c Faq}'s are Frequently Asked Questions, but since Orson is new, no one has
+  asked questions about it.
+  These are Fictionally Anticipated Questions instead.
+  Some of these questions were suggested by the {c faq} lists for other
+  languages, notably those for C.
+  I may add new questions to the list from time to time.}
+
+{narrow
+ {layout
+  {row
+   {right {goto general 1.}\ }
+   {left General questions.}}
+  {row
+   {right {goto arraytups 2.}\ }
+   {left Questions about arrays and tuples.}}
+  {row
+   {right {goto chars 3.}\ }
+   {left Questions about characters.}}
+  {row
+   {right {goto coercions 4.}\ }
+   {left Questions about coercions.}}
+  {row
+   {right {goto constvars 5.}\ }
+   {left Questions about constants and variables.}}
+  {row
+   {right {goto equates 6.}\ }
+   {left Questions about equates and declarations.}}
+  {row
+   {right {goto forms 7.}\ }
+   {left Questions about forms.}}
+  {row
+   {right {goto parens 8.}\ }
+   {left Questions about parentheses.}}
+  {row
+   {right {goto pointers 9.}\ }
+   {left Questions about pointers.}}
+  {row
+   {right {goto string 10.}\ }
+   {left Questions about strings.}}
+  {row
+   {right {goto tokens 11.}\ }
+   {left Questions about tokens.}}
+  {row
+   {right {goto types 12.}\ }
+   {left Questions about types.}}
+  {row
+   {right {goto current 13.}\ }
+   {left Questions about the current implementation of Orson.}}
+  {row
+   {right {goto misc 14.}\ }
+   {left Miscellaneous questions.}}
+  {row
+   {right {goto references 15.}\ }
+   {left References.}}}}
+
+{rule}
+
+{label general}
+{left {b 1. General questions.}}
+
+{justify
+  {b Q.}
+  What is Orson?}
+
+{justify
+  {b A.}
+  {i Orson} is a small, general purpose programming language.
+  It's designed to be used by individuals instead of groups, so it omits the
+  complex information hiding mechanisms of other languages, like classes,
+  modules, and packages.
+  In their place, Orson emphasizes extendability and expressiveness, and
+  provides access to low level objects like that of C
+  {goto ker1988 {c [ker 1988].}}
+  However, you can still write safe, modular programs in Orson.
+
+  Orson divides computation into two phases, called transformation and
+  execution.
+  In {i transformation,} Orson creates new expressions by calling {i forms,}
+  which are much like macros that expand to abstract syntax trees.
+  Forms are written in an applicative language that is similar to Scheme, but
+  with an algebraic notation and an explicit type system.
+  In {i execution,} Orson evaluates the expressions produced by
+  transformation, as in a conventional compiler.
+
+  Although the parts of Orson that perform transformation and execution are
+  tightly integrated, the language may be implemented so that all
+  transformations are performed at compile time, and all executions at run
+  time.
+  This allows programming with forms in an abstract, general style, while
+  still producing efficiently executable programs.}
+
+{justify
+  {b Q.}
+  Why is it called {i Orson}?}
+
+{justify
+  {b A.}
+  I thought the name sounded good.
+  {i Orson} isn't an acronym, so it doesn't properly appear in capital
+  letters.
+  The name doesn't refer to any group, person, place, or thing: Orson is not
+  named after Orson Bean, Orson Scott Card, or Orson Welles.
+  Orson also has nothing to do with the {c brit}-award-winning rock band of
+  the same name.
+
+  Since Orson uses forms so much, I once considered calling it {i Formula,}
+  as a pun on {i Modula} (which uses modules) and {i Simula} (which does
+  simulations).
+  Alas, someone else had already used the name for a music composition
+  language {goto and1991 {c [and 1991].}}
+
+  A very early version of Orson was called {i Who,} intended as a joking
+  reference to the many languages that are named after famous people
+  (like {i Ada,} {i Eiffel,} {i Haskell,} {i Pascal,} etc.)
+  However, this presented obvious problems with what to call the compiler in
+  a Unix environment, as the names {t who} and {t wc} are already taken.}
+
+{justify
+  {b Q.}
+  Why doesn't Orson look like C?
+  All the other new languages do.}
+
+{justify
+  {b A.}
+  C's syntax is poorly designed.
+  For example, consider (1) the need for semicolons as terminators for some
+  (but not all) statements, (2) the error-prone infix operators, such as = and
+  ==, (3) the inside-out notation for function types, (4) the bizarre infix
+  operator priorities, (5) the need for {i break} statements inside {i switch}
+  statements, (6) the lack of delimiting names like {b then} and {b of,} 
+  whose presence promotes readability and good error recovery.
+
+  C is great because of its {i semantics,} not its syntax.
+  Unfortunately, designers of new programming languages haven't understood
+  this, because they've imitated its syntax, not its semantics.
+  Perhaps they think making their languages look like C will make them
+  easier to learn.
+  This is a mistake, because learning a new syntax is only a small part of
+  learning a new language.
+  It also misleads new users.
+  When I was a professor, I often met students who thought they knew Java, but
+  actually knew C or C++, and had trouble with the transition.
+
+  Orson doesn't look like C because it's different from C.
+  C is a statement language; Orson is an expression language.
+  C uses name compatibility for some of its types; Orson uses structure
+  compatibility for all.
+  C programs are collections of functions; most Orson programs are
+  collections of forms.
+  C doesn't really have arrays; Orson does.}
+
+{justify
+  {b Q.}
+  Why isn't Orson object oriented?
+  All the other new languages are.}
+
+{justify
+  {b A.}
+  In the 1960's, programmers thought you couldn't use linked data structures
+  without using someone's fancy list processing system, like {c ipl}
+  {goto sam1969 {c [sam 1969]}} or Lisp {goto ste1990 {c [ste 1990].}}
+  Knuth's books debunked this idea {goto knu1975 {c [knu 1975].}}
+  Of course you can use linked structures in any modern language.
+
+  Now programmers think you can't write in an object oriented style without
+  using someone's fancy object oriented system, like C++ or Java.
+  Actually you can approximate an object oriented style in any modern
+  language.
+  Orson contains several mechanisms (alternate forms and secret names) that
+  support such approximations.
+  {i Objects may be closer than they appear!}
+
+  I'm skeptical about object orientedness.
+  It works well for games, graphics, and {c gui}'s (the three {c g}'s).
+  However, it works less well for other kinds of programs, in which it may
+  make simple things unnecessarily complicated.
+  Maybe someday, object oriented programming will go back into our bag of
+  tricks along with everything else, to be taken out and used only when
+  appropriate.}
+
+{justify
+  {b Q.}
+  Does Orson come with an {c ide}?
+  All the other new languages do.}
+
+{justify
+  {b A.}
+  Not at present.
+  Of course an {c ide} is an Integrated Development Environment, essentially a
+  text editor that automates the troublesome tasks of programming.
+  Orson doesn't have one because I don't use {c ide}'s when I write my own
+  stuff.
+  I use Emacs and {c Gnu} command line tools instead.
+  I don't know if it would be possible to take an existing {c ide} and adapt it
+  to Orson, or vice-versa.
+
+  A lot of people want to make badly designed programming languages easier to
+  use by giving them a fancy {c ide.}
+  This makes sense if someone (like a boss) is forcing you to use a badly
+  designed language.
+  I think it would be better to try making well designed languages instead.
+  I don't know if Orson is well designed or not.}
+
+{justify
+  {b Q.}
+  Why isn't Orson an interpreted language?
+  All the other new languages are.}
+
+{justify
+  {b A.}
+  There's a place for interpreted languages.
+  They're good for fast prototyping and for portability.
+  Also, the speed of compiled languages isn't needed for many applications.
+  Some people therefore argue that programming ought to be done exclusively
+  with interpreters.
+  At the risk of attacking a straw man, I think this is a bad idea.
+   
+  Using interpreted languages means we don't benefit from faster hardware.
+  My present computer is many times faster than the one I owned in the 1980's,
+  and its hard disk has a far larger capacity.
+  But my (interpreted) Java programs now seem to run about as fast as my
+  (compiled) Pascal programs did back then, and they're not that much easier
+  to write.
+   
+  Interpreted languages also prevent programmers from accessing the hardware
+  directly.
+  Here's a paranoid fantasy: suppose a big operating systems company wished
+  to prevent competition.
+  It might then support only interpreted languages that aren't powerful
+  enough to write new operating systems.
+  This would make it hard for small companies to rise up and challenge them.
+  Now imagine what would happen if this company also held a monopoly on all
+  software available to the public...}
+
+{justify
+  {b Q.}
+  Does Orson support concurrency, parallel computation, multi-processing, or
+  threads?
+  All the other new languages do.}
+
+{justify
+  {b A.}
+  Not at present.
+  Future versions may do so.
+  It may be possible to use {c Posix} threads {goto stv2005 {c [stv 2005]}}
+  with the current Orson compiler, but there's no explicit support for this,
+  and I've never tried it.
+  Orson's catch-throw mechanism and the garbage collector in the Orson
+  library are probably not safe for threads.
+  Also, Orson is currently translated to C, so in principle it should be
+  possible to do anything in Orson that can be done in C.}
+
+{justify
+  {b Q.}
+  Does Orson have a formally defined semantics?
+  All the other new languages do.}
+
+{justify
+  {b A.}
+  Not at present.
+  Why?
+  (1) I wanted to describe Orson in a way that would be accessible to a wide
+  audience, so I wrote most of the Revised⁻¹ Report
+  {goto moe2014 {c [moe 2014]}} in English instead of mathematics.
+  However, Orson's type system is described using a semi-formal notation.
+  (2) All the Orson documentation is in {c html,} so it can be read with a
+  browser, but browsers can't display mathematics well enough to handle the
+  typography of formal semantics.
+  (3) I don't know enough about formal semantics to describe Orson.
+  This is the real reason.
+
+  I'd be happy to hear from anyone who wants to write a formal semantics
+  for Orson, or from anyone who has already done so.
+  I don't guarantee that I can help you write such a thing, or even that I'll
+  understand it after you're written it.}
+
+{justify
+  {b Q.}
+  Orson sucks.
+  No one will ever use Orson instead of C (or C++, Cobol, Java, etc.).}
+
+{justify
+  {b A.}
+  No one has to.
+  I didn't write Orson to replace any other language, and to paraphrase
+  {i The Rocky Horror Picture Show} {goto hen1979 {c [hen 1979],}} I didn't
+  write it for you.
+  I wrote it because I wanted to use it myself.
+  Many people think something must be popular to be successful.
+  This is the high school cheerleader's definition of success.
+  Don't be misled by it.}
+
+{justify
+  {b Q.}
+  Orson sucks.
+  I can't use it to make web pages that talk to databases.
+  (Insert your favorite commercial programming task.)}
+
+{justify
+  {b A.}
+  Orson is a low level language with a high level library.
+  You might be able to write Orson programs like the ones you want if there was
+  library support for them.
+  If you'd rather use some other language, then why are you using Orson?}
+
+{rule}
+
+{label arraytups}
+{left {b 2. Questions about arrays and tuples.}}
+
+{justify
+  {b Q.}
+  Is there a way to compare arrays or tuples automatically?}
+
+{justify
+  {b A.}
+  No.
+  The only way to do that is to write a form or procedure that compares two
+  arrays element by element, or two tuples slot by slot.
+  However, you can write a higher-order form that makes a comparison form
+  automatically, like this.}
+
+{narrow{orson
+makeEquality :−
+ (form (type tup t, list s) foj:
+  (form (t l, t r) bool:
+   (with
+     makingEquality :−
+      (form (list s) bool:
+       (if isEmpty(s)
+        then true
+        else "."(l, car(s)) = "."(r, car(s)) ∧ makingEquality(cdr(s))))
+    do makingEquality(s))))
+
+comp :− (tuple real re, real im)
+
+"=" :− makeEquality(comp: $re, $im)}}
+
+{justify
+  This is one of the few times when you must call {i "}.{i "} explicitly,
+  instead of writing {i e}.{i n.}}
+
+{justify
+  {b Q.}
+  Can I write a constant whose type is an array or a tuple?}
+
+{justify
+  {b A.}
+   No.
+   But you can simulate such a thing with a form or a procedure.
+   For example, the form {i makeComp} returns a complex number, given values
+   for its slots {i re} and {i im.}}
+
+{narrow{orson
+comp :− (tuple real re, real im)
+
+makeComp :−
+ (form (real re, real im) comp:
+  (with var comp z
+   do z.re := re
+      z.im := im
+      z))}}
+
+{justify
+  Orson doesn't have a notation for array or tuple constants because it's
+  easy to write a form like this, which acts like such a constant.
+  The Orson library may someday provide more efficient versions of these
+  forms.}
+
+{rule}
+
+{label chars}
+{left {b 3. Questions about characters.}}
+
+{justify
+  {b Q.}
+  Does Orson support Unicode?
+  All the other new languages do.}
+
+{justify
+  {b A.}
+  Yes.
+  Orson uses a 31-bit character set that includes the 21-bit Unicode
+  {goto uni2006 {c [uni 2006]}} and the 7-bit {c ascii}
+  {goto ans1986 {c [ans 1986]}} character sets as subsets.
+  (Some people think Unicode is a 16-bit character set, but they're wrong.)
+  Orson uses the {c utf}-8 encoding for strings.
+
+  The good news is that you can still write Orson programs in {c ascii,} even
+  on old systems that don't support Unicode, and that Orson characters and
+  strings are completely compatible with those of C and Unix.
+  The bad news is that you can't access string characters using simple
+  pointer arithmetic any more, unless those strings contain only {c ascii}
+  characters.
+  However, the Orson library contains forms that make this relatively
+  painless.}
+
+{justify
+  {b Q.}
+  If Orson supports Unicode, then why can't I use Cyrillic letters in names,
+  like I can in Java?
+  (Insert your favorite non-Roman alphabet.)}
+
+{justify
+  {b A.}
+  Orson allows only unaccented Roman and Greek letters in plain and secret
+  names, along with a few mathematical symbols.
+  Here's why.}
+
+{bullet
+ {justify
+   Most programming languages use English reserved names (like {b if} and
+   {b while}), and their syntaxes assume English word order.
+   They can't be made international just by allowing unreserved names to use
+   letters from multiple alphabets.
+   This would work only in languages that don't need reserved names, and
+   that use a syntax which is not based on word order.}
+ {justify
+   Many alphabets have letters that look like other letters.
+   For example, the Roman capital letter `A' (U+0041) looks like the Greek
+   capital letter `A' (U+0391), and the letter `LJ' (U+01C7) looks like the
+   letter `L' (U+004C) followed by the letter `J' (U+004A)
+   {goto gos1996 {c [gos 1996].}}
+   Allowing such letters in names would make it possible to write confusing
+   programs, with names that seem to be identical, but are not.}
+ {justify
+   Programs should be written to be as understood by as many people as
+   possible.
+   It is claimed that more people read English than any other language
+   {goto mcc1987 {c [mcc 1987],}} and all programmers know some mathematics,
+   so programs should be written with English or mathematical names.
+   For example, Linus Torvalds, a native of Finland whose first language is
+   Swedish, chose to write his famous operating system kernel in English
+   {goto moo2001 {c [moo 2001].}}
+   No English chauvinism is intended: the status of English is due to
+   historical accidents, not to any inherent superiority.}}
+
+{justify
+  Orson does allow most characters (including those from non-Roman
+  alphabets) in quoted names.
+  For example, you can write {i "}Русский{i "} in Cyrillic letters, but you
+  must include the double quotes, since they're part of the name.}
+
+{justify
+  {b Q.}
+  I just tried to write an Orson program, but your compiler complained when
+  I used tabs.
+  How can I make it stop doing that?}
+
+{justify
+  {b A.}
+  Don't use tabs.
+  They're handled inconsistently by different output devices and utility
+  programs.
+  A program with tabs might look properly indented on one computer, but not on
+  another.
+  This can't happen if you use blanks, which look the same way everywhere.
+  Orson makes you use blanks by treating tabs (and all other control
+  characters except newlines) as illegal characters.
+
+  Just because you shouldn't use tabs, doesn't mean you shouldn't use the
+  {c tab} key.
+  Some text editors can insert an appropriate number of blanks when you press
+  {c tab.}
+  Consider using such an editor.}
+
+{rule}
+
+{label coercions}
+{left {b 4. Questions about coercions.}}
+
+{justify
+  {b Q.}
+  When I write the equate {b real}\ {i x}\ :−\ 0, I get an error message.
+  What's wrong?}
+
+{justify
+  {b A.}
+  0 isn't a real constant.
+  It's an integer constant.
+  Unlike other languages, Orson doesn't automatically coerce integers to
+  reals.
+  Write {b real}\ {i x}\ :−\ 0.0 instead.
+  Orson has only the bare minimum of coercions, and has no way to define new
+  ones.}
+
+{justify
+  {b Q.}
+  Why doesn't Orson coerce integers to reals?
+  All the other languages do.}
+
+{justify
+  {b A.}
+  There are several reasons.}
+
+{bullet
+ {justify
+   Coercion should occur only in situations where no information will be
+   lost.
+   On most computers, some integers cannot be exactly represented as reals, so
+   information would be lost if they were coerced.}
+ {justify
+   Integers and reals are very different kinds of objects inside a computer,
+   and have different properties.
+   For example, it is meaningful to test integers for equality, but in many
+   algorithms it is not meaningful to test reals for equality.
+   Often you test if they are within some small number ε of each other, by
+   writing {i abs}({i u}\ −\ {i v})\ ≤\ ε.}
+ {justify
+   Suppose that Orson coerced integers to reals, but someone implemented
+   complex numbers, perhaps by using tuples.
+   Then for consistency, there should be a way to coerce reals to complexes,
+   too.
+   That would require a user-defined coercion mechanism, something which
+   would complicate Orson tremendously.
+   (An early version of Orson included this: it was a mess.)
+   The simplest fix, which maintains consistency, is not to coerce integers to
+   reals.}
+ {justify
+   Coercions from integers to reals can be simulated easily by casts.
+   Using an explicit cast alerts the reader when an object of one type is
+   being converted to an object of another type, which an implicit coercion
+   does not do.
+   Also, it's possible to define new casts.}}
+
+{rule}
+
+{label constvars}
+{left {b 5. Questions about constants and variables.}}
+
+{justify
+  {b Q.}
+  I declared an integer variable {i j} with an initial value of 0.
+  When I tried resetting {i j} to 4, I got an error message about an
+  undefined method.}
+
+{narrow{orson
+!  {c Wrong.}
+(with int j :− 0
+ do j := 2 + 2
+    writeln(j))}}
+
+{justify
+  What's wrong?}
+
+{justify
+  {b A.}
+  The name {i j} isn't a variable.
+  It's a constant.
+  You got an error message because the form {i "}:={i "} expects a variable
+  as its first argument, but you gave it a constant instead.
+  Orson searched for a member of {i "}:={i "} that works with constants, but it
+  couldn't find one, so it scolded you about an undefined method.
+  You should have written this.}
+
+{narrow{orson
+(with var int j :− 0
+ do j := 2 + 2
+    writeln(j))}}
+
+{justify
+  Orson is fussier than other languages about distinguishing constants and
+  variables.
+  This is so it can do computation with constants during transformation.
+  Variable types have {b var} prefixes.
+  Constant types don't.}
+
+{justify
+  {b Q.}
+  When I wrote this, I got an error message about {i "}:={i "} being an
+  undefined method.}
+
+{narrow{orson
+!  {c Wrong.}
+abs :−
+ (proc (int x) int:
+  (if x < 0
+   then x := − x)
+  x)}}
+
+{justify
+  What's wrong?}
+
+{justify
+  {b A.}
+  The name {i x} isn't a variable.
+  It's a constant.
+  You got an error message because the form {i "}:={i "} expects a variable
+  as its first argument, but you gave it a constant instead.
+  Orson searched for a member of {i "}:={i "} that works with constants, but it
+  couldn't find one, so it scolded you about an undefined method.
+  You could have written this, which makes a local variable {i x} and
+  initializes it to the value of the parameter {i x.}}
+
+{narrow{orson
+abs :−
+ (proc (int x) int:
+  (with var int x :− (past x)
+   do (if x < 0
+       then x := − x)
+      x))}}
+
+{justify
+  However, it's simpler to write it without a variable, like this.
+  Orson often uses variables less than other languages.}
+
+{narrow{orson
+abs :−
+ (proc (int x) int:
+  (if x < 0
+   then − x
+   else x))}}
+
+{justify
+  Some programmers like to represent the state of a program using the values of
+  variables.
+  They write their code as a linear series of steps, where each step changes
+  the program's state by resetting the variables.
+  Call this ''state as value.''
+
+  Other programmers like to represent state using the place that's currently
+  being executed in a program.
+  They write their code as a branching structure instead, with a different
+  place for each state that their program can assume.
+  Call this ''state as place.''
+
+  I personally prefer to write in the ``state as place'' style whenever
+  possible, because I think it's easier to read and understand.
+  It's also closer to the ``spirit'' of Orson, whose design steals ideas from
+  languages that use variables sparingly or not at all.}
+
+{justify
+ {b Q.}
+ I want to declare a variable {i v} whose value can be an integer of any type.
+ I wrote the equate {b var}\ {i inj}\ {i v,} but Orson gave me an error message
+ about a missing `:−'.
+ So I wrote the equate {b var}\ {i inj}\ {i v}\ :−\ 0 instead, but then Orson
+ gave me an error message about 0 having the wrong type.
+ How can I declare a variable of type {b var}\ {i inj}?}
+
+{justify
+ {b A.}
+ You can't declare a variable of type {b var}\ {i inj,} or indeed any variable
+ whose base type contains jokers.
+ This is because variables are execution instances (they exist only during
+ execution) but jokers are transformation types (they exist only during
+ transformation).
+ I admit the error messages are misleading, but they are correctly saying that
+ you can't do what you're trying to do.
+
+ There are infinitely many possible integer types: {i int}0, {i int}1,
+ {i int}2, etc., with increasing sizes.
+ A variable whose value is an integer of any type would have an infinitely
+ large size, and so could not be represented inside a real computer.
+ You might be able to approximate what you want by using a pointer variable of
+ a type like {b var}\ {b ref}\ {i void,} and then casting it so that it points
+ to whatever sort of integer you want to reference with it.}
+
+{justify
+ {b Q.}
+ If I can't declare a variable of type {b var}\ {i inj,} then what good is the
+ type {b var}\ {i inj}?
+ Why does Orson even let me write such a type?}
+
+{justify
+ {b A.}
+ There are no objects whose type is {i exactly} {b var}\ {i inj.}
+ However, there are objects whose types are {i subtypes} of {b var}\ {i inj.}
+ For example, a {b var}\ {i int}0 variable has a type that is a subtype of
+ {b var}\ {i inj.}
+ As a result, a type like {b var}\ {i inj} can be used in situations where we
+ want to {i describe} an existing object, not {i make} a new object.
+ For example, I can write a form {i zeroer} that takes an integer variable of
+ any size as its argument, and sets its value to 0.}
+
+{narrow{orson
+zeroer :−
+ (form (var inj v) void:
+   v := 0)}}
+
+{justify
+  Here {b var}\ {i inj} is simply describing the objects to which {i v} can be
+  bound.
+  It says that {i v} can be bound to a variable of type {b var}\ {i int}0, or
+  of type {b var}\ {i int}1, or of type {b var}\ {i int}2, etc.}
+
+{justify
+ {b Q.}
+ But doesn't {i v} have the type {b var}\ {i inj} inside the body of the form
+ {i zeroer}?}
+
+{justify
+ {b A.}
+ No, it has the type of the constant or expression with which {i zeroer} was
+ called.
+ If {i zeroer} was called with an expression of type {b var}\ {i int}0, then
+ {i v} has the type {b var}\ {i int}0, and if it was called with an expression
+ of type {b var}\ {i int}1, then it has the type {b var}\ {i int}1 instead.
+ Arguments to forms can be coerced to {i subtypes} of their corresponding
+ parameter types, not necessarily to {i exactly} those parameter types.
+ The ``Revised⁻¹ Report'' calls this {i permissive coercion.}}
+ 
+{rule}
+
+{label equates}
+{left {b 6. Questions about equates and declarations.}}
+
+{justify
+  {b Q.}
+  How do I declare a variable whose value is a procedure?}
+
+{justify
+  {b A.}
+  Write the equate {b var}\ {i p}\ {i n}\ :−\ {i e,} where {i p} is the
+  type of the procedure you want, {i n} is the name of the variable, and
+  {i e} is an expression that returns a procedure of type {i p.}
+  You can write just {b var}\ {i p}\ {i n} if you want.
+  For example, if you want a variable whose values are procedures that
+  take integer arguments and return integers, then you'd write
+  {b var}\ {b proc}\ ({i int})\ {i int}\ {i n.}
+
+  Do not use a pointer to a procedure as you would in C, unless you're doing
+  something weird (see below).
+  You'll get something that Orson thinks is different from a procedure itself.}
+
+{justify
+  {b Q.}
+  How do I declare an array of {i n} procedures returning procedures
+  returning pointers to characters?}
+
+{justify
+  {b A.}
+  Write the equate
+  [{i n}]\ {b proc}\ ()\ {b proc}\ ()\ {b row}\ {i char}\ {i p}\ :−\ {i e,}
+  where {i e} returns such an array.
+  You can leave out the {i e} if you declare {i p} as a variable.
+  Note that unlike the corresponding type in C, this is easily read from
+  left to right.
+
+  I assume you want to represent characters as {i char}'s, but it will also
+  work with {i char}0's.
+  I also assume that you want procedures without arguments, and that you
+  want a {i row} pointer to a character.
+  If you want the procedure to return a string, then you should use the type
+  {i string} instead of {b row}\ {i char.}}
+
+{justify
+  {b Q.}
+  How can I declare a procedure that returns a procedure of the same type?
+  I'm building a state machine with one procedure for each state, each of
+  which returns a procedure for the next state.
+  But I can't find a way to declare the procedures.}
+
+{justify
+  {b A.}
+   You can't, but you can have the procedure return a pointer to a procedure
+   of the same type.
+   (This is what I meant by ``something weird'' in an earlier question.)
+   For example:}
+
+{narrow{orson
+state :− proc () ref state
+nextState :−
+ (proc () ref state:
+   ...)}}
+
+{justify
+  You'd then dereference the pointer to get the procedure.
+  This is one of the few places where you really have to use a pointer to a
+  procedure.
+  I assume you want procedures that don't accept arguments, but it's easy to
+  modify the above procedures so they do.
+
+  If {i p} is a pointer to a procedure that doesn't accept arguments, then
+  you call it by writing {i p}↑() or {i p}^().
+  You must include the explicit dereference operator `↑' or `^', because Orson
+  thinks a pointer to a procedure is different from a procedure itself.}
+
+{justify
+  {b Q.}
+  What is the initial value of a variable that is not explicitly initialized?
+  For example, suppose I write the equate {b var}\ {i int}\ {i v,} without
+  the :−\ {i e} part.}
+
+{justify
+  {b A.}
+  In Orson, the value of an uninitialized variable is unspecified, which
+  means it's probably garbage.
+  This is true whether the variable is declared in a {i prog} clause or in a
+  {i with} clause.
+  If you want a variable with a specific initial value, you must initialize
+  it yourself.}
+
+{justify
+  {b Q.}
+  I used an equate like {i "}∧{i "}\ :−\ {i x} to redefine the `∧' operator.
+  But later, when I wrote {i a}\ ∧\ {i b,} Orson used the old definition.
+  Why?}
+
+{justify
+  {b A.}
+  You can redefine an operator only if it is implemented as a method.
+  The operators {b also}, {b and}, {b or}, {b ref}, {b row}, {b type}, {b var},
+  `\ ;\ ', `∧', and `∨' are not implemented as methods.
+  They're built directly into Orson, so you can't redefine them.
+  You can bind quoted names that resemble these operators (like {i "}∧{i "}),
+  but the operators themselves aren't affected.
+  You could call {i "}∧{i "}({i a,}\ {i b}) if you want, however.
+
+  The operators {b also,} {b var,} and `\ ;\ ' are built in because I don't
+  know why you'd want to redefine them, unless you want to write programs that
+  are hard to understand.
+  Also, they're used a lot, and building them into Orson makes them more
+  efficient than if they were defined as methods.
+  The operators {b and,} {b or,} {b ref,} {b row,} {b type,} `∧', and `∨' are
+  built in because they don't evaluate all their arguments, or because they
+  evaluate them in special ways.}
+
+{justify
+  {b Q.}
+  I used an equate like {i "}√{i "}\ :−\ {i y} to define a square-root
+  operator.
+  But later, when I wrote √{i a} to compute the square root of {i a,} Orson
+  gave me an error message.
+  Why?}
+
+{justify
+  {b A.}
+  Orson doesn't know that `√' is an operator.
+  It only knows about a few operator tokens, and you can't add new ones.
+  Binding the quoted name {i "}√{i "} doesn't make a new operator.
+  You could call {i "}√{i "}({i a}) if you want, however.}
+
+{justify
+  {b Q.}
+  Why didn't Orson give me error messages when I wrote {i "}∧{i "}\ :−\ {i x}
+  and {i "}√{i "}\ :−\ {i y} then?}
+
+{justify
+  {b A.}
+  Quoted names can have any visible characters inside them (except for quotes),
+  so {i "}∧{i "} and {i "}√{i "} are perfectly reasonable.
+  Why should they be errors?
+  I can imagine uses for them.}
+
+{rule}
+
+{label forms}
+{left {b 7. Questions about forms.}}
+
+{justify
+  {b Q.}
+  How are forms different from Lisp macros?}
+
+{justify
+  {b A.}
+  By {i Lisp,} I'll assume you mean Common Lisp {goto ste1990 {c [ste 1990].}}
+  If you meant some other dialect, then the following may only provide partial
+  answers to your question.}
+
+{bullet
+ {justify
+   Form bodies use the same notation as everything else in Orson.
+   This in not true of Common Lisp, in which most macros are written as
+   expressions that return lists, which in turn represent other expressions.
+   Common Lisp's {i backquote} mechanism helps abbreviate this.
+   Orson doesn't use (and doesn't need) anything like backquotes.}
+ {justify
+   The arguments of a form are evaluated (they're {i transformed}) before the
+   form is applied.
+   This is not true of Common Lisp macros, whose arguments are not evaluated.}
+ {justify
+   Forms are properly lexically scoped.
+   This is not true of Common Lisp macros, whose arguments can violate lexical
+   scoping.
+   For example, if an argument {t x} is passed to a macro that uses {t x} as
+   a local variable, then the two {t x}'s will be confused.
+   Such {i name capture} cannot occur in Orson.}
+ {justify
+   Forms are typed.
+   Specifically, form parameters have types, and the result returned by a form
+   also has a type.
+   This is not true of Common Lisp macros, because the language doesn't really
+   have types in the sense that Orson does.}
+ {justify
+   Generic forms require that their arguments have types which are related to
+   each other in specific ways.
+   This is not true of Common Lisp macros, again because the language doesn't
+   really have types.}
+ {justify
+   Forms can automatically inherit behavior from other forms that are defined
+   in surrounding scopes.
+   This is not true of Common Lisp macros.}
+ {justify
+   Alternate forms can be called with varying numbers and types of arguments.
+   Common Lisp macros can be written to simulate this (except for the part
+   about types).}}
+
+{justify
+  Having said all that, Common Lisp macros work at a lower level of abstraction
+  than Orson forms, and are therefore potentially more powerful.
+  However, after writing lots of Orson code, I haven't found anything that I
+  wanted to do with Orson forms, but could not.
+  Your experience may be different.}
+
+{justify
+  {b Q.}
+  How are forms different from C macros?}
+
+{justify
+  {b A.}
+  Some parts of the previous answer are applicable here.
+  Also, C macros work with strings of characters, or with strings of tokens,
+  while Orson forms work directly with the internal representations of
+  expressions.
+  (Some authors call these internal representations ``abstract syntax trees.'')
+  As a result, you need not include extra parentheses in Orson forms as you
+  must in C macros.}
+
+{justify
+  {b Q.}
+  My Orson program takes a very long time to compile, and/or makes very large
+  binary files.
+  I had to tell the Orson compiler to use more memory, too.
+  Why is Orson so slow and so inefficient?}
+
+{justify
+  {b A.}
+  It isn't.
+  You probably have large forms that are used repeatedly in your program.
+  If possible, change them to procedures.
+  Sometimes this requires nothing more than changing the name {b form} to
+  {b proc.}
+  This works because forms use the same notation for expressions as the rest
+  of Orson, the subject of a previous question.}
+
+{justify
+  {b Q.}
+  Form subsumption doesn't always detect a member form that can never be
+  called.
+  Here's an alternate form which returns a string that is the name of an
+  integer type.}
+
+{narrow{orson
+intkToString :−
+ (alt
+  (form (int0) string:
+    ''int0''),
+  (form (int1) string:
+    ''int1''),
+  (form (int2) string:
+    ''int2''),
+  (form (inj) string:
+    ''unknown''))}}
+
+{justify
+  Here the last member form can never be called, because an integer type
+  ({i inj}) is either {i int}0, {i int}1, or {i int}2.
+  However, the last member form is not subsumed.}
+
+{justify
+  {b A.}
+  You're wrong, because Orson doesn't say how many integer types there are.
+  All it says is that an implementation of Orson must provide {i int}0,
+  {i int}1, and {i int}2, at minimum.
+  However, the last member form could still be called in an implementation of
+  Orson that provides {i int}3.
+  You could add a member that handles {i int}3's, but then the last member
+  could be called in an implementation that provides {i int}4, etc.
+
+  There are infinitely many integer types, but only finitely many are provided
+  by any given implementation.
+  Someday, when we're all using computers with 1024-bit words, Orson will
+  be ready with the integer type {i int}7
+  (2⁷\ byte ×\ 8\ bit\ byte⁻¹\ = 1024 bits).
+  It could happen.}
+
+{justify
+ {b Q.}
+ But form subsumption {i still} doesn't always detect a member form that can
+ never be called.
+ Here's an alternate form which returns a string that is the name of a numeric
+ type.}
+
+{narrow{orson
+numToString :−
+ (alt
+  (form (inj) string:
+    ''integer''),
+  (form (rej) string:
+    ''real''),
+  (form (num) string:
+    ''unknown''))}}
+
+{justify
+  The last member form can never be called, because a numeric type ({i num}) is
+  either an integer type ({i inj}) or a real type ({i rej}).
+  However, the last member form is not subsumed.}
+
+{justify
+  {b A.}
+  You're {i still} wrong, because if jokers are considered to be sets of
+  objects, then no joker is necessarily the union of any other jokers.
+  The joker {i num} is not necessarily the union of {i inj} and {i rej.}
+  For example, in a prelude that provides complex numbers, {i num} might be
+  the union of {i coj} (a joker describing complex numbers), {i inj,} and
+  {i rej.}
+  If {i z} is a complex number, then {i numToString}({i z}) would call the
+  last member form, and return {q ''unknown''.}
+
+  Jokers are defined this way is so Orson might be extended without breaking
+  existing programs.
+  A program that works under the present Orson compiler, where the numeric
+  jokers are {i inj} and {i rej,} should work the same way under a future
+  Orson compiler, where the numeric jokers are {i inj,} {i rej,} and {i coj.}}
+
+{justify
+  {b Q.}
+  I can write a form that takes a variable number of arguments, by using a
+  list.
+  How can I write a procedure that takes a variable number of arguments?}
+
+{justify
+  {b A.}
+  You can't.
+  You can, however, write a form that takes its arguments in a list, then
+  calls a procedure to do its work.
+  It might copy its arguments into an execution object and then call the
+  procedure on that object.
+  For example, the form {i sum} uses the procedure {i Sum} to compute the
+  sum of zero or more integers, so that the call
+  {i sum}(:\ 1,\ 2,\ 3,\ 4) returns 10.}
+
+{narrow{orson
+sum :−
+ (form (list l) int:
+  (with
+    int n :− length(l)
+    var [n] int a
+   do (for inj k in n
+       do a[k] := l[k])
+      Sum(n, a↓)))
+
+Sum :−
+ (proc (int n, row int a) int:
+  (with var int s :− 0
+   do (for int k in n
+       do s += a[k])
+      s))}}
+
+{justify
+  For simplicity, I've left out error checking on the list {i l.}
+  Using an array isn't necessarily the only way to do something like this.
+  There's a technical report that explains other ways.}
+
+{justify
+  {b Q.}
+  I've redefined the form {i "}+{i "} so it can add two complex numbers, like
+  this:}
+
+{narrow{orson
+compl :− (tuple real re, real im)
+
+"+" :−
+ (form (compl l, compl r) compl:
+  (with var compl z
+   do z.re := l.re + l.re
+      z.im := l.im + r.im
+      z))}}
+
+{justify
+  That works fine, but if {i z}₁ has the type {b var}\ {i compl,} and {i z}₂
+  has the type {i compl,} I get an error message when I write
+  {i z}₁\ +=\ {i z}₂.
+  What's wrong?}
+
+{justify
+  {b A.}
+  Orson doesn't know about the relationship between {i "}+{i "} and
+  {i "}+={i "}.
+  Redefining one doesn't also redefine the other.
+  If you want {i z}₁\ +=\ {i z}₂ to work, you must redefine {i "}+={i "}
+  yourself, maybe like this.}
+
+{narrow{orson
+"+=" :−
+ (form (var compl l, compl r) comp:
+   l := l + r)}}
+
+{justify
+  This works because the {i "}+{i "} inside the form knows how to do complex
+  addition: it's the operator you redefined above.
+  As long as they're redefined in the same {i prog} or {i with} clause, you can
+  redefine the forms in any order ({i "}+{i "} before {i "}+={i "} or
+  {i "}+={i "} before {i "}+{i "}) and Orson won't get confused.}
+
+{justify
+  {b Q.}
+  Then why does {i z}₁\ :=\ {i z}₂ still work?
+  Why didn't I have to redefine {i "}:={i "} so it works with the type
+  {i comp}?}
+
+{justify
+  {b A.}
+  The prelude defines {i "}:={i "} like this, so it works with any object
+  that can be the base type of a variable type (any {i mut} object).}
+
+{narrow{orson
+":=" :−
+ (gen (type mut lType)
+   gen (type lType rType)
+    form (var lType l, rType r) void:
+     ?varSet(l, r))}}
+
+{justify
+  The {i gen} prefixes make sure the types of the variable and its new value
+  are compatible.
+  The hook ?{i varSet} then does the assignment using ``magic'' mechanisms that
+  are not available to ordinary programmers.}
+
+{justify
+  {b Q.}
+  I want to write a form that evaluates to a variable, so I can call it on the
+  left side of an assignment operator like {i "}:={i ".}
+  However, I can't make it work.}
+
+{narrow{orson
+[256] var int map
+
+!  {c Wrong.}
+mapped :−
+ (form (int k) var int:
+  (if 0 ≤ k < length(map)
+   then map[k]
+   else throw("index out of range")))}}
+
+{justify
+  The idea is that if {i k} is a legal index for the array {i map,} then
+  {i mapped}({i k}) should evaluate to the variable at that index.
+  If {i k} isn't a legal index, then it should throw an exception.
+  Unfortunately, Orson always coerces the variable to its value.}
+
+{justify
+  {b A.}
+  The problem is that if an expression inside an {i if} clause evaluates to
+  a variable, then the variable gets coerced to its value.
+  So your form doesn't evaluate to the integer variable at index {i k,} but
+  rather to the integer at index {i k.}
+  You might think that you could fix the form like this:}
+
+{narrow{orson
+!  {c Wrong.}
+mapped :−
+ (form (int k) var int:
+  (if ¬ (0 ≤ k < length(map))
+   then throw("index out of range"))
+  map[k])}}
+
+{justify
+  But this doesn't work either: it still transforms to the integer at index
+  {i k.}
+  The reason is that {i map}[{i k}] is the last expression in a subsequence
+  (Orson has silently inserted a semicolon after the {i if} clause).
+  An expression in a subsequence that returns a variable gets coerced to the
+  variable's value.
+  The solution maybe isn't obvious:}
+
+{narrow{orson
+mapped :−
+ (form (int k) var int:
+   map[
+    (if 0 ≤ k < length(map)
+     then k
+     else throw("index out of range"))])}}
+
+{justify
+  Now {i map}[...] appears directly as the form's body, so it's not part of a
+  subsequence, and the variable to which it evaluates won't be coerced.
+  Form bodies, lists, some arguments to methods, and {b type} prefixes are the
+  only places in Orson where variables aren't coerced to their values.}
+
+{rule}
+
+{label parens}
+{left {b 8. Questions about parentheses.}}
+
+{justify
+  {b Q.}
+  Orson gave me all kinds of error messages when I wrote this.}
+
+{narrow{orson
+abs :−
+ proc (int x) int:
+  if x < 0
+  then − x
+  else x}}
+
+{justify
+  Why did it do that?}
+
+{justify
+  {b A.}
+  You didn't put parentheses around the {i proc} clause, or around the
+  {i if} clause.
+  You should have written this.}
+
+{narrow{orson
+abs :−
+ (proc (int x) int:
+  (if x < 0
+   then − x
+   else x))}}
+
+{justify
+  Parentheses are required parts of clauses.
+  As a result, you don't need silly things like `{t \{}' and `{t \}}', or like
+  {b begin} and {b end.}}
+
+{justify
+  {b Q.}
+  It's hard to keep all those parentheses balanced, so I started writing
+  them like they're curly brackets in C.}
+
+{narrow{orson
+abs :−
+ (
+  proc (int x) int:
+   (
+    if x < 0
+    then − x
+    else x
+   )
+ )}}
+
+{justify
+  What do you think?}
+
+{justify
+ {b A.}
+ I think it's ugly, because it uses too much whitespace.
+ It also seems silly, since many text editors will help you balance
+ parentheses.
+ If you like it, though, go ahead and use it.
+
+ As far as I'm concerned, you can format and indent programs however you like,
+ as long as you do so consistently.
+ However, you may have to change your style if you write code that other
+ people (colleagues or teachers) need to look at.
+ This is true even in a language like Orson that's intended for programmers who
+ don't work in big groups.}
+
+{justify
+  {b Q.}
+  Orson uses too many parentheses.
+  It's as bad as Lisp!}
+
+{justify
+  {b A.}
+  Lisp {goto ste1990 {c [ste 1990]}} is my favorite programming language.
+  If we all wrote in Lisp, then many of our programming problems would go
+  away.
+  But that's not what you meant.
+  For the sake of argument, let's assume parentheses are evil, so languages
+  should need as few as possible.
+  I claim that for some programs, Orson uses {i fewer} parentheses than
+  other languages.
+  Consider the following C fragment:}
+
+{narrow{t{display
+if (a < b)
+\{
+  count -= 1;
+  return -1;
+\}
+else if (a > b)
+\{
+  count += 1;
+  return 1;
+\}
+else
+\{
+  return 0;
+\}}}}
+
+{justify
+  It uses ten parentheses, if you count braces.
+  An equivalent Orson fragment looks like this.}
+
+{narrow{orson
+(if a < b
+ then count −= 1
+      −1
+ else if a > b
+      then count += 1
+           1
+      else 0)}}
+
+{justify
+  The Orson fragment uses only {i two} parentheses, and it doesn't need
+  semicolons or {i return} statements either.
+  Of course this is only a small fragment of a program, and the results will
+  depend on the brace style you use.
+  For example, you don't really need braces around the last {i return}
+  statement.}
+
+{justify
+  {b Q.}
+  If you like Lisp so much, then why doesn't Orson look like Lisp?}
+
+{justify
+  {b A.}
+  One of Lisp's many advantages is that its programs are expressed using a
+  simple prefix notation, so programmers need not remember the details of a
+  complex syntax.
+  The syntax also makes it easy to extend the language, typically by using
+  macros.
+
+  Unfortunately, Lisp has scared most programmers away, maybe because it
+  reminds them of mathematics (it has that spooky Greek letter λ).
+  Even the functional programming community has switched to languages with a
+  more familiar appearance, such as Haskell {goto hud1992 {c [hud 1992].}}
+  It saddens me to say this, and I hope I'm wrong, but Lisp is dying.
+  We should try to steal what we can from its corpse before they bury it.
+
+  Orson's syntax is intended as a compromise between the simplicity of Lisp
+  and the familiarity of other languages.
+  The {c bnf} for Orson {goto moe2014 {c [moe 2014]}} fits on about four
+  pages.
+  I might have squeezed it into three if I hadn't restricted myself to
+  classical 1960 {c bnf.}
+
+  The current Orson-to-{c gcc} translator resembles a Lisp interpreter
+  internally, and Orson forms are really just a typed λ-calculus.
+  However, you can write Orson programs without knowing that.}
+
+{rule}
+
+{label pointers}
+{left {b 9. Questions about pointers.}}
+
+{justify
+  {b Q.}
+  I'm deliberately trying to dereference {i nil} to cause an error during
+  execution, so I can get the attention of a debugger.
+  However, I can't figure out how to do it!
+  If I write {i nil}↑ or {i nil}\{{b ref}\ {i void}\}↑, Orson gives me an
+  error message.
+  How does Orson know what I'm trying to do, and how can I fool it?}
+
+{justify
+  {b A.}
+  The current implementation of Orson tests during transformation if
+  (1) you're trying to dereference {i nil,}
+  (2) you're trying to dereference any pointer whose type is {i null,} and
+  (3) you're trying to cast a pointer other than {i nil} to {i null.}
+  The way to avoid the tests is to use a pointer variable, since Orson can't
+  test the values of variables during transformation.}
+
+{narrow{orson
+var ref void p :− nil
+bang :− (form () void: p↑)}}
+
+{justify
+  You can now call {i bang}() to cause an execution error.}
+
+{rule}
+
+{label string}
+{left {b 10. Questions about strings.}}
+
+{justify
+  {b Q.}
+  Orson represents a string as a pointer to an array of bytes, terminated by a
+  zero-byte.
+  That is a poor representation, because you can't compute a string's length
+  without traversing it.
+  Why does Orson represent strings that way?}
+
+{justify
+  {b A.}
+  Strings are the favorite data structure of bad programmers.
+  They want to represent most objects as strings.
+  They would be better off with data structures that are specifically designed
+  for the objects they want to represent.
+  You should use strings only when you want to print things (although there
+  are exceptions to this general rule).
+
+  This means the representation used for strings is largely irrelevant, and the
+  designer of a programming language is free to pick any representation that is
+  convenient.
+  I designed Orson to use the same representation as does C
+  {goto ker1988 {c [ker 1988].}}
+  It's convenient because it lets Orson use library procedures that have
+  already been written for C, without change.
+
+  If you're using strings only for printing, then you must traverse them
+  anyway, to visit their characters.
+  You might need to find the length of a string before you print it.
+  However, traversing a string twice, first to find its length, and then to
+  print it, shouldn't affect run time much, because traversal should be much
+  faster than printing.}
+
+{rule}
+
+{label tokens}
+{left {b 11. Questions about tokens.}}
+
+{justify
+  {b Q.}
+  I get an error whenever I use a dash.
+  For example, I get an error when I write {i j}\ :—\ 1, and I get another
+  error when I write {i j}\ –\ 1.
+  What am I doing wrong?}
+
+{justify
+  {b A.}
+  Maybe you're using the wrong kind of dash.
+  Orson programs can be written in Unicode {goto uni2006 {c [uni 2006],}} which
+  has many characters that look like dashes.
+  For example:}
+
+{narrow
+ {layout
+  {row
+   {left `\ -\ '\ }
+   {left is a {c hyphen-minus} (U+002D),}}
+  {row
+   {left `\ ‐\ '\ }
+   {left is a {c hyphen} (U+2010),}}
+  {row
+   {left `\ ‑\ '\ }
+   {left is a {c non-breaking hyphen} (U+2011),}}
+  {row
+   {left `\ ‒\ '\ }
+   {left is a {c figure dash} (U+2012),}}
+  {row
+   {left `\ –\ '\ }
+   {left is an {c en dash} (U+2013),}}
+  {row
+   {left `\ —\ '\ }
+   {left is an {c em dash} (U+2014),}}
+  {row
+   {left `\ ―\ '\ }
+   {left is a {c horizontal bar} (U+2015), and}}
+  {row
+   {left `\ −\ '\ }
+   {left is a {c minus sign} (U+2212).}}}}
+
+{justify
+  This may not be a complete list.
+  Some of them may even look the same, depending on your browser's default
+  font, but they are different characters, with different codes.
+  Sheesh!
+
+  Orson recognizes only two of these: `\ -\ ', a {c hyphen-minus} (U+002D),
+  which is the familiar {c ascii} character that you get from {c us} keyboards,
+  and `\ −\ ', a {c minus sign} (U+2212), which you can get from a character
+  palette.
+  You can write sums and terms using either character.
+  You can also write a colon-dash in an equate using either character.
+
+  Technically, the {c hyphen-minus} character is preferred in English text, and
+  the {c minus sign} character is preferred in Orson code.
+  The Orson library uses this convention.
+  However, you don't need to care unless you're modifying the definition of
+  the subtraction operator in the Standard Prelude, or unless you're
+  anal-retentively fussy about how your programs look, like I am.}
+
+{justify
+  {b Q.}
+  You use `<>' as the operator that tests for inequality.
+  By analogy with `<=' and `>=', this suggests {i less than or greater than.}
+  However, some objects, like complex numbers, can be unequal without being
+  less or greater.
+  You should use something else.}
+
+{justify
+  {b A.}
+  I agree, but all the good choices in {c ascii} are taken.
+  I can't use `/=', `|=', or `~=' because they're assignment operators.
+  I can't use `!=' because an exclamation mark denotes a comment.
+  I can't use `#' because it denotes an integer constant.
+  I don't want to use `\\=' because it's too easily confused with `/='.
+  Things like `=/=' and `=/' are ugly.
+  A reserved name like {b neq} is even uglier: it looks like Klingon
+  {goto okr1992 {c [okr 1992].}}
+
+  If you use Orson on a system that supports Unicode (and most systems do) then
+  you can write the not-equals sign `≠' as a synonym for `<>'.
+  If you don't, then you can still write {b not}\ ({i a}\ =\ {i b}).}
+
+{justify
+  {b Q.}
+  If `<>' and `≠' test for inequality, then what about this?}
+
+{narrow{orson
+!  {c Almost wrong.}
+nonzero :−
+ (proc (int n) void:
+  (if n != 0
+   then writeln(''Not zero.'')))}}
+
+{justify
+  It works correctly.
+  Why?}
+
+{justify
+  {b A.}
+  Well, it {i compiles} correctly; whether it {i works} correctly is a
+  different question.
+  The exclamation point starts a comment, which includes the rest of the
+  line.
+  So you've really written a procedure like this.}
+
+{narrow{orson
+nonzero :−
+ (proc (int n) void:
+  (if n
+   then writeln(''Not zero.'')))}}
+
+{justify
+  It {i seems} to work correctly because the {i if} clause tests if the
+  expression that comes after {b if} is not zero.
+  If so, then it evaluates the expression that comes after {b then.}
+  You got lucky, but you wouldn't have if you'd written this.}
+
+{narrow{orson
+!  {c Wrong.}
+unequal :−
+ (proc (int a, int b) void:
+  (if a != {i b}
+   then writeln(''Not equal.'')))}}
+
+{justify
+  Something like this happened to me when I got C and Orson confused.
+  I therefore considered changing the definition of comments so that the
+  exclamation point must be followed by a blank.
+  However, I realized that this wouldn't stop similarly confused people from
+  using the exclamation mark as the {c not} operator, so I never made the
+  change.}
+
+{justify
+  {b Q.}
+  There's something wrong with string literals.
+  When I write {i "}Hello,\ world!{i "} with quotation marks, I get an error
+  message about an undeclared name.}
+
+{justify
+  {b A.}
+  That's because {i "}Hello,\ world!{i "} isn't a string literal.
+  It's a quoted name.
+  You get an error because the name isn't declared.
+  Write {q ''Hello,\ world!''} instead.
+  That's {i apostrophe,} {i apostrophe,} {i hello,} {i comma,} {i blank,}
+  {i world,} {i exclamation point,} {i apostrophe,} {i apostrophe.}}
+
+{justify
+  {b Q.}
+  There's something wrong with character literals.
+  When I write {i "}x{i "} with quotation marks I get an error message about an
+  undeclared name.}
+
+{justify
+  {b A.}
+  That's because {i "}x{i "} isn't a character literal.
+  It's a quoted name.
+  You get an error because the name isn't declared.
+  Write {q 'x'} instead.
+  That's {i apostrophe,} {i x,} {i apostrophe.}}
+
+{justify
+  {b Q.}
+  Why does Orson use such a goofy notation for character literals and string
+  literals?}
+
+{justify
+  {b A.}
+  Orson needs to have quoted names for operators like {i "}+{i "} and
+  {i "}:={i ".}
+  I think quoted names should be delimited by single characters, and given
+  the limitations of the {c ascii} character set, the best choice is the
+  quotation mark `\ {i "}\ '.
+  Orson must be compatible with {c ascii,} so its programs can be typed on
+  ordinary {c us} keyboards, and so they can be run on computers that don't
+  support Unicode.
+
+  Once I'd used the quotation mark, I had to use other characters to notate
+  character and string literals.
+  I also had to notate character and string literals in different ways, so
+  Orson can tell them apart.
+  For example, Pascal {goto jen1974 {c [jen 1974]}} used a single quote
+  `\ {q '}\ ' to notate both characters and strings, so that {q 'x'} was a
+  character literal.
+  It had {i no way} to notate a string literal with exactly one character!
+
+  Given these constraints, I decided to notate characters with single
+  apostrophes, like {q 'x',} because it's what C uses
+  {goto ker1988 {c [ker 1988].}}
+  Since strings are like characters but ``bigger,'' I decided to notate them
+  with two apostrophes, like {q ''Hello,\ world!''.}
+  If Orson had objects bigger than strings, but still like strings, then maybe
+  I'd notate them using {i three} apostrophes.
+
+  By the way, Orson's notation for strings makes it easy to write
+  {q ''Type\ "quit"\ to\ exit''} and {q ''Type\ 'exit'\ to\ quit''} without
+  escape characters such as backslashes.
+  I hope these examples are easy to read on your browser.}
+
+{justify
+  {b Q.}
+  How can I write the name of a constant in upper case letters, like in C and
+  Java?
+  A name that starts with an upper case letter is a secret name, so I can't
+  use it outside the {i prog} clause where it's defined.}
+
+{justify
+  {b A.}
+  There's no way to do that.
+  This is deliberate.
+  Writing constant names in upper case is a bad idea, even in C-like languages,
+  despite what style guides, teachers, and textbooks say.
+  Here's why.}
+
+{bullet
+ {justify
+   Someday you might want to turn the constant into a variable.
+   For example, you might decide that its value should be a run-time option.
+   Then you must change the name wherever it appears.}
+ {justify
+   In Orson, a name's type tells you if it's a constant or a variable, not the
+   way it's spelled.
+   You shouldn't encode an object's type into its name, as in the
+   ``Hungarian Style,'' because then you must change the name if you ever
+   change its type.}
+ {justify
+   Orson constant names are different from C constant names.
+   For example, in Orson you can bind a constant name to the value of a
+   variable during execution.
+   You can't do that in C, so you shouldn't write constant names as you do in
+   C.}
+ {justify
+   Orson uses constant names more often than C.
+   It's a hassle to spell them in a special way.}
+ {justify
+   It's ugly.
+   It looks like you're SHOUTING at the person reading your code.
+   I don't like to be shouted at, and probably you don't either.}}
+
+{justify
+  If you really must use capital letters for some reason, you can write a
+  quoted name, as in {i "}CONSTANT{i ",} but that's ugly too.
+  If you'd rather use C, then why are you using Orson?}
+
+{justify
+  {b Q.}
+  But then why are secret names spelled differently from other names?
+  If you want to change a secret name into a plain name, then you must change
+  it whenever it appears.}
+
+{justify
+  {b A.}
+  Yes, secret names are inconsistent with what I just said.
+  However, having secret names spelled with initial upper case letters was very
+  easy to implement.
+  It also lets secret names be parts of types, like tuple types and symbol
+  types.
+
+  It's also simpler than declaring names with a special secret type prefix,
+  like {b sec}, so that {b sec}\ {b var}\ {i t}\ {i v} would declare {i v} to
+  be a secret variable name.
+  If Orson had a {b sec} prefix, then it would raise lots of questions that I
+  don't know how to answer.
+  For example, is {b sec}\ {b var}\ {i t} different from
+  {b var}\ {b sec}\ {i t,} and if so, how?
+  Is {b sec}\ {b sec}\ {i t} different from {b sec}\ {i t,} and if so, how?
+  What does it mean to use {b sec}\ {i t} as a parameter type in a method, or
+  as a yield type in a method?
+  Orson's type system is complex enough already.}
+
+{justify
+  {b Q.}
+  How can I make a name that's both a quoted name and a secret name?}
+
+{justify
+  {b A.}
+  There ought to be a way to do this, but there isn't.
+  Sorry.
+  A secret name starts with an upper case Roman letter.
+  A quoted name starts with a quote `\ {i "}\ '.
+
+  I suppose Orson could be changed so a quoted name is secret if the first
+  character after the double quote is an upper case Roman letter.
+  That way a name like {i "}Secret{i "} would be a secret quoted name.
+  However, that doesn't solve the problem, since there would still be no way to
+  make something like {i "}+{i "} be a secret name.
+
+  An early version of Orson used backslashes to notate secret names, so
+  \\{i secret} was a secret plain name, and \\{i "}secret{i "} was a secret
+  quoted name.
+  This was hard to read and write, especially for programs with many secret
+  names, so I changed it.
+
+  I personally use quoted names only for operators (like {i "}+{i "}) and for
+  constants in enumerations (like {i "}unexpected\ value{i "}).
+  I haven't found a situation yet where these should be secret.}
+
+{justify
+  {b Q.}
+  If names that start with capital letters are secret names, then how can I
+  write a proper name that's not a secret name?}
+
+{justify
+  {b A.}
+  You could use lower case letters, as in {i johnSmith,} or you could use a
+  quoted name, as in {i "}John\ Smith{i ".}
+  Maybe you could write {i mrJohnSmith} if Smith thinks he's being insulted
+  otherwise.
+  However, maybe he'd also be insulted if he knew you're representing him as
+  a data structure that has so little state information.
+
+  This reminds me of the (apocryphal?) story about why early computer
+  printers used only upper case letters, even though everyone knew lower case
+  letters were easier to read.
+  The reason is that you can't spell {i God} correctly with lower case
+  letters.
+  I don't have a good answer for that, except to say that it seems
+  presumptuous to write a program with {i God} in it.
+  John Updike's novel {i Roger's Version} {goto upd1986 {c [upd 1986]}}
+  discusses such a program in detail.
+  It even includes Lisp code.}
+
+{rule}
+
+{label types}
+{left {b 12. Questions about types.}}
+
+{justify
+  {b Q.}
+  In Orson, types have types.
+  Doesn't that lead to contradictions or paradoxes?}
+
+{justify
+  {b A.}
+  There are paradoxes in set theory that result from having sets of sets.
+  Perhaps the best known is {i Russell's paradox}
+  {goto ruc1982 {c [ruc 1982],}} where the members of a set {i S} are said to
+  be all sets that are not members of themselves.
+  Is {i S} a member of itself?
+  If it is, then it isn't.
+  If it isn't, then it is.
+
+  Mathematically, Orson types are sets of objects, and Orson types can have
+  types.
+  It's therefore tempting to suppose you could state Russell's paradox in
+  Orson's type system.
+  I don't think this is possible, because (among other things) it isn't
+  strong enough to express {c not.}
+  You can't make a type {i S} that describes all objects which are not of the
+  type {i S.}
+  At least I {i think} you can't.
+
+  I'd be happy to hear from anyone who can prove that Orson's type system
+  leads to a paradox, but I probably won't understand your proof.
+  I also won't change Orson's type system to eliminate the paradox, unless it's
+  easy to make the change, or unless your proof breaks something important.}
+
+{justify
+  {b Q.}
+  Can a tuple contain a pointer to itself?}
+
+{justify
+  {b A.}
+  Yes.
+  There are at least two ways to write the type of such a tuple.
+  For example, both of the following code fragments bind {i node} to the type
+  of a node in a linear chain of tuples.
+  (I call them {i chains} because Orson provides objects called {i lists} that
+  are different from these.)}
+
+{narrow
+ {layout
+  {row
+   {orson
+link :− ref node
+node :−
+ (tuple
+   string name,
+   var link next)}
+   {left \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+   {orson
+
+node :−
+ (tuple
+   string name,
+   var ref node next)}}}}
+
+{justify
+  You can even have a form that returns the type of such a chain.
+  For example, the form {i chain} returns the type of a node in a linear
+  chain of tuples.
+  Each tuple contains an object whose type is {i base.}}
+
+{narrow{orson
+chain :−
+ (form (type exe base) type tup:
+  (with
+    node :−
+     (tuple
+       base name,
+       var ref node next)
+   do node))}}
+
+{justify
+  For example, {i chain}({b var}\ {i int}) returns the type of a node in a
+  linear chain of tuples, each of which contains an integer variable.}
+
+{justify
+  {b Q.}
+  The equate {q [10]\ {i char}\ {i tc}\ :−\ ''ten\ chars''} gives me an
+  error.
+  What's wrong?}
+
+{justify
+  {b A.}
+  It's because the string {q ''ten\ chars''} has the type {i string} (which
+  is bound to {b row}\ {i char}0), and the equate expects an array of type
+  [10]\ {i char,} a different type.
+  Also, your array type asks for an array of ten {i char}1's (each 32 bits) but
+  but there are ten {i char}0's in your string (each 8 bits).
+  You get two different kinds of characters because Orson uses the {c utf}-8
+  encoding for strings {goto uni2006 {c [uni 2006].}}
+
+  You might rewrite the equate as {q {i string}\ {i tc}\ :−\ ''ten\ chars''.}
+  It doesn't give you the array that you wanted, but a string, which might be
+  just as good, since you can index it to obtain individual characters.
+  For example, {i tc}[0] returns the character {q 't'.}}
+
+{justify
+  {b Q.}
+  Why can't I pass {i nil} to a generic form?
+  I wrote something like this:}
+
+{narrow{orson
+foo :−
+ (gen (type exe b)
+   form (row b p) void:
+    ...)}}
+
+{justify
+  When I call {i foo}({i nil}), I get an error.
+  My form expects a {i row} pointer as an argument, and I thought {i nil}'s
+  type was a subtype of any {i row} pointer type.}
+
+{justify
+  {b A.}
+  The type of {i nil} is {i null,} which is indeed a subtype of any pointer
+  type, including any {i row} pointer type.
+  However, since you wrote a generic form that binds {i b,} Orson thinks you
+  want to do something with the base type of the pointer {i p.}
+  The problem is that {i null} doesn't have a base type, so your form can't
+  accept {i nil} as an argument.
+
+  There are several things you might do.
+  One is to write a form with two members: one to handle {i null} pointers
+  and another to handle everything else.
+  Maybe the one that handles {i null} pointers should report an error.}
+
+{narrow{orson
+foo :−
+ (alt
+  (form (null p) void:
+    ...),
+  (gen (type exe b)
+    form (row b p) void:
+     ...))}}
+
+{justify
+  Another is to put the {b row} prefix in a different place, and then use
+  an {i if} clause inside the form to test if you have {i nil} or not.
+  You must now call {i base}({i p}) explicitly to get {i p}'s base type.
+  I tested if {i pType} was {i null,} instead of testing if {i p} equals
+  {i nil,} so the test is done during transformation.}
+
+{narrow{orson
+foo :−
+ (gen (type row exe pType)
+   form (pType p) void:
+    (if pType ⊆ null
+     then ...
+     else ...))}}
+
+{justify
+  Still another is to keep the original definition of {i foo,} but cast
+  {i nil} to another pointer type before you pass it.
+  For example, you could write {i foo}({i nil}\{{b row}\ {i void}\}).
+  You can even arrange for Orson to do this automatically, like so:}
+
+{narrow{orson
+foo :−
+ (alt
+  (form (null) void:
+    foo(nil\{row void\})),
+  (gen (type exe b)
+    form (row b p) void:
+     ...))}}
+
+{justify
+  All of these are just kludges to get around {i null}'s lack of a base type.}
+
+{justify
+  {b Q.}
+  So why doesn't {i null} have a base type?
+  Why couldn't its base type be {i void}?}
+
+{justify
+  {b A.}
+  The type {i null} can't have a base type, because {i nil} references no
+  object, and the lack of an object shouldn't have a type.
+  (What type is a unicorn?)
+  The base type of {i null} can't be {i void} because {i void} is the type
+  of an object, namely {i skip.}
+  If {i null} had the base type {i void,} then maybe {i nil} would reference
+  {i skip,} and you could dereference it.
+  That shouldn't be possible.
+
+  When designing a programming language, it's tempting to pick some object
+  with hardly a meaning, like {i void,} and then use it everywhere to plug
+  semantic holes.
+  Common Lisp uses its {t nil} object that way, and C uses its {t void} type
+  that way too.
+  I tried not to do things like that in Orson.}
+
+{rule}
+
+{label current}
+{left {b 13. Questions about the current implementation of Orson.}}
+
+{justify
+  {b Q.}
+  Your Orson compiler doesn't follow the ``Endian Pill C Coding Standard,''
+  which says that only the first four characters of names are significant.
+  Because of this, I can't run Orson on my {c ibm} 650.
+  (Insert your favorite C coding standard and your favorite retro
+  computer.)}
+
+{justify
+  {b A.}
+  It's worse than you think.
+  The Orson compiler has lots of non-portable C code in it.
+  It assumes pointers are totally ordered, even if they don't point into the
+  same array.
+  It uses lots of {c Gnu} extensions, and it translates Orson to C code that
+  also uses lots of {c Gnu} extensions {goto sta2008 {c [sta 2008].}}
+  Despite that, it seems to work on every computer I've tried, except on those
+  without executable stacks (there's a question about that later).
+  I'm sorry it doesn't work on your 1956 computer.}
+
+{justify
+  {b Q.}
+  Is there a version of Orson that works under Windows?
+  (Insert your favorite for-profit operating system.)}
+
+{justify
+  {b A.}
+  At present, Orson runs only on Unix-like operating systems, such as
+  {c Gnu}/Linux.
+  An old, incomplete version of Orson ran successfully under Sun's Solaris,
+  many years ago.
+  I don't know if the current version runs under whatever operating system
+  Sun uses now, as I no longer have access to Sun hardware.
+  I also don't know how hard it would be to make Orson work under another
+  system.}
+
+{justify
+  {b Q.}
+  Can your compiler translate Orson to dialects of C other than just {c Gnu} 
+  C?
+  Can it translate to {c ansi} C?
+  (Insert your favorite C dialect.)}
+
+{justify
+  {b A.}
+  No.
+  I have no plans to make Orson produce {c ansi} C code.
+  Sorry.
+  Implementing the compiler as a {c Gnu} C translator was the easiest way to
+  get it running.
+  C programs produced by the translator depend on features of {c Gnu} C that
+  may not be in other versions of C.
+  They include arbitrary length names, hexadecimal floats, nested functions,
+  statement expressions, and zero length arrays.
+  Maybe this list is incomplete.}
+
+{justify
+  {b Q.}
+  Is there an Orson compiler that produces machine code directly, instead of
+  producing {c gcc} code and then compiling it?}
+
+{justify
+  {b A.}
+  I don't have one.
+  One way to make one would be to write an Orson front end for {c gcc.}
+  This would be better than trying to make Orson produce {c ansi} C.
+  There are already similar front ends for other languages, such as Ada,
+  Fortran, Objective C, and Pascal.
+  I don't know enough about {c gcc}'s internals to do this myself.
+  Is anyone interested?}
+
+{justify
+  {b Q.}
+  I tried to compile an Orson program, but I got an error message that I
+  don't understand.
+  The compiler just stopped and said
+  {t Orson:}\ {t Got}\ {t [Nil]}\ {t in}\ {t evaluate!}
+  What does it mean?}
+
+{justify
+  {b A.}
+  It means you found a bug in the Orson compiler.
+  Sorry.
+  Any message that ends in an exclamation mark means Orson has detected a bug
+  in itself.
+  After it detects the bug, it immediately halts without compiling your
+  program.
+
+  I might try to fix the bug, if you send me the program that caused it.
+  Be sure to tell me the version of the compiler you're using: you can find 
+  that out by typing {t orson}\ {t -v}.
+  Also tell me if you're using a modified version of the prelude, etc.
+
+  Better yet, fix the bug yourself.
+  Then tell me and everyone else how you did it.
+  You've got the source code.}
+
+{justify
+  {b Q.}
+  I looked at the standard prelude.
+  It uses funny things like ?{i nil} and ?{i intAdd}({i l,}\ {i r}).
+  What are they?
+  How can I use them in my programs?}
+
+{justify
+  {b A.}
+  A name that starts with a question mark is a {i hook.}
+  (Question marks are shaped like hooks.)
+  When Orson encounters a hook, it executes a corresponding C code fragment
+  in the compiler.
+  As a result, a hook can do anything that C can do, even things that are
+  difficult or impossible in Orson.
+
+  You're not allowed to use hooks, unless they appear in an Orson source
+  file with an {t .op} suffix.
+  Even then, it's a bad idea, unless you know what you're doing.
+  Hooks are intended to be used only by the implementers and maintainers of
+  the Orson compiler and library.
+  (Right now that's only me.)
+  You can crash the compiler by giving bad arguments to certain hooks, so
+  they should be used only inside methods that verify their arguments for them.
+  Also, future versions of Orson may introduce new hooks, may eliminate old
+  hooks, or may change how old hooks work.}
+
+{justify
+  {b Q.}
+  Why doesn't your Orson compiler provide a 64-bit integer type, {i int}3?}
+
+{justify
+  {b A.}
+  Because the present compiler was developed on 32-bit computers, mostly with
+  Intel {i x}86 processors.
+  There's no reason it couldn't provide {i int}3, since the compiler translates
+  Orson programs to {c gcc,} which supports 64-bit integers.
+  The problem is that information about simple types appears in many different
+  places throughout the present compiler.
+  To provide {i int}3, I'd have to find all those places and make small changes
+  to them.
+  It wouldn't be hard, just tedious.
+
+  I shouldn't have designed the compiler that way.
+  I should have kept all information about simple types in some kind of central
+  repository.
+  If I ever rewrite the Orson compiler (maybe in Orson itself) I may implement
+  such a thing.}
+
+{justify
+  {b Q.}
+  I can't compile the Orson compiler on my Apple Macintosh computer.
+  I can't compile {c gcc} code produced by the Orson compiler, either.
+  What's wrong?}
+
+{justify
+  {b A.}
+  In 2006, Apple i686 Darwin stopped supporting nested functions in {c Gnu} C
+  programs.
+  Unfortunately, significant parts of the Orson compiler are written in
+  continuation passing style {c (cps)}, which is most easily simulated in
+  {c gcc} with nested functions.
+  {c Gcc} code produced by the Orson compiler might also use nested functions,
+  even if it's not written in {c cps.}
+
+  Nested functions were eliminated because the {c gcc} compiler implements
+  them using {i trampolines:} code fragments that are written to the stack
+  for later execution.
+  However, putting executable code on the stack via a buffer overflow is also
+  a favorite technique of crackers for gaining illegal access to a computer.
+  Apple was apparently trying to prevent such access by making it impossible to
+  execute code on the stack.
+
+  As far as I know, the Orson compiler now works on current Apple systems,
+  and so do the {c gcc} programs that it produces.
+  It may be necessary to add extra options to the {c gcc} command to make those
+  things happen.
+  I don't follow Apple much any more, so I don't necessarily know what those
+  things are.
+  I also don't know if Apple now supports an executable stack, or if they
+  fixed the problem in some other way.}
+
+{rule}
+
+{label misc}
+{left {b 14. Miscellaneous questions.}}
+
+{justify
+  {b Q.}
+  Why doesn't Orson have a {i return} statement?}
+
+{justify
+  {b A.}
+  Orson is an expression language, so it doesn't have statements at all.
+  I'll assume you mean an expression that, when executed, makes a procedure
+  stop and return an object.
+  If you have {i return}'s, then every path through a procedure body must end
+  with one.
+  At least it does if the procedure returns an object.
+
+  Java compilers try to enumerate all such paths, complaining if they find
+  one that doesn't end with a {t return} statement
+  {goto gos1996 {c [gos 1996].}}
+  Unfortunately, Turing says it's impossible to do this.
+  As a result, Java sometimes complains needlessly, and you must add dummy
+  {t return} statements to shut it up.
+
+  Some C compilers, however, apparently don't care.
+  They say that a procedure returns an unspecified object if it stops without
+  executing a {t return} statement.
+  I'm not sure if this is better than Java, or worse, but it has the virtue
+  of being simpler.
+
+  Neither of these alternatives is correct, but since Orson doesn't have
+  {i return}'s, the problem goes away.
+  An Orson procedure just returns the object to which its body evaluates.
+  If the body has the wrong type, then this is detected by Orson's type system.
+  Since the compiler has to check types anyway, it requires no extra work.
+  This is yet another reason why expression languages are better than
+  statement languages.
+
+  There are other problems with {i return}'s, too.
+  For example, what happens if a {i return} appears in a form body?
+  Does it terminate the form during transformation, or does it transform to an
+  expression that terminates a procedure during execution?
+  Should there be two kinds of {i return}'s, one that terminates forms during
+  transformation, and another that terminates procedures during execution?
+  What happens if a {i return} appears outside a form or procedure body?
+  If there are no {i return}'s, then I don't have to answer these questions.}
+
+{rule}
+
+{label references}
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label and1991}
+   {c [and\ 1991]\ \ }}
+  {justify
+    David P. Anderson, Ron Kuivila.
+    ``Formula: A Programming Language for Expressive Computer Music.''
+    {i {c Ieee} Computer.}
+    Volume 24, Number 7, July 1991.
+    Pages 12–21.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label ans1986}
+   {c [ans\ 1986]\ \ }}
+  {justify
+    American National Standards Institute.
+    ``American National Standard Code for Information Interchange.''
+    {c ansi} X3.4–1986.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label des1967}
+   {c [des\ 1967]\ \ }}
+  {justify
+    Ralph De Sola.
+    {i Abbreviations Dictionary.}
+    Meredith Press.
+    New York, New York.
+    1967.
+    Page 104.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label hen1979}
+   {c [hen\ 1979]\ \ }}
+  {justify
+    Bill Henkin.
+    {i The Rocky Horror Picture Show Book.}
+    Hawthorn Books.
+    New York, New York.
+    1979.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label hud1992}
+   {c [hud\ 1992]\ \ }}
+  {justify
+    Paul Hudak, Simon Peyton Jones, Philip Wadler, editors.
+    ``Report on the Programming Language Haskell.''
+    {i {c Acm Sigplan} Notices.}
+    Volume 27, Number 5, May 1992.
+    Section R.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label jen1974}
+   {c [jen\ 1974]\ \ }}
+  {justify
+    Kathleen Jensen, Niklaus Wirth.
+    {i {c Pascal} User Manual and Report.}
+    Springer-Verlag.
+    Berlin, Germany.
+    1974.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label ker1988}
+   {c [ker\ 1988]\ \ }}
+  {justify
+    Brian W. Kernighan, Dennis M. Ritchie.
+    {i The C Programming Language.}
+    Second Edition.
+    Prentice-Hall.
+    Upper Saddle River, New Jersey.
+    1988.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label knu1975}
+   {c [knu\ 1975]\ }}
+  {justify
+    Donald E. Knuth.
+    {i The Art of Computer Programming.
+    Fundamental Algorithms.}
+    Second Edition.
+    Addison-Wesley.
+    Reading, Massachusetts.
+    1975.
+    Pages 234–238.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label gos1996}
+   {c [gos\ 1996]\ \ }}
+  {justify
+    James Gosling, Bill Joy, Guy Steele.
+    {i The Java Language Specification.}
+    Addison-Wesley.
+    Reading, Massachusetts.
+    1996.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label mcc1987}
+   {c [mcc\ 1987]}}
+  {justify
+    Robert McCrum, William Cran, Robert MacNeil.
+    {i The Story of English.}
+    Elizabeth Sifton Books.
+    Viking Penguin, Inc.
+    New York, New York.
+    1987.
+    Page 19.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label moe2014}
+   {c [moe\ 2014]\ \ }}
+  {justify
+    James B. Moen.
+    ``The Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2014.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label moo2001}
+   {c [moo\ 2001]\ \ }}
+  {justify
+    Glenn Moody.
+    {i Rebel Code.}
+    Perseus Publishing.
+    Cambridge, Massachusetts.
+    2001.
+    Page 115.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label okr1992}
+   {c [okr\ 1992]\ \ }}
+  {justify
+    Marc Okrand.
+    {i The Klingon Dictionary.}
+    Pocket Books.
+    New York, New York.
+    1992.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label ruc1982}
+   {c [ruc\ 1982]\ \ }}
+  {justify
+    Rudy Rucker.
+    {i Infinity and the Mind.}
+    Birkhauser.
+    Boston, Massachusetts.
+    1982.
+    Page 193.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label sam1969}
+   {c [sam\ 1969]\ }}
+  {justify
+    Jean E. Sammet.
+    {i Programming Languages: History and Fundamentals.}
+    Prentice-Hall.
+    Englewood Cliffs, New Jersey.
+    1969.
+    Pages 388–400.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label sta2008}
+   {c [sta\ 2008]\ \ }}
+  {justify
+    Richard M. Stallman, the {c Gcc} Developer Community.
+    ``Using and Porting the {c Gnu} Compiler Collection.''
+    Free Software Foundation.
+    Boston, Massachusetts.
+    2008.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label ste1990}
+   {c [ste\ 1990]\ }}
+  {justify
+    Guy L. Steele Jr.
+    {i Common Lisp: The Language.}
+    Second Edition.
+    Digital Press.
+    Bedford, Massachusetts.
+    1990.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label stv2005}
+   {c [stv\ 2005]}}
+  {justify
+    W. Richard Stevens.
+    Stephen A. Rago.
+    {i Advanced Programming in the {c Unix} Environment.}
+    Second Edition.
+    Addison-Wesley.
+    Upper Saddle River, New Jersey.
+    2005.
+    Chapters 11–12.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label upd1986}
+   {c [upd\ 1986]\ \ }}
+  {justify
+    John Updike.
+    {i Roger's Version.}
+    Ballantine Books.
+    New York, New York.
+    1986.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label uni2006}
+   {c [uni\ 2006]\ \ }}
+  {justify
+    The Unicode Consortium.
+    {i The Unicode Standard, Version 5.0.}
+    Fifth Edition.
+    Addison-Wesley Professional.
+    Reading, Massachusetts.
+    2006.}}}

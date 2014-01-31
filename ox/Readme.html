@@ -1,0 +1,307 @@
+<!-- Created by Bracy 0.4 on Tuesday, January 28, 2014 at 8:06 AM CST -->
+<html>
+ <head>
+  <title>
+   Ox
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Ox</b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   January 28, 2014
+  </p>
+  <blockquote>
+   <p align="justify">
+    How shall we find the concord of this discord?
+   </p>
+   <p align="right">
+    <a href="#sha1936">
+     [<small>SHA</small> 1936]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   This directory contains source code for <i>Ox,</i> a cross-reference
+   generator (also called a concordance generator) for Orson source files. Ox
+   reads a series of source files, recording the names in those files. It then
+   writes a table that lists the names in lexicographic order, and the numbers
+   of the lines where they appear. Ox is written in Orson
+   <a href="#moe2014">
+    [<small>MOE</small> 2014],
+   </a>
+   and is intended to run under Unix-like systems, such as
+   G<small>NU</small>/Linux. These files contain Orson source code for Ox.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="char.os">
+        <tt>char.os</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Read characters from a source file.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="main.os">
+        <tt>main.os</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Main program.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="ox.os">
+        <tt>ox.os</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Write a cross-referenced list of names in a source file.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="parse.os">
+        <tt>parse.os</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Recursive descent parser.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="record.os  ">
+        <tt>record.os&nbsp;&nbsp;</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Record a name and its line numbers.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="report.os">
+        <tt>report.os</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Write names and their line numbers.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="token.os">
+        <tt>token.os</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Group characters into tokens.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   These files contain documentation and other supporting material.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./README">
+        <tt>README</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       Short text version of <tt>Readme.html</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="Readme.by">
+        <tt>Readme.by</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Bracy source for <tt>Readme.html.</tt>
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="Readme.html">
+        <tt>Readme.html</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       What you&rsquo;re reading now.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./Makefile">
+        <tt>Makefile</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Compile, install, uninstall Ox.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="ox.1">
+        <tt>ox.1</tt>
+       </a>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       Manual page for Ox.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   Ox is available under the terms of the G<small>NU</small> General
+   Public License (<small>GPL</small>) version 3. An Orson compiler is
+   also available from the author under the same terms.
+  </p>
+  <hr />
+  <p align="center">
+   <b>References</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2014">
+      </a>
+      [<small>MOE</small>&nbsp;2014]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;Revised&#8315;&#185; Report on the
+      Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
+      2014.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="sha1936">
+      </a>
+      [<small>SHA</small>&nbsp;1936]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      William Shakespeare. <i>A Midsummer Night&rsquo;s Dream.</i> Act
+      <small>V</small>. Scene <small>I</small>. In <i>The Complete
+      Works of William Shakespeare.</i> William Aldis Wright, editor. Garden
+      City Publishing Company, Inc. Garden City, New York. Page 407. 1936.
+     </p>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

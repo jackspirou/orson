@@ -1,0 +1,708 @@
+{title The Eg Manual}
+
+{center
+ {b The {c Eg} Manual}
+
+ James B. Moen
+ January 18, 2014}
+
+{justify
+  Copyright © 2014 James B. Moen.
+  Permission is granted to copy, distribute, and/or modify this document under
+  the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
+  version published by the Free Software Foundation; with no Invariant
+  Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license may be obtained at
+  {goto http://fsf.org/ {t <http://fsf.org/>.}}
+
+  This manual uses special characters.
+  Without proper rendering support, you may see question marks, boxes, or other
+  symbols in place of these characters.}
+
+{rule}
+
+{center {b Contents}}
+
+{layout
+ {row
+  {left {goto intro 0.} \ }
+  {left Introduction.}}
+ {row
+  {left {goto file 1.} \ }
+  {left Characters and files.}}
+ {row
+  {left {goto language 2.} \ }
+  {left Language.}}
+ {row
+  {left \ }
+  {layout
+   {row
+    {left {goto unit 2.1.} \ }
+    {left Units.}}
+   {row
+    {left \ }
+    {layout
+     {row
+      {left {goto name 2.1.1.} \ }
+      {left Names.}}
+     {row
+      {left {goto string 2.1.2.} \ }
+      {left Strings.}}}}
+   {row
+    {left {goto term 2.2.} \ }
+    {left Terms.}}
+   {row
+    {left \ }
+    {layout
+     {row
+      {left {goto number 2.2.1.} \ }
+      {left Numbers.}}
+     {row
+      {left {goto range 2.2.2.} \ }
+      {left Ranges.}}
+     {row
+      {left {goto star 2.2.3.} \ }
+      {left Stars.}}
+     {row
+      {left {goto plus 2.2.4.} \ }
+      {left Pluses.}}
+     {row
+      {left {goto question 2.2.5.} \ }
+      {left Question marks.}}}}
+   {row
+    {left {goto conjunct 2.3.} \ }
+    {left Conjunctions.}}
+   {row
+    {left {goto disjunct 2.4.} \ }
+    {left Disjunctions.}}
+   {row
+    {left {goto rule 2.5.} \ }
+    {left Rules.}}
+   {row
+    {left {goto grammar 2.6.} \ }
+    {left Grammars.}}
+   {row
+    {left {goto example 2.7.} \ }
+    {left Examples.}}}}
+ {row
+  {left {goto reference 3.} \ }
+  {left References.}}
+ {row
+  {left \ }
+  {left \ }}}
+
+{rule}
+
+{label intro}
+{left {b 0. Introduction.}}
+
+{narrow
+ {justify
+  {b ex⋅em⋅pli gra⋅ti⋅a}
+  (ĕg-zĕm{b ′}plī′ grā{b ′}shē-ә, ĭg-)
+  Abbr. {b e.g.}
+  {i Latin,} For the sake of example; for example.}
+ {right
+  {goto ahd1973 {c [ahd 1973]}}}}
+
+{* That "ә" isn't a Latin Small Letter Turned E (U+01DD) or even an IPA Latin
+   Small Letter Schwa (U+0259) but a Cyrillic Small Letter Schwa (U+04D9). It
+   looked better with the font we use. }
+
+{justify
+  {ci Eg} (pronounced {i ee-jee}) is a program that generates random example
+  strings which are described by a context-free grammar ({c cfg})
+  {goto hop2007 {c [hop 2007],}} and writes them to standard output.
+  It works by translating the grammar to an equivalent tree structure, then
+  doing a random, depth-first traversal of the tree.
+  Heuristics prevent the same parts of the tree from being visited too often.
+
+  Because of its simple traversal algorithm, {c Eg} works well only for small
+  grammars that translate to shallow trees.
+  Large grammars often have parts that are effectively inaccessible, because
+  those parts are unlikely to be visited during traversal.
+  However, {c Eg} has been used successfully to help debug {c cfg}'s, and to
+  create random test inputs for other programs.
+  For example, an early version of {c Eg} was used to help debug the syntax of
+  the programming language Orson {goto moe2014 {c [moe 2014],}} specifically
+  the parts describing {i case} clauses and string literals.
+  It was also used to create test programs for an experimental Orson compiler.
+
+  This manual describes {c Eg}'s language for grammars, which is an extended
+  version of Backus-Naur Form ({c bnf}) {goto wir1977 {c [wir 1977].}}
+  The reader is assumed to be familiar with {c bnf} or with {c cfg}'s.
+  {c Eg} runs under Unix-like operating systems, such as {c Gnu}/Linux.
+  The Unix command {t man}\ {t eg} shows an online manual page that explains
+  how to run {c Eg,} and how to set the parameters that control it.}
+
+{label file}
+{left {b 1. Characters and files.}}
+
+{justify
+  {c Eg} uses a 31-bit character set that is a superset of the 21-bit Unicode
+  character set {goto uni2006 {c [uni 2006].}}
+  Unicode, in turn, is a superset of the 7-bit {c ascii} character set
+  {goto ans1986 {c [ans 1986].}}
+  It is possible to use {c Eg} with {c ascii} characters on computers that do
+  not support Unicode.
+
+  An {c Eg} grammar resides on one or more {i files.}
+  Each file is a series of one or more {i lines.}
+  Each line is a series of zero or more visible characters, followed by an
+  invisible unspecified {i newline} character.
+  A {i blank} (U+0020) is considered to be a visible character.
+  The last line in a file need not be terminated by a newline.
+  {c Eg} may place limits on the number of files in a grammar, the number of
+  lines in a file, and the number of characters in a line.
+
+  Except for newlines, invisible characters like {i control} characters and
+  {i tabs} (U+0009) must not appear in files.
+  This is because they may be handled inconsistently by peripheral devices and
+  by other programs.
+  However, {c Eg} grammars can still generate strings that contain invisible
+  characters.
+
+  {c Eg} ignores blanks and newlines, called {i whitespace,} except inside
+  {goto string strings,} and where it is required to separate adjacent
+  {goto name names.}
+  This lets grammars be {i indented} to reflect their logical structure.
+  There are many ways to indent grammars.
+  The way used in this manual is recommended, but not required.
+
+  {c Eg} also ignores {i comments,} treating them as whitespace.
+  A comment starts with an exclamation mark `{t !}' (U+0021), is followed by
+  zero or more characters other than newlines, and is terminated by a newline.
+  Since comments are ignored by {c Eg,} they can be used to introduce
+  explanatory text into a file.}
+
+{label language}
+{left {b 2. Language.}}
+
+{justify
+  {c Eg}'s language for context-free grammars is an extended version of
+  {c bnf.}
+  Each {goto grammar} is a set of one or more rules.
+  Each {goto rule} defines a {goto name} to be a disjunction.
+  Each {goto disjunct disjunction} is a set of one or more conjunctions.
+  Each {goto conjunct conjunction} is a set of one or more terms.
+  Each {goto term} is a unit, with an optional {goto range range.}
+  Each {goto unit} is either a name or a {goto string string.}
+  The next few sections describe the parts of {c Eg}'s language in detail.}
+
+{label unit}
+{left {b 2.1. Units.}}
+
+{justify
+  A {i unit} may be a {goto name {i name,}} which represents a nonterminal
+  symbol.
+  It may also be a {goto string {i string,}} which represents a terminal
+  symbol.}
+
+{label name}
+{left {b 2.1.1. Names.}}
+
+{justify
+  Each {i name} represents a nonterminal symbol.
+  A name begins with an upper case Roman letter (`{t A}' through `{t Z}'), or a
+  lower case Roman letter (`{t a}' through `{t z}').
+  It is followed by zero or more digits (`{t 0}' through `{t 9}'), upper case
+  Roman letters, and lower case Roman letters.
+  The name may have any number of characters, but must fit on a single
+  {goto file line.}
+  For example, {t a}, {t B}, {t digit}, {t Letter,} and {t Ralph124C41} are all
+  names.
+
+  Each name must be defined by appearing on the left side of exactly one
+  {goto rule rule.}
+  The name generates the strings that are generated by its {i definition,}
+  which is the {goto disjunct disjunction} on the right side of the rule.
+  Names can be defined by rules in any order.
+  A name may appear in the right side of the rule that defines it.
+  It may also appear in the right sides of other rules, before and after it is
+  defined: this lets the rules of a grammar appear in any order.}
+
+{label string}
+{left {b 2.1.2. Strings.}}
+
+{justify
+  Each {i string} represents a terminal symbol.
+  A string begins with a {i quote} `\ {t "}\ ', is followed by zero or more
+  {goto file visible} characters other than quotes, and is terminated by
+  another quote.
+  It may have any number of characters, but must fit on a single
+  {goto file line.}
+  For example, {t ""}, {t "A"}, and {t "Zarf"} are all strings.
+  Each string generates itself, without its surrounding quotes.
+
+  Invisible characters and quotes can be included in strings by using
+  {i slashed} characters.
+  There are two kinds of slashed characters.
+  The first kind consists of a {i backslash} `\ {t \\}\ ' followed by one of
+  the characters in the following table.
+  The table shows each slashed character, the Unicode character that it
+  represents, its official Unicode name, and an unofficial name.}
+
+{table
+ {row
+  {center {b \ \ Slashed\ \ }}
+  {center {b \ \ Code\ \ }}
+  {center {b \ \ Official Name\ \ }}
+  {center {b \ \ Unofficial Name\ \ }}}
+ {row
+  {center {t \\A} or {t \\a}}
+  {center \ U+0007\ }
+  {left \ {c control}\ }
+  {left \ {i Alert}\ }}
+ {row
+  {center {t \\B} or {t \\b}}
+  {center \ U+0008\ }
+  {left \ {c control}\ }
+  {left \ {i Backspace}\ }}
+ {row
+  {center {t \\E} or {t \\e}}
+  {center \ U+001B\ }
+  {left \ {c control}\ }
+  {left \ {i Escape}\ }}
+ {row
+  {center {t \\F} or {t \\f}}
+  {center \ U+000C\ }
+  {left \ {c control}\ }
+  {left \ {i Formfeed}\ }}
+ {row
+  {center {t \\N} or {t \\n}}
+  {center \ U+000A\ }
+  {left \ {c control}\ }
+  {left \ {i Linefeed}\ }}
+ {row
+  {center {t \\R} or {t \\r}}
+  {center \ U+000D\ }
+  {left \ {c control}\ }
+  {left \ {i Return}\ }}
+ {row
+  {center {t \\T} or {t \\t}}
+  {center \ U+0009\ }
+  {left \ {c control}\ }
+  {left \ {i Horizontal tab}\ }}
+ {row
+  {center {t \\V} or {t \\v}}
+  {center \ U+000B\ }
+  {left \ {c control}\ }
+  {left \ {i Vertical tab}\ }}
+ {row
+  {center \ {t \\"}\ }
+  {center \ U+0022\ }
+  {left \ {c quotation mark}\ }
+  {left \ {i Quote}\ }}
+ {row
+  {center \ {t \\\\}\ }
+  {center \ U+005C\ }
+  {left \ {c reverse solidus}\ }
+  {left \ {i Backslash}\ }}}
+
+{justify
+  The second kind of slashed character starts with a backslash and a {i sharp}
+  `{t #}' (U+0023), followed by the hexadecimal code for the character it
+  represents.
+  Within the code, digits have the values 0 through 9; letters `{t A}' through
+  `{t F}' and `{t a}' through `{t f}' have the values 10 through 15.
+  The code must be between {t 0} and {t 7FFFFFFF} (2147483647).
+  For example, the string {t "Hello,}\ {t world!\\#0A"} ends with a linefeed
+  character, whose code is U+000A.
+  It could also have been written as {t "Hello,}\ {t world!\\N"}.}
+
+{label term}
+{left {b 2.2. Terms.}}
+
+{justify
+  A {i term} may be a {goto unit unit.}
+  It may also be a unit followed by a {i postfix.}
+  A postfix may be a {goto range range,} a {goto star star,} a
+  {goto plus plus,} or a {goto question question mark.}}
+
+{label number}
+{left {b 2.2.1. Numbers.}}
+
+{justify
+  {i Numbers} can appear as parts of {goto range ranges.}
+  A number is a series of one or more digits (`{t 0}' through `{t 9}') that
+  fits on a single {goto file line.}
+  {c Eg} may place an upper limit on how large a number can be.
+
+  The Unicode infinity symbol `{t ∞}' (U+221E) can also be used as a number.
+  Its value may be changed by the user; see the online {goto intro manual}
+  page for details.
+  Despite its name, the value of `{t ∞}' is typically quite small.}
+
+{label range}
+{left {b 2.2.2. Ranges.}}
+
+{justify
+  Suppose that σ is a {goto unit unit.}
+  Also suppose that {i m} and {i n} are {goto number numbers,} and that {i m}
+  is less than or equal to {i n.}
+  Then the {goto term} σ{t (}{i m}{t ,}\ {i n}{t )} is a unit with a {i range}
+  postfix.
+  It generates a random string, constructed by concatenating at least {i m,}
+  but no more than {i n,} of the strings that are generated by σ.
+  Concatenating zero strings produces the empty string.
+  If {i n} is omitted from a range, then it defaults to {i m.}
+
+  For example, if the {goto name} {t letter} is defined to generate a random
+  Roman letter, then the term {t letter(2,}\ {t 6)} generates a string of two
+  to six random letters.
+  It might generate strings like {t aa}, {t BB}, {t zzA}, or {t syzygy}.
+  Similarly, the terms {t letter(}{t 7,}\ {t 7)} and {t letter(7)} generate
+  generate strings of exactly seven random letters.
+  They might generate strings like {t abxWzGh} or {t vulnose.}}
+
+{label star}
+{left {b 2.2.3. Stars.}}
+
+{justify
+  Suppose that σ is a {goto unit unit.}
+  Then the {goto term} σ{t ∗} is equivalent to a term σ{t (0,}\ {t ∞)} with a
+  {goto range} postfix.
+  It generates a random string, constructed by concatenating zero or more of
+  the strings that are generated by σ.
+  For example, if the {goto name} {t letter} is {goto rule defined} to generate
+  a random Roman letter, then the term {t letter∗} might generate the empty
+  string, or strings like {t aa}, {t BB}, {t zzA}, or {t Mxyzptlyk}.
+
+  The term can be written either as σ{t *}, with an {c ascii} asterisk
+  (U+002A), or as σ{t ∗}, with a Unicode asterisk operator (U+2217).
+  The Unicode version is preferred, although the {c ascii} version is easier
+  to type, and may be used on computers that do not support Unicode.}
+
+{label plus}
+{left {b 2.2.4. Pluses.}}
+
+{justify
+  Suppose that σ is a {goto unit unit.}
+  Then the {goto term} σ{t +} is equivalent to a term σ{t (1,}\ {t ∞)} with a
+  {goto range} postfix.
+  It generates a random string, constructed by concatenating one or more of the
+  strings that are generated by σ.
+  It is {goto star similar} to σ{t ∗}, but it cannot generate the empty string
+  unless σ itself does.}
+
+{label question}
+{left {b 2.2.5. Question marks.}}
+
+{justify
+  Suppose that σ is a {goto unit unit.}
+  Then the {goto term} σ{t ?} is equivalent to a term σ{t (0,}\ {t 1)} with a
+  {goto range} postfix.
+  It generates either the empty string, or else a string that is generated by σ
+  itself.}
+
+{label conjunct}
+{left {b 2.3. Conjunctions.}}
+
+{justify
+  A {i conjunction} may be a {goto term term.}
+  It may also be two or more terms, separated by {goto file whitespace.}
+  The conjunction generates a random string, constructed by concatenating the
+  strings that are generated by its terms.
+  For example, if the {goto name} {t letter} is {goto rule defined} to generate
+  a random Roman letter, and the name {t digit} is defined to generate a random
+  digit, then the conjunction {t letter}\ {t digit}\ {t digit} generates a
+  random string consisting of a letter followed by two digits.
+  It might generate strings like {t b12}, {t F00}, or {t x15}.}
+
+{label disjunct}
+{left {b 2.4. Disjunctions.}}
+
+{justify
+  A {i disjunction} may be a {goto conjunct conjunction.}
+  It may also be two or more conjunctions, separated by {i bars}  `{t |}'
+  (U+007C).
+  The disjunction chooses one of its conjunctions at random, then generates a
+  string using that conjunction.
+  For example, if the {goto name} {t letter} is {goto rule defined} to
+  generate a random Roman letter, and the name {t digit} is defined to
+  generate a random digit, then the disjunction {t letter}\ {t |}\ {t digit}
+  generates either a random letter or a random digit.
+
+  Each disjunction records the conjunctions it has chosen in the past.
+  It has a slight bias against choosing conjunctions that it has chosen
+  recently before.
+  This is intended to keep {c Eg} from being ``trapped'' in a small portion of
+  a grammar, and to generate a wide variety of strings.
+  {c Eg}'s disjunction bias can be adjusted by the user.
+  At one extreme, conjunctions are chosen regardless of whether they were
+  chosen before.
+  At the other extreme, conjunctions are (almost) never chosen if they were
+  chosen before.
+  See the online {goto intro manual} page for details.}
+
+{label rule}
+{left {b 2.5. Rules.}}
+
+{justify
+  A {i rule} consists of a {goto name name,} followed by a Unicode arrow
+  `{t →}' (U+2192), followed by a {goto disjunct disjunction,} and terminated
+  by a dot `{t .}' (U+002E).
+  Rules are sometimes called {i productions.}
+  The rule {i defines} the name on the left side of the arrow to be the
+  disjunction on the right side.
+  For example, if the name {t letter} is defined to generate a random Roman
+  letter, then this rule defines the name {t word} to generate a random word.}
+
+{narrow
+ {left
+  {t word → letter | word letter .}}}
+
+{justify
+  For example, after {t word} is defined by the rule, it might
+  generate strings like {t a}, {t BB}, {t zzA}, or {t pudwucky}.
+
+  A rule can also be written with an {c ascii} equal sign `{t =}' (U+003D)
+  instead of the arrow.
+  The Unicode version is preferred, although the {c ascii} version is easier
+  to type, and may be used on computers that do not support Unicode.}
+
+{label grammar}
+{left {b 2.6. Grammars.}}
+
+{justify
+  A {i grammar} consists of zero or more {goto rule rules,} separated by
+  {goto file whitespace.}
+  Each grammar must {goto rule define} the {goto name} {t start.}
+  It generates the strings that are generated from {t start}'s
+  {goto name definition.}
+  If a grammar resides on more than one {goto file file,} then it is equivalent
+  to the grammar that results from concatenating all the files together.
+
+  {c Eg} can become trapped in infinite loops when generating strings for some
+  grammars.
+  The simplest such grammar is one consisting of the single rule
+  {t start}\ {t →}\ {t start.}
+  Also, {c Eg} may need a very long time to generate strings for some grammars.
+  Most simple grammars can generate short strings quickly.
+  However, complex grammars, especially those that generate long strings, must
+  be carefully designed in order to work efficiently.}
+
+{label example}
+{left {b 2.7. Examples.}}
+
+{justify
+  This section shows three example {c Eg} grammars.
+  The first generates Orson {i case} clauses {goto moe2014 {c [moe 2014].}}
+  It was used to help debug the {c bnf} rules that describe Orson's syntax.
+  This grammar is designed so that an assignment can appear prefixed by
+  {t none} at most once in each {i case} clause.
+  It might generate a string like
+  {t (case}\ {t S}\ {t of}\ {t L:}\ {t E;}\ {t L,}\ {t L:}\ {t E;}\ {t L:}\ {t E;}\ {t none:}\ {t E)}.}
+
+{narrow
+ {t
+  {display
+          start → caseClause.
+     caseClause → "(case " sequence " of " optCases ")".
+       optCases → empty |
+                  labeledCases optOtherCases optSemicolon |
+                  noneCase optLabeledCases optSemicolon.
+   labeledCases → labeledCase | labeledCase "; " labeledCases.
+    labeledCase → labels ": " assignment.
+  optOtherCases → empty | "; " noneCase optLabeledCases.
+       noneCase → "none: " assignment.
+optLabeledCases → empty | "; " labeledCases.
+     assignment → "E".
+          empty → "".
+         labels → label | label ", " labels.
+          label → "L".
+   optSemicolon → empty | ";".
+       sequence → "S".}}}
+
+{justify
+  The second example generates Orson string literals, and was also used to help
+  debug the {c bnf} rules for Orson's syntax.
+  A string literal consists of two apostrophes, followed by a series of zero
+  or more characters that do not include two adjacent apostrophes, followed by
+  two more apostrophes.
+  This grammar might generate strings like {qt ''''}, {qt '''''}, {qt ''c''},
+  {qt ''cc''}, and {qt ''c'c'ccc'''}.}
+  
+{narrow
+ {qt
+  {display
+        start → stringLiteral.
+stringLiteral →  "''" optString "''" optApostrophe.
+    optString → empty |
+                character optString |
+                "'" character optString.
+optApostrophe → empty | "'".
+        empty → "".
+    character → "c".}}}
+
+{justify
+  The third example generates {c Eg} grammars themselves.
+  Although it formally describes a context-free approximation to the syntax of
+  an {c Eg} grammar, it is very unlikely to generate working grammars, or even
+  comprehensible ones.}
+
+{narrow
+ {t
+  {display
+!  Start.
+
+      start → grammar.
+
+!  Grammars.
+
+    grammar → rule otherRule∗.
+       rule → name arrow disjunction ".".
+      arrow → " = " | " → ".
+  otherRule → "\\N" rule.
+disjunction → conjunction disjunct∗.
+   disjunct → " | " conjunction.
+conjunction → term conjunct∗.
+   conjunct → " " term.
+       term → unit postfix?.
+       unit → name | string.
+    postfix → "*" | "+" | "∗" | range.
+      range → "(" lower upper? ")".
+      lower → number.
+      upper → ", " number.
+
+!  Tokens.
+
+       name → letter otherChar∗.
+  otherChar → letter | digit.
+     number → digit+ | "∞".
+     string → "\\"" char* "\\"".
+       char → nonquote | "\\\\" slashed.
+    slashed → special | "#" hexit(1, 8).
+
+!  Characters in tokens. We use only ASCII.
+
+        bak → "\\\\".
+      digit → "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" |
+              "8" | "9".
+      hexit → "A" | "B" | "C" | "D" | "E" | "F" | "a" | "b" |
+              "c" | "d" | "e" | "f" | "0" | "1" | "2" | "3" |
+              "4" | "5" | "6" | "7" | "8" | "9".
+     letter → "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" |
+              "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" |
+              "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" |
+              "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" |
+              "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" |
+              "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" |
+              "w" | "x" | "y" | "z".
+   nonquote → " " | "!" | quo | "#" | "$" | "%" | "&" | "'" |
+              "(" | ")" | "*" | "+" | "," | "-" | "." | "/" |
+              "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" |
+              "8" | "9" | ":" | ";" | "<" | "=" | ">" | "?" |
+              "@" | "A" | "B" | "C" | "D" | "E" | "F" | "G" | 
+              "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" |
+              "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" |
+              "X" | "Y" | "Z" | "[" | bak | "]" | "^" | "_" |
+              "`" | "a" | "b" | "c" | "d" | "e" | "f" | "g" |
+              "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | 
+              "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" |
+              "x" | "y" | "z" | "\{" | "|" | "\}" | "~".
+        quo → "\\"".
+    special → "A" | "B" | "F" | "N" | "R" | "T" | "V" | "a" |
+              "b" | "f" | "n" | "r" | "t" | "v" | "\\"" | "\\\\".}}}
+
+{justify
+  This grammar generates {goto string strings} using only visible {c ascii}
+  characters.
+  Of course it is infeasible to write a grammar that generates strings with
+  Unicode characters, as there are so many of them.}
+
+{rule}
+
+{label reference}
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label ahd1973}
+   {c [ahd\ 1973]\ \ }}
+  {justify
+    {i The American Heritage Dictionary of the English Language.}
+    William Morris, editor.
+    American Heritage Publishing Company, Inc.
+    Houghton Mifflin Company.
+    Boston, Massachusetts.
+    1973.
+    Page 459.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label ans1986}
+   {c [ans\ 1986]\ \ }}
+  {justify
+    American National Standards Institute.
+    ‘‘American National Standard Code for Information Interchange.’’
+    {c Ansi} X3.4–1986.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label hop2007}
+   {c [hop\ 2007]\ \ }}
+  {justify
+    John E. Hopcroft, Rajeev Motwani, Jeffrey D. Ullman.
+    {i Introduction to Automata Theory, Languages, and Computation.}
+    Third Edition.
+    Addison-Wesley.
+    Boston, Massachusetts.
+    2007.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2014}
+   {c [moe\ 2014]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2014.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label uni2006}
+   {c [uni\ 2006]\ \ }}
+  {justify
+    The Unicode Consortium.
+    {i The Unicode Standard, Version 5.0.}
+    Fifth Edition.
+    Addison-Wesley Professional.
+    Reading, Massachusetts.
+    2006.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label wir1977}
+   {c [wir\ 1977]\ \ }}
+  {justify
+    Niklaus Wirth.
+    ``What Can We Do About the Unnecessary Diversity of Notation for Syntactic
+    Definitions?''
+    {i Communications of the {c Acm.}}
+    Volume 20.
+    Number 1.
+    November, 1977.
+    Pages 822–823.}}}

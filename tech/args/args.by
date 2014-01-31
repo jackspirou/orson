@@ -1,0 +1,575 @@
+{title Methods with Variable Numbers of Arguments in Orson}
+
+{center
+ {b Methods with Variable Numbers of Arguments in Orson}
+
+ James B. Moen
+ June 12, 2013}
+
+{justify
+  Copyright © 2013 James B. Moen.
+  Permission is granted to copy, distribute, and/or modify this document under
+  the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
+  version published by the Free Software Foundation; with no Invariant
+  Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license may be obtained at
+  {goto http://fsf.org/ {t <http://fsf.org/>.}}
+
+  This document uses special characters.
+  Without proper rendering support, you may see question marks, boxes, or other
+  symbols in place of these characters.
+  This document must be rendered in a font where an italic quote `\ {i "}\ '
+  looks different from two apostrophes `\ {q ''}\ '.}
+
+{rule}
+
+{left {b 0. Introduction.}}
+
+{narrow
+ {justify
+   I'd like to have an argument please.}
+ {right
+  {goto cha1989 {c [cha 1989]}}}}
+
+{justify
+  The programming language Orson {goto moe2013 {c [moe 2013]}} doesn't provide
+  methods (forms and procedures) that have varying numbers of arguments.
+  This report shows how they can be simulated in a few common cases.
+  It assumes good knowledge of Orson; some familiarity with C
+  {goto ker1988 {c [ker 1988]}} is also helpful.}
+
+{left {b 1. Forms with default arguments.}}
+
+{justify
+  Suppose I want to perform some computations with complex numbers.
+  I'll represent a complex number using a tuple type called {i comp.}
+  It has two slots: {i re} holds the real part of the complex number, and
+  {i im} holds the complex part.}
+
+{narrow{orson
+comp :− (tuple real re, real im)}}
+
+{justify
+  The form {i makeComp} returns a new complex number represented this way,
+  given its real and complex parts.
+  For example, {i makeComp}(1.0,\ −2.0) returns a {i comp} that represents the
+  complex number 1.0\ −\ 2.0{i i.}}
+
+{narrow{orson
+makeComp :−
+ (form (real re, real im) comp:
+  (with var comp z
+   do z.re := re
+      z.im := im
+      z))}}
+
+{justify
+  Now suppose I want to make lots of complex numbers whose complex parts are
+  0.0.
+  I'd like to omit the second argument of {i makeComp} in such cases, and have
+  it default to 0.0.
+  For example, {i makeComp}(3.0) would return a {i comp} that represents the
+  complex number 3.0\ +\ 0.0{i i.}
+  Orson doesn't provide forms with optional arguments, but I can simulate them
+  by using an alternate form, like this.}
+
+{narrow{orson
+makeComp :−
+ (alt
+  (form (real re) comp:
+    makeComp(re, 0.0)),
+  (form (real re, real im) comp:
+   (with var comp z
+    do z.re := re
+       z.im := im
+       z)))}}
+
+{justify
+  Now if I call {i makeComp} with one real argument, its first member fills in
+  the default 0.0 for its second argument, then calls its second member.
+  If I call {i makeComp} with two arguments, it acts just as it did before.
+  If I were writing a form with more arguments, or one that had more defaults,
+  I could handle them by adding more members to the alternate form.
+  By convention, the optional arguments should follow the required ones.}
+
+{left {b 2. Forms with zero or more arguments.}}
+
+{justify
+  If you want to write a form that takes varying numbers of arguments, you must
+  put those arguments into a list.
+  For example, suppose you have a form called {i max} that takes one or more
+  integers as its arguments, and returns the largest of these integers.
+  If you want to find the maximum of the integer arguments {i i,} {i j,} and
+  {i k,} then you'd call {i max} like this.}
+
+{narrow{orson
+max((: i, j, k))}}
+
+{justify
+  Note that it's possible to call {i max} with zero arguments by using an empty
+  list, like this.
+  This might cause problems because the maximum of zero integers isn't well
+  defined.}
+
+{narrow{orson
+max((:))}}
+
+{justify
+  If a call has a colon among its arguments, then all the arguments on the
+  right of the colon are put into a list.
+  So the calls shown above can be abbreviated as
+  {i max}(:\ {i i,}\ {i j,}\ {i k}) or as {i max}(:), which helps hide the
+  fact that a list is being used.}
+
+{left {b 3. Executing arguments too many times.}}
+
+{justify
+  Let's return to the form {i max} from the previous section.
+  I might write it like this.}
+
+{narrow{orson
+max :−
+ (with
+   maxing :−
+    (form (inj m, list k) inj:
+     (if isEmpty(k)
+      then m
+      else if car(k) > m
+           then maxing(car(k), cdr(k))
+           else maxing(m, cdr(k))))
+  do (form (list k) inj:
+       maxing(car(k), cdr(k))))}}
+
+{justify
+  The helper form {i maxing} does all the work for {i max.}
+  (By convention, if I write a form with a name like {i foo,} its helper forms
+  will have names like {i fooing.})
+  It keeps the current maximum in {i m,} while it visits each integer in the
+  list {i k.}
+  Whenever it visits an integer that's greater than the current maximum, it
+  updates {i m.}
+  After it's visited all the integers in {i k,} it simply returns {i m.}
+
+  The form {i max} doesn't work if {i k} is the empty list, or if it has
+  elements that aren't integers.
+  To simplify the discussion, {i max} does no error checking.
+  Error checks would be included if {i max} were part of a real program.
+
+  There are other things wrong with {i max} too.
+  The following example will demonstrate them.
+  Suppose the integer variables {i a,} {i b,} and {i c} are declared like
+  this.}
+
+{narrow{orson
+var int a :− 1
+var int b :− 2
+var int c :− 3}}
+
+{justify
+  Also suppose that you call {i max} with three expressions that use {i a,}
+  {i b,} and {i c.}}
+
+{narrow{orson
+max(: a + b, b + c, c + a)}}
+
+{justify
+  The call to {i max} will then transform to a nested {i if} clause that looks
+  like this.
+  When the {i if} clause is executed, it will return the value of
+  {i b}\ +\ {i c,} which is 5.}
+
+{narrow{orson
+(if b + c > a + b
+ then (if c + a > b + c
+       then c + a
+       else b + c)
+ else (if c + a > a + b
+       then c + a
+       else a + b))}}
+
+{justify
+  The problem is that the arguments to {i max} are executed more than once.
+  In the example, the argument {i b}\ +\ {i c} might be executed three times.
+  That's not important here, since integer additions are cheap to execute.
+  However, it might be important if {i max}'s arguments were more expensive to
+  execute, or if they had side effects.}
+
+{left {b 4. Withification.}}
+
+{justify
+  I can make sure each argument is executed only once by wrapping the call to
+  {i max} inside a {i with} clause, as shown below.
+  Using a {i with} clause in this way is called {i withification.}}
+
+{narrow{orson
+(with
+  int t₀ :− a + b
+  int t₁ :− b + c
+  int t₂ :− c + a
+ do max(: t₀, t₁, t₂))}}
+
+{justify
+  You probably don't want to write a {i with} clause every time you call
+  {i max.}
+  Fortunately, it's possible to write a wrapper form
+  {goto moe2013 {c [moe 2013]}} called {i withified} that makes the {i with}
+  clause automatically.}
+
+{narrow{orson
+withified :−
+ (form (list a) foj:
+  (form (form (list) obj body) obj:
+   (with
+     withifying :−
+      (form (list n, list a) obj:
+       (if isEmpty(a)
+        then body(n)
+        else (with obj t :− car(a)
+              do withifying(conc(n: t), cdr(a)))))
+    do withifying((:), a))))}}
+
+{justify
+  The form {i withified} visits each element in the list {i a,} and makes
+  nested {i with} clauses that bind temporary names to those elements.
+  Orson automatically uses a different temporary name in each {i with} clause,
+  to avoid conflicts with names already used elsewhere in the program.
+  For example, suppose I have an expression
+  {i e}((: {i i,}\ {i j,}\ {i k})) that performs a computation using the
+  expressions {i i,} {i j,} and {i k,} which are the elements of a list.
+  Then this {i for} clause:}
+
+{narrow{orson
+(for list l in withified((: i, j, k))
+ do e(l))}}
+
+{justify
+  transforms to this nested {i with} clause, in which the names beginning with
+  {i u} are unique names that appear nowhere else.}
+
+{narrow{orson
+(with obj u₀ :− i
+ do (with obj u₁ :− j
+     do (with obj u₂ :− k
+         do e((: u₀, u₁, u₂)))))}}
+
+{justify
+  Orson collapses all the nested {i with} clauses into one, so I end up with
+  this.}
+
+{narrow{orson
+(with
+  obj u₀ :− i
+  obj u₁ :− j
+  obj u₂ :− k
+ do e((: u₀, u₁, u₂)))}}
+
+{justify
+  Now, if {i e} performs some computation using the expressions {i i,} {i j,}
+  and {i k,} then each is executed only once.
+  This is just what I need to fix {i max,} so I'll rewrite it using
+  {i withified} like this.}
+
+{narrow{orson
+max :−
+ (with
+   maxing :−
+    (form (inj m, list k) inj:
+     (if isEmpty(k)
+      then m
+      else if car(k) > m
+           then maxing(car(k), cdr(k))
+           else maxing(m, cdr(k))))
+  do (form (list k) inj:
+      (for list k' in withified(k)
+       do maxing(k'))))}}
+
+{justify
+  Now if I call {i max}(: {i a}\ +\ {i b,}\ {i b}\ +\ {i c,}\ {i c}\ +\ {i a}),
+  I get this {i with} clause as a result.}
+
+{narrow{orson
+(with
+  int u₀ :− a + b
+  int u₁ :− b + c
+  int u₂ :− c + a
+ do (if u₁ > u₀
+     then (if u₂ > u₁
+           then u₂
+           else u₁)
+     else (if u₂ > u₀
+           then u₂
+           else u₀)))}}
+
+{justify
+  The form {i withified} is available in the Orson library.
+  You can get it by loading the library file {i lib.withify.}}
+
+{left {b 5. Forms with one or more arguments.}}
+
+{justify
+  Another problem with {i max} is that it fails when I call it with an empty
+  list of arguments.
+  I could fix the problem by rewriting {i max} so it checks for an empty list,
+  like this.
+  Note that in this case, {i max} returns the default value 0 so that
+  transformation can continue.}
+
+{narrow{orson
+max :−
+ (with
+   maxing :−
+    (form (inj m, list k) inj:
+     (if isEmpty(k)
+      then m
+      else if car(k) > m
+           then maxing(car(k), cdr(k))
+           else maxing(m, cdr(k))))
+  do (form (list k) inj:
+      (if isEmpty(k)
+       then error($k, "too few elements", 0)
+       else (for list k' in withified(k)
+             do maxing(k')))))}}
+
+{justify
+  However, it's better to rewrite {i max} so that calling it with an empty list
+  is {i impossible.}
+  I can do that by letting {i max} have two arguments: an integer {i a} and a
+  list of integers {i d.}
+  It returns the maximum of a list whose first argument is {i a,} and whose
+  remaining arguments are in {i d.}}
+
+{narrow{orson
+max :−
+ (with
+   maxing :−
+    (form (inj m, list k) inj:
+     (if isEmpty(k)
+      then m
+      else if car(k) > m
+           then maxing(car(k), cdr(k))
+           else maxing(m, cdr(k))))
+  do (form (inj a, list d) inj:
+      (with list k in withified(cons(a, d))
+       do maxing(car(k), cdr(k)))))}}
+
+{justify
+  Now the list of integers seen by {i maxing} always has at least one element,
+  and the problem with the empty list goes away.
+  The call to {i max} from the previous section looks like this:}
+
+{narrow{orson
+max(a + b, (: b + c, c + a))}}
+
+{justify
+  Or I can abbreviate it, like this:}
+
+{narrow{orson
+max(a + b: b + c, c + a)}}
+
+{justify
+  If for some reason I want to call {i max} with only one argument {i j,} I can
+  write {i max}({i j}:).
+  There's no good reason to do that with {i max,} but there might be if I was
+  calling a different form.
+
+  It's convenient to say that {i max} now has two kinds of arguments.
+  The argument {i a} is a {i required} argument, and the arguments in the list
+  {i d} are {i optional} arguments.
+  To take full advantage of the colon abbreviation, most forms should be
+  written so their required arguments come first, and their optional arguments
+  (if any) follow.}
+
+{left {b 7. Procedures with optional arguments.}}
+
+{justify
+  It's easy to simulate a procedure with optional arguments.
+  Just write a form with optional arguments that calls the procedure.
+  For example, the procedure {i MakeComp} (with an upper case {i M}) returns
+  a new complex number with a real part {i re} and an imaginary part {i im.}
+  The form {i makeComp} (with a lower case {i m}) calls it.}
+
+{narrow{orson
+MakeComp :−
+ (proc (real re, real im) comp:
+  (with var comp z
+   do z.re := re
+      z.im := im
+      z))
+
+makeComp :−
+ (alt
+  (form (real re) comp:
+    makeComp(re, 0.0)),
+  (form (real re, real im) comp:
+    MakeComp(re, im)))}}
+
+{justify
+  Since {i MakeComp} is a secret name, it can't be called outside the {i prog}
+  clause where it's defined.
+  It can be called only through the form {i makeComp.}
+  Orson programs often use forms to set up arguments for secret procedures in
+  this way.}
+
+{left {b 8. Procedures with zero or more arguments.}}
+
+{justify
+  I can simulate a form with zero or more arguments by passing it a list.
+  Unfortunately, I can't simulate a procedure with zero or more arguments in
+  the same way.
+  This is because lists are transformation objects, but procedures are
+  execution objects, so they can't perform computations with lists.
+  As a result, it's harder to simulate a procedure with zero or more arguments,
+  although it's possible in a few special cases.
+
+  Sometimes you can simulate a procedure with many arguments by making nested
+  calls to a simpler version of that procedure.
+  This is one way to write {i max} as a procedure.
+  I first define a secret procedure called {i Max} that finds the larger of two
+  integers, {i l} and {i r.}}
+
+{narrow{orson
+Max :−
+ (proc (int l, int r) int:
+  (if l > r
+   then l
+   else r))}}
+
+{justify
+  Then I define a form called {i max} that takes one or more arguments, the
+  way previous versions of {i max} did.
+  The form {i max} then calls itself recursively to make a series of nested
+  calls to the procedure {i Max.}
+  The series of nested calls finds the maximum of all the arguments.}
+
+{narrow{orson
+max :−
+ (form (int m, list k) int:
+  (if isEmpty(k)
+   then m
+   else Max(m, max(car(k), cdr(k)))))}}
+
+{justify
+  Now suppose that I call {i max} with the same arguments I did before.
+  Then the call transforms to an expression that's equivalent to this one, with
+  two calls to {i Max.}}
+
+{narrow{orson
+Max(a + b, Max(b + c, c + a))}}
+
+{justify
+  Unfortunately, this doesn't work for some procedures.
+  If it doesn't, then one possibility is to copy a form's arguments into some
+  kind of execution object, and pass the object to the procedure.
+  I'll show how to do that with {i max,} but only because that's what I used in
+  previous examples.
+  Probably nobody would really write {i max} in the way I'm going to.
+
+  The first step is to define a secret procedure {i Max} that takes an array
+  of {i n} integers as its argument.
+  It returns the maximum of the integers in the array.
+  Orson doesn't have variable length arrays, so I'll simulate one by passing
+  {i n} as an argument, and using a {i row} pointer to reference {i a.}
+  This is what I'd do in a language like C {goto ker1988 {c [ker 1988].}}}
+
+{narrow{orson
+Max :−
+ (proc (int n, row var int a) int:
+  (with var int m :− a[0]
+   do (for int j in 1, n
+       do (if a[j] > m
+           then m := a[j]))
+      m))}}
+
+{justify
+  The next step is to write a form {i max.}
+  It transforms to a {i with} clause that creates a temporary array {i t.}
+  Then it calls the form {i assigning} to make a sequence of assignments
+  that fills {i t} with the values of {i max}'s arguments.
+  Finally it calls {i Max} with the length of the array, and a pointer to the
+  array itself.}
+
+{narrow{orson
+max :−
+ (form (int m, list k) int:
+  (with
+    int l :− length(k)
+    var [l + 1] int t
+    assigning :−
+     (form (int j, list k) void:
+      (if ¬ isEmpty(k)
+       then t[j] := car(k)
+            assigning(j + 1, cdr(k))))
+   do t[0] := m
+      assigning(1, k)
+      Max(l, t↓)))}}
+
+{justify
+  For example, if I call {i max} with the three arguments from previous
+  examples, then it would transform to a {i with} clause that's equivalent to
+  this one.}
+
+{narrow{orson
+(with var [3] int t
+ do t[0] := a + b
+    t[1] := b + c
+    t[2] := c + a
+    Max(3, t↓))}}
+
+{justify
+  By the way, this is more or less what a procedure that takes multiple
+  arguments would do in a real programming language.
+  It would copy the arguments to the stack and then call the procedure with the
+  number of arguments it will find there.
+  The difference is that in Orson, I must set this up explicitly using a form.
+
+  This works only because all of {i max}'s arguments have the same type, so I
+  can put them into an array.
+  It wouldn't work for simulating a procedure that takes multiple arguments of
+  different types.
+  To do that, I'd have to use a more general kind of data structure to hold
+  the arguments, then pass that data structure to the procedure.}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label cha1989}
+   {c [cha\ 1989]\ \ }}
+  {justify
+    Graham Chapman, John Cleese, Terry Gilliam, Eric Idle, Terry Jones,
+    Michael Palin.
+    {i Monty Python's Flying Circus: All The Words.}
+    Volume Two.
+    Pantheon Books.
+    New York, New York.
+    1989.
+    Page 86.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label ker1988}
+   {c [ker\ 1988]\ }}
+  {justify
+    Brian W. Kernighan, Dennis M. Ritchie.
+    {i The C Programming Language.}
+    Second Edition.
+    Prentice-Hall.
+    Upper Saddle River, New Jersey.
+    1988.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label moe2013}
+   {c [moe\ 2013]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2013.}}}

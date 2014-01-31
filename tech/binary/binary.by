@@ -1,0 +1,959 @@
+{title Automatically Building Search Trees from IF clauses.}
+
+{center
+  {b Automatically Building Search Trees From {i if} Clauses}
+
+  James B. Moen
+  June 26, 2013}
+
+{center {b Abstract}}
+
+{narrow
+ {justify
+   Orson forms can build binary search trees automatically, using nested {i if}
+   clauses.
+   Three such forms are discussed that produce progressively more efficient
+   trees.
+   Although the trees are probably slower than hash tables, they're probably
+   faster than binary search on arrays, since they don't need index
+   calculations.}}
+
+{justify
+  Copyright © 2013 James B. Moen.
+  Permission is granted to copy, distribute, and/or modify this document under
+  the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
+  version published by the Free Software Foundation; with no Invariant
+  Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license may be obtained at
+  {goto http://fsf.org/ {t <http://fsf.org/>.}}
+
+  This document uses special characters.
+  Without proper rendering support, you may see question marks, boxes, or other
+  symbols in place of these characters.
+  This document must be rendered in a font in which an italic quote `\ {i "}\ '
+  looks different from two apostrophes `\ {q ''}\ '.}
+
+{rule}
+
+{left {b 0. Introduction.}}
+
+{narrow
+ {display
+``There's been an accident!'' they said,
+``Your servant's cut in half; he's dead.''
+``Indeed!'' said Mr. Jones, ``and please
+Give me the half that's got my keys.''}
+ {right
+  {goto gra1974 {c [gra 1974]}}}}
+
+{justify
+  Suppose you want to test if a string is a member of a set of constant
+  strings, and you want to do it with as few comparisons as possible.
+  For example, if you're writing the lexical scanner for a compiler, you might
+  want to test if a string is a reserved name.
+
+  Probably the fastest way is to use a hash table
+  {goto wir1976 {c [wir 1976].}}
+  If you can design a hash function that's carefully tailored to the set of
+  reserved names, then you can make the test in {i O}(1) comparisons.
+  Unfortunately, designing such a hash function isn't easy.
+  It may not even exist for some sets.
+  Also, you may have to design a new hash function each time the set of
+  reserved names changes.
+
+  Maybe the next best alternative is binary search
+  {goto wir1976 {c [wir 1976].}}
+  If there are {i n} names in the set, binary search can make the test in
+  {i O}({i log}\ {i n}) comparisons.
+  This isn't as good as {i O}(1), but it's still fast, and you don't have to
+  invent a hash function.
+  I'll therefore consider only binary search here.
+
+  The idea behind binary search is that you represent the set as a list of
+  strings, in alphabetical order.
+  This differs from most textbook treatments of binary search, which use
+  arrays instead of lists, but you'll see later that this doesn't matter.
+  I'll call this list {i v,} and the string that you're looking for I'll
+  call {i k.}
+
+  If you want to test if {i k} is reserved, you compare it with the string in
+  the middle of the list, which I'll call {i middle}({i v}).
+  If {i k} is less than {i middle}({i v}), then you know that if {i k} is in
+  the list, it must be on the left of {i v.}
+  You therefore repeat the process with {i left}({i v}), a list of the strings
+  on the left of the middle.
+  Similarly, if {i k} is greater than {i middle}({i v}), then you know that
+  if {i k} is in the list, it must be on the right of {i v.}
+  You therefore repeat the process with {i right}({i v}), a list of strings on
+  the right of the middle.
+
+  If {i k} is neither less than or greater than {i middle}({i v}), then it
+  must be equal, so you've found the string you're looking for, and you can
+  stop searching.
+  If {i v} ever becomes empty, then you know {i k} isn't in the list, so you
+  can also stop.
+  Each time you repeat the process, you divide {i v} in half, so that binary
+  search takes {i O}({i log}\ {i length}({i v})) string comparisons.}
+
+{left {b 1. First version.}}
+
+{narrow
+ {justify
+   [T]o have you listen at all, it is necessary to talk about trees.}
+ {right
+  {goto ric1995 {c [ric 1995]}}}}
+
+{justify
+  It's easy to translate the English text of the introduction into an Orson
+  {goto moe2013 {c [moe 2013]}} program.
+  Actually, when I wrote this, I started with the program and translated it to
+  English.
+
+  I'll use the predefined form {i comp} to compare strings lexicographically.
+  It takes two strings {i l} and {i r} as its arguments.
+  It returns an integer less than 0 if {i l} is less than {i r,} returns 0 if
+  {i l} equals {i r,} and returns an integer greater than 0 if {i l} is greater
+  than {i r.}
+
+  Using {i comp,} I can then write a form {i isIn} that takes a string {i k}
+  and a list {i v} as its arguments.
+  I'll assume that the elements of {i v} are string constants, and that they're
+  sorted in alphabetical order.
+  The form {i isIn} returns {i true} if {i k} is a member of {i v,} and returns
+  {i false} otherwise.}
+
+{narrow{orson
+(prog
+  isIn :−
+   (form (string k, list v) bool:
+    (with
+      k :− (past k)
+      isInning :−
+       (form (list v) bool:
+        (if isEmpty(v)
+         then false
+         else (with t :− comp(k, middle(v))
+               do (if t < 0
+                   then isInning(left(v))
+                   else if t > 0
+                        then isInning(right(v))
+                        else true))))
+     do isInning(v)))}}
+
+{justify
+  Note that I use a helper form {i isInning} that does all the work for
+  {i isIn.}
+  By convention, if I write a form called {i foo,} then I'll call its helper
+  forms something like {i fooing.}
+
+  I haven't yet defined the forms {i left,} {i middle,} and {i right,} but they
+  should work as described in the introduction.
+  It's a little tricky to get them right.
+  I've heard that the late Edsger Dijkstra used to ask famous computer
+  scientists to write (from scratch) a binary search algorithm for arrays.
+  Most of them got it wrong.
+  I'll avoid these problems by using Orson lists instead of arrays, and by
+  not being famous.
+
+  I'll guess that {i middle}({i v}) is at index {i length}({i v})\ /\ 2 in
+  {i v.}
+  This is correct when {i v} has an odd number of elements, and is off by one
+  when it has an even number.
+  Since I'm using lists instead of arrays, this is the only index calculation
+  I'll need to do.
+
+  That leaves only {i left} and {i right.}
+  I'll make a table with lists of various lengths to see what {i left,}
+  {i middle,} and {i right} should return for each one.
+  By looking at the table, maybe I can see a pattern that will tell me how to
+  write the code for these forms.}
+
+{table
+ {row
+  {center {bi v}}
+  {center {b {i left}({i v})}}
+  {center {b {i middle}({i v})}}
+  {center {b {i right}({i v})}}}
+ {row
+  {left (: {i a})}
+  {center (:)}
+  {center {i a}}
+  {center (:)}}
+ {row
+  {left (: {i a,} {i b})}
+  {center (: {i a})}
+  {center {i b}}
+  {center (:)}}
+ {row
+  {left (: {i a,} {i b,} {i c})}
+  {center (: {i a})}
+  {center {i b}}
+  {center (: {i c})}}
+ {row
+  {left (: {i a,} {i b,} {i c,} {i d})}
+  {center (: {i a,} {i b})}
+  {center {i c}}
+  {center (: {i d})}}
+ {row
+  {left (: {i a,} {i b,} {i c,} {i d,} {i e})}
+  {center (: {i a,} {i b})}
+  {center {i c}}
+  {center (: {i d,} {i e})}}}
+
+{justify
+  Here's the pattern.
+  If the middle element is at index {i j,} then to compute {i left}({i v}), I
+  need to make a list of the first {i j} elements in {i v.}
+  To compute {i right}({i v}), I need to delete the first {i j}\ +\ 1 elements
+  from {i v.}
+  Now that I know this, it's easy to write {i left,} {i middle,} and {i right.}
+  The extra parenthesis at the end closes the program.}
+
+{narrow{orson
+left :−
+ (with
+   lefting :−
+    (form (list v, inj j) list:
+     (if j = 0
+      then (:)
+      else cons(car(v), lefting(cdr(v), j − 1))))
+  do (form (list v) list:
+       lefting(v, length(v) / 2)))
+
+middle :−
+ (with
+   middling :−
+    (form (list v, inj j) list:
+     (if j = 0
+      then car(v)
+      else middling(cdr(v), j − 1)))
+  do (form (list v) obj:
+       middling(v, length(v) / 2)))
+
+right :−
+ (with
+   righting :−
+    (form (list v, inj j) list:
+     (if j = 0
+      then v
+      else righting(cdr(v), j − 1)))
+  do (form (list v) list:
+       righting(v, length(v) / 2 + 1)))
+)}}
+
+{justify
+  Suppose {i m} is a string variable, and I want to test if it contains an
+  Orson reserved name.
+  Such a test might be part of an Orson compiler's lexical scanner.
+  I can call {i isIn} to make the test, like so:}
+
+{narrow
+ {layout
+  {row
+   {left {i isIn}({i m}:\ \ }
+   {left {q ''also''},\ \ }
+   {left {q ''alt''},\ \ }
+   {left {q ''alts''},\ \ }
+   {left {q ''and''},\ \ }
+   {left {q ''case''},\ \ }
+   {left {q ''catch''},\ \ }}
+  {row
+   {left \ }
+   {left {q ''do''},\ \ }
+   {left {q ''else''},\ \ }
+   {left {q ''for''},\ \ }
+   {left {q ''form''},\ \ }
+   {left {q ''gen''},\ \ }
+   {left {q ''if''},\ \ }}
+  {row
+   {left \ }
+   {left {q ''in''},\ \ }
+   {left {q ''load''},\ \ }
+   {left {q ''mod''},\ \ }
+   {left {q ''none''},\ \ }
+   {left {q ''not''},\ \ }
+   {left {q ''of''},\ \ }}
+  {row
+   {left \ }
+   {left {q ''or''},\ \ }
+   {left {q ''past''},\ \ }
+   {left {q ''proc''},\ \ }
+   {left {q ''prog''},\ \ }
+   {left {q ''ref''},\ \ }
+   {left {q ''row''},\ \ }}
+  {row
+   {left \ }
+   {left {q ''then''},\ \ }
+   {left {q ''tuple''},\ \ }
+   {left {q ''type''},\ \ }
+   {left {q ''var''},\ \ }
+   {left {q ''while''},\ \ }
+   {left {q ''with''})}}}}
+
+{*
+test :−
+ isIn(m:
+  ''also'',  ''alt'',   ''alts'',  ''and'',   ''case'',  ''catch'',
+  ''do'',    ''else'',  ''for'',   ''form'',  ''gen'',   ''if'',
+  ''in'',    ''load'',  ''mod'',   ''none'',  ''not'',   ''of'',
+  ''or'',    ''past'',  ''proc'',  ''prog'',  ''ref'',   ''row'',
+  ''then'',  ''tuple'', ''type'',  ''var'',   ''while'', ''with'') }
+
+{justify
+  To understand what happens next, you need to know how an Orson form is
+  called.
+  Orson first transforms its arguments to make new expressions.
+  Then, in the form's body, Orson replaces the form's parameters by these
+  expressions.
+  Finally, Orson transforms the resulting body to make another new expression,
+  which is result of calling the form.
+  Forms therefore work something like macros, but with expressions instead of
+  strings.
+  However, unlike macros, they can also do computations with constants, and
+  can call themselves recursively.
+
+  Because {i isIn} calls itself recursively, the new expression will be made
+  up of nested {i if} clauses and {i with} clauses.
+  In effect, it's a binary search tree {goto wir1976 {c [wir 1976]}} that's
+  made out of code instead of data.
+  When it's executed, the new expression will test if {i m} is one of the
+  strings in the list, in no more than about
+  {i O}({i log}\ {i length}({i v})) calls to {i comp.}
+
+  The expressions from {i isIn} that involve lists will vanish as a result of
+  the transformation process.
+  That's why it doesn't matter if I write {i isIn} with lists, even though
+  they're less efficient than arrays.
+  By the time the new expression resulting from {i isIn} gets executed, it's
+  not computing lists any more.
+  It's not computing indexes any more either, so it might be faster than binary
+  search on an array.
+
+  It's also easier to write the form {i isIn} that it would be to build a
+  binary search tree out of {i if} clauses by hand.
+  If the set of Orson reserved names ever changes, then all I have to do is
+  change the call to {i isIn.}
+  I don't have to figure out how to insert new reserved names into the binary
+  tree.
+
+  With the advertising for Orson out of the way, here's the new expression
+  that the call to {i isIn} gets transformed into.
+  It has some problems, but this is only the first version.}
+
+{narrow{orson
+(with
+  string k :− m
+  int t :− comp(k, ''none'')
+ do (if t < 0
+     then (with int t :− comp(k, ''else'')
+           do (if t < 0
+               then (with int t :− comp(k, ''and'')
+                     do (if t < 0
+                         then (with int t :− comp(k, ''alt'')
+                               do (if t < 0
+                                   then (with int t :− comp(k, ''also'')
+                                         do (if t < 0
+                                             then false
+                                             else if t > 0
+                                                  then false
+                                                  else true))
+                                   else if t > 0
+                                        then (with int t :− comp(k, ''alts'')
+                                              do (if t < 0
+                                                  then false
+                                                  else if t > 0
+                                                       then false
+                                                       else true))
+                                        else true))
+                         else if t > 0
+                              then (with int t :− comp(k, ''catch'')
+                                    do (if t < 0
+                                        then (with int t :− comp(k, ''case'')
+                                              do (if t < 0
+                                                  then false
+                                                  else if t > 0
+                                                       then false
+                                                       else true))
+                                        else if t > 0
+                                             then (with int t :− comp(k, ''do'')
+                                                   do (if t < 0
+                                                       then false
+                                                       else if t > 0
+                                                            then false
+                                                            else true))
+                                             else true))
+                              else true))
+               else if t > 0
+                    then (with int t :− comp(k, ''if'')
+                          do (if t < 0
+                              then (with int t :− comp(k, ''form'')
+                                    do (if t < 0
+                                        then (with int t :− comp(k, ''for'')
+                                              do (if t < 0
+                                                  then false
+                                                  else if t > 0
+                                                       then false
+                                                       else true))
+                                        else if t > 0
+                                             then (with int t :− comp(k, ''gen'')
+                                                   do (if t < 0
+                                                       then false
+                                                       else if t > 0
+                                                            then false
+                                                            else true))
+                                             else true))
+                              else if t > 0
+                                   then (with int t :− comp(k, ''load'')
+                                         do (if t < 0
+                                             then (with int t :− comp(k, ''in'')
+                                                   do (if t < 0
+                                                       then false
+                                                       else if t > 0
+                                                            then false
+                                                            else true))
+                                             else if t > 0
+                                                  then (with int t :− comp(k, ''mod'')
+                                                        do (if t < 0
+                                                            then false
+                                                            else if t > 0
+                                                                 then false
+                                                                 else true))
+                                                  else true))
+                                   else true))
+                    else true))
+     else if t > 0
+          then (with int t :− comp(k, ''row'')
+                do (if t < 0
+                    then (with int t :− comp(k, ''past'')
+                          do (if t < 0
+                              then (with int t :− comp(k, ''of'')
+                                    do (if t < 0
+                                        then (with int t :− comp(k, ''not'')
+                                              do (if t < 0
+                                                  then false
+                                                  else if t > 0
+                                                       then false
+                                                       else true))
+                                        else if t > 0
+                                             then (with int t :− comp(k, ''or'')
+                                                   do (if t < 0
+                                                       then false
+                                                       else if t > 0
+                                                            then false
+                                                            else true))
+                                             else true))
+                              else if t > 0
+                                   then (with int t :− comp(k, ''prog'')
+                                         do (if t < 0
+                                             then (with int t :− comp(k, ''proc'')
+                                                   do (if t < 0
+                                                       then false
+                                                       else if t > 0
+                                                            then false
+                                                            else true))
+                                             else if t > 0
+                                                  then (with int t :− comp(k, ''ref'')
+                                                        do (if t < 0
+                                                            then false
+                                                            else if t > 0
+                                                                 then false
+                                                                 else true))
+                                                  else true))
+                                   else true))
+                    else if t > 0
+                         then (with int t :− comp(k, ''var'')
+                               do (if t < 0
+                                   then (with int t :− comp(k, ''tuple'')
+                                         do (if t < 0
+                                             then (with int t :− comp(k, ''then'')
+                                                   do (if t < 0
+                                                       then false
+                                                       else if t > 0
+                                                            then false
+                                                            else true))
+                                             else if t > 0
+                                                  then (with int t :− comp(k, ''type'')
+                                                        do (if t < 0
+                                                            then false
+                                                            else if t > 0
+                                                                 then false
+                                                                 else true))
+                                                  else true))
+                                   else if t > 0
+                                        then (with int t :− comp(k, ''with'')
+                                              do (if t < 0
+                                                  then (with int t :− comp(k, ''while'')
+                                                        do (if t < 0
+                                                            then false
+                                                            else if t > 0
+                                                                 then false
+                                                                 else true))
+                                                  else if t > 0
+                                                       then false
+                                                       else true))
+                                        else true))
+                         else true))
+          else true))}}
+
+{justify
+  I've made a few changes to make this expression easier to read.
+  Instead of {i k} and {i t,} the actual expression produced by Orson uses
+  unique names that appear nowhere else.
+  This is necessary so a name that's passed in an argument to a form can't be
+  the same as a name used inside the form.
+  The actual expression uses 0 and 1 instead of {i false} and {i true} (Orson
+  doesn't have Boolean values).
+  It also doesn't use {i comp,} but rather an unspecified expression that
+  {i comp} transforms into.}
+
+{left {b 2. Second version.}}
+
+{narrow
+ {justify
+   There are some trees, Watson, which grow to a certain height and then
+   suddenly develop some unsightly eccentricity.}
+ {right
+  {goto doy1982a {c [doy 1982a]}}}}
+
+{justify
+  The tree of {i if} clauses has 153 lines, which is much too long.
+  How can I make it shorter?
+  The first thing I notice is that fragments of inefficient code appear over
+  and over in the tree.
+  Here's one of them, which was apparently produced when {i isIn} was called on
+  the list (:\ {q ''type''}).}
+
+{narrow{orson
+(with int t :− comp(k, ''type'')
+ do (if t < 0
+     then false
+     else if t > 0
+          then false
+          else true))}}
+
+{justify
+  What does it do?
+  First, it compares {i k} with the string {q ''type''.}
+  If {i k} is less than {q ''type'',} then it returns {i false.}
+  If {i k} is greater than {q ''type'',} then it also returns {i false.}
+  If {i k} is neither less or greater than {q ''type'',} then it returns
+  {i true.}
+  So this is really just a complicated way of asking if {i k} equals
+  {q ''type''}.
+
+  Here's another inefficient code fragment, which was produced when {i isIn}
+  was called on the list {q (:\ ''while'',\ ''with'').}
+  Similar reasoning reveals that this is really just a complicated way of
+  asking if {i k} equals either string.}
+
+{narrow{orson
+(with int t :− comp(k, ''with'')
+ do (if t < 0
+     then (with int t :− comp(k, ''while'')
+           do (if t < 0
+               then false
+               else if t > 0
+                    then false
+                    else true))
+     else if t > 0
+          then false
+          else true))}}
+
+{justify
+  It looks like {i isIn} generates inefficient code when {i v} has either one
+  or two elements.
+  I'll rewrite {i isIn} so that if {i v} has one element, then it will use an
+  equality test.
+  If {i v} has two elements, then it will use two equality tests connected by
+  ∨ (or).
+
+  I don't need to add more special cases like these, because it seems
+  reasonable to use {i if} clauses when {i v} has three or more elements.
+  All I need to do is rewrite {i isIn} so it has special cases for lists of
+  zero, one, and two elements, and of course a general case for longer ones.
+  Here it is.}
+
+{narrow{orson
+isIn :−
+ (form (string k, list v) bool:
+  (with
+    k :− (past k)
+    isInning :−
+     (form (list v) bool:
+      (if isEmpty(v)
+       then false
+       else if isEmpty(cdr(v))
+            then k = car(v)
+            else if isEmpty(cdr(cdr(v)))
+                 then k = car(v) ∨ k = car(cdr(v))
+                 else (with t :− comp(k, middle(v))
+                       do (if t < 0
+                           then isInning(left(v))
+                           else if t > 0
+                                then isInning(right(v))
+                                else true))))
+   do isInning(v)))}}
+
+{justify
+  Now when I call {i isIn,} I get a tree of {i if} clauses that looks like
+  this.}
+
+{narrow{orson
+(with 
+  string k :− m
+  int t :− comp(k, ''none'')
+ do (if t < 0
+     then (with int t :− comp(k, ''else'')
+           do (if t < 0
+               then (with int t :− comp(k, ''and'')
+                     do (if t < 0
+                         then (with int t :− comp(k, ''alt'')
+                               do (if t < 0
+                                   then k = ''also''
+                                   else if t > 0
+                                        then k = ''alts''
+                                        else true))
+                         else if t > 0
+                              then (with int t :− comp(k, ''catch'')
+                                    do (if t < 0
+                                        then k = ''case''
+                                        else if t > 0
+                                             then k = ''do''
+                                             else true))
+                              else true))
+               else if t > 0
+                    then (with int t :− comp(k, ''if'')
+                          do (if t < 0
+                              then (with int t :− comp(k, ''form'')
+                                    do (if t < 0
+                                        then k = ''for''
+                                        else if t > 0
+                                             then k = ''gen''
+                                             else true))
+                              else if t > 0
+                                   then (with int t :− comp(k, ''load'')
+                                         do (if t < 0
+                                             then k = ''in''
+                                             else if t > 0
+                                                  then k = ''mod''
+                                                  else true))
+                                   else true))
+                    else true))
+     else if t > 0
+          then (with int t :− comp(k, ''row'')
+                do (if t < 0
+                    then (with int t :− comp(k, ''past'')
+                          do (if t < 0
+                              then (with int t :− comp(k, ''of'')
+                                    do (if t < 0
+                                        then k = ''not''
+                                        else if t > 0
+                                             then k = ''or''
+                                             else true))
+                              else if t > 0
+                                   then (with int t :− comp(k, ''prog'')
+                                         do (if t < 0
+                                             then k = ''proc''
+                                             else if t > 0
+                                                  then k = ''ref''
+                                                  else true))
+                                   else true))
+                    else if t > 0
+                         then (with int t :− comp(k, ''var'')
+                               do (if t < 0
+                                   then (with int t :− comp(k, ''tuple'')
+                                         do (if t < 0
+                                             then k = ''then''
+                                             else if t > 0
+                                                  then k = ''type''
+                                                  else true))
+                                   else if t > 0
+                                        then k = ''while'' ∨ k = ''with''
+                                        else true))
+                         else true))
+          else true))}}
+
+{justify
+  As before, I've made changes to this expression so it will be easier to read.
+  For example, the actual expression doesn't use {i "}={i ",} but an
+  unspecified expression that {i "}={i "} transforms into.
+
+  With these modifications, I get only 73 lines of code, which is about half
+  what I had before.
+  The special case for a list of two strings was used only once, to test the
+  strings {q ''while''} and {q ''with''}.
+  Maybe it would be used more often with a different list of strings.}
+
+{left {b 3. Third version.}}
+
+{narrow
+ {justify
+   ``I fear, sir,'' said Holmes, ``that, interesting and indeed essential as
+   these details are, my inquiries must go more to the root of things.''}
+ {right
+  {goto doy1982b {c [doy 1982b]}}}}
+
+{justify
+  Are other improvements possible?
+  Well, the constant name {i t} gets declared over and over again.
+  An optimizing compiler might be able to factor out all those constant
+  declarations, and replace them with a single variable declaration.
+  It turns out, however, that I can rewrite {i isIn} so that this happens
+  without optimization.
+
+  Do I really want to do that?
+  Right now, if {i k} (the string I'm looking for) is a constant, then the
+  call to {i isIn} will transform all the way down to a constant Boolean
+  value, so I could use it to search sets of strings at compile time.
+  If I change {i isIn} to use a variable, then this won't work.
+
+  Suppose I don't care about searching at compile time.
+  Then I can rewrite {i isIn} so it declares the variable {i t} once at the
+  root of the tree.
+  The result looks like this.}
+
+{narrow{orson
+isIn :−
+ (form (string k, list v) bool:
+  (with
+    k :− (past k)
+    var int t
+    isInning :−
+     (form (list v) bool:
+      (if isEmpty(v)
+       then false
+       else if isEmpty(cdr(v))
+            then k = car(v)
+            else if isEmpty(cdr(cdr(v)))
+                 then k = car(v) ∨ k = car(cdr(v))
+                 else if t := comp(k, middle(v)) ; t < 0
+                      then isInning(left(v))
+                      else if t > 0
+                           then isInning(right(v))
+                           else true))
+   do isInning(v)))}}
+
+{justify
+  Calling {i isIn} now results in a smaller tree of {i if} clauses, with only
+  60 lines.
+  It fits on one page!}
+
+{narrow{orson
+(with
+  string k :− m
+  var int t
+ do (if t := comp(k, ''none'') ; t < 0
+     then (if t := comp(k, ''else'') ; t < 0
+           then (if t := comp(k, ''and'') ; t < 0
+                 then (if t := comp(k, ''alt'') ; t < 0
+                       then k = ''also''
+                       else if t > 0
+                            then k = ''alts''
+                            else true)
+                 else if t > 0
+                      then (if t := comp(k, ''catch'') ; t < 0
+                            then k = ''case''
+                            else if t > 0
+                                 then k = ''do''
+                                 else true)
+                      else true)
+           else if t > 0
+                then (if t := comp(k, ''if'') ; t < 0
+                      then (if t := comp(k, ''form'') ; t < 0
+                            then k = ''for''
+                            else if t > 0
+                                 then k = ''gen''
+                                 else true)
+                      else if t > 0
+                           then (if t := comp(k, ''load'') ; t < 0
+                                 then k = ''in''
+                                 else if t > 0
+                                      then k = ''mod''
+                                      else true)
+                           else true)
+                else true)
+     else if t > 0
+          then (if t := comp(k, ''row'') ; t < 0
+                then (if t := comp(k, ''past'') ; t < 0
+                      then (if t := comp(k, ''of'') ; t < 0
+                            then k = ''not''
+                            else if t > 0
+                                 then k = ''or''
+                                 else true)
+                      else if t > 0
+                           then (if t := comp(k, ''prog'') ; t < 0
+                                 then k = ''proc''
+                                 else if t > 0
+                                      then k = ''ref''
+                                      else true)
+                           else true)
+                else if t > 0
+                     then (if t := comp(k, ''var'') ; t < 0
+                           then (if t := comp(k, ''tuple'') ; t < 0
+                                 then k = ''then''
+                                 else if t > 0
+                                      then k = ''type''
+                                      else true)
+                           else if t > 0
+                                then k = ''while'' ∨ k = ''with''
+                                else true)
+                     else true)
+          else true))}}
+
+{left {b 4. Conclusions.}}
+
+{narrow
+ {justify
+   It's a talent, like a musician's, or a poet's.
+   I can play a computer read-in literally for hours at a time and never make
+   a mistake.}
+ {right
+  {goto bru1975 {c [bru 1975]}}}}
+
+{justify
+  Does a binary tree made from {i if} clauses really execute faster than a hash
+  table?
+  Probably not, but it doesn't require a carefully tailored hash function or
+  a carefully arranged table, either.
+  Does it execute faster than conventional binary search on an array?
+  Probably, since it doesn't have to calculate array indexes.
+  Does it execute faster enough to make a difference?
+  Possibly, but I haven't tested it.
+  However, a compiler's lexical scanner must test if every name it reads is
+  reserved.
+  That's a lot of tests.
+  Making them run even a little faster might be noticeable.
+
+  Orson makes it easy to write programs that use forms instead of procedures,
+  in which lots of things get done by inline code.
+  In general, inline code should execute faster than calling a procedure.
+  However, if all that inline code makes the program so large that it no longer
+  fits in cache, then it might end up executing {i slower.}
+  The Orson programmer should use forms wisely to guard against this
+  possibility.
+
+  It's interesting to speculate if the way we write algorithms is influenced
+  by our inability to write long, boring expressions without making mistakes.
+  Would we have invented binary search on arrays if it were easy to write
+  expressions like the ones shown here?
+  Are there any important programs that are most clearly expressed as forms
+  that generate them?}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label bru1975}
+   {c [bru\ 1975]\ \ }}
+  {justify
+    John Brunner.
+    {i The Shockwave Rider.}
+    Ballantine Books.
+    New York, New York.
+    1975.
+    Page 253.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label doy1982a}
+   {c [doy\ 1982a]\ \ }}
+  {justify
+    Arthur Conan Doyle.
+    ``The Adventure of the Empty House.''
+    In {i The Original Illustrated Sherlock Holmes.}
+    Castle.
+    Secaucus, New Jersey.
+    1982.
+    Page 461.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label doy1982b}
+   {c [doy\ 1982b]\ \ }}
+  {justify
+    Arthur Conan Doyle.
+    ``The Adventure of the Second Stain.''
+    In {i The Original Illustrated Sherlock Holmes.}
+    Castle.
+    Secaucus, New Jersey.
+    1982.
+    Page 624.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label gra1974}
+   {c [gra\ 1974]\ \ }}
+  {justify
+    Harry Graham.
+    ``Accident.''
+    In {i Most Ruthless Rhymes for Heartless Homes.}
+    Edward Arnold (Publishers) Ltd.
+    London, United Kingdom.
+    1974.
+    Page 84.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2013}
+   {c [moe\ 2013]\ \ }}
+  {justify
+    James B. Moen.
+    ``The Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2013.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label ric1995}
+   {c [ric\ 1995]\ \ }}
+  {justify
+    Adrienne Rich.
+    ``What Kind of Times are These.''
+    In {i Dark Fields of the Republic: Poems 1991–1995.}
+    W. W. Norton and Company.
+    New York, New York.
+    1995.
+    Page 3.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label wir1976}
+   {c [wir\ 1976]\ \ }}
+  {justify
+    Niklaus Wirth.
+    {i Algorithms + Data Structures = Programs.}
+    Prentice-Hall.
+    Englewood Cliffs, New Jersey.
+    1976.}}}
+
+{justify
+  Any good undergraduate data structures textbook will tell you about binary
+  search, binary search trees, and hash tables.
+  Wirth's book is old and out of print, but it's still my favorite.}

@@ -1,0 +1,1583 @@
+<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:29 PM CST -->
+<html>
+ <head>
+  <title>
+   The Eg Manual
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>The E<small>G</small> Manual</b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   January 18, 2014
+  </p>
+  <p align="justify">
+   Copyright &#169; 2014 James B. Moen. Permission is granted to copy,
+   distribute, and/or modify this document under the terms of the
+   G<small>NU</small> Free Documentation License, Version 1.3 or any later
+   version published by the Free Software Foundation; with no Invariant
+   Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the
+   license may be obtained at
+   <a href="http://fsf.org/">
+    <tt>&lt;http://fsf.org/&gt;.</tt>
+   </a>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This manual uses special characters. Without
+   proper rendering support, you may see question marks, boxes, or other
+   symbols in place of these characters.
+  </p>
+  <hr />
+  <p align="center">
+   <b>Contents</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a href="#intro">
+       0.
+      </a>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      Introduction.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a href="#file">
+       1.
+      </a>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      Characters and files.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a href="#language">
+       2.
+      </a>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      Language.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <table cellpadding="0" cellspacing="0">
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#unit">
+          2.1.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         Units.
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <table cellpadding="0" cellspacing="0">
+         <tr valign="top">
+          <td>
+           <p>
+            <a href="#name">
+             2.1.1.
+            </a>
+            &nbsp;
+           </p>
+          </td>
+          <td>
+           <p>
+            Names.
+           </p>
+          </td>
+         </tr>
+         <tr valign="top">
+          <td>
+           <p>
+            <a href="#string">
+             2.1.2.
+            </a>
+            &nbsp;
+           </p>
+          </td>
+          <td>
+           <p>
+            Strings.
+           </p>
+          </td>
+         </tr>
+        </table>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#term">
+          2.2.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         Terms.
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <table cellpadding="0" cellspacing="0">
+         <tr valign="top">
+          <td>
+           <p>
+            <a href="#number">
+             2.2.1.
+            </a>
+            &nbsp;
+           </p>
+          </td>
+          <td>
+           <p>
+            Numbers.
+           </p>
+          </td>
+         </tr>
+         <tr valign="top">
+          <td>
+           <p>
+            <a href="#range">
+             2.2.2.
+            </a>
+            &nbsp;
+           </p>
+          </td>
+          <td>
+           <p>
+            Ranges.
+           </p>
+          </td>
+         </tr>
+         <tr valign="top">
+          <td>
+           <p>
+            <a href="#star">
+             2.2.3.
+            </a>
+            &nbsp;
+           </p>
+          </td>
+          <td>
+           <p>
+            Stars.
+           </p>
+          </td>
+         </tr>
+         <tr valign="top">
+          <td>
+           <p>
+            <a href="#plus">
+             2.2.4.
+            </a>
+            &nbsp;
+           </p>
+          </td>
+          <td>
+           <p>
+            Pluses.
+           </p>
+          </td>
+         </tr>
+         <tr valign="top">
+          <td>
+           <p>
+            <a href="#question">
+             2.2.5.
+            </a>
+            &nbsp;
+           </p>
+          </td>
+          <td>
+           <p>
+            Question marks.
+           </p>
+          </td>
+         </tr>
+        </table>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#conjunct">
+          2.3.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         Conjunctions.
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#disjunct">
+          2.4.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         Disjunctions.
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#rule">
+          2.5.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         Rules.
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#grammar">
+          2.6.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         Grammars.
+        </p>
+       </td>
+      </tr>
+      <tr valign="top">
+       <td>
+        <p>
+         <a href="#example">
+          2.7.
+         </a>
+         &nbsp;
+        </p>
+       </td>
+       <td>
+        <p>
+         Examples.
+        </p>
+       </td>
+      </tr>
+     </table>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a href="#reference">
+       3.
+      </a>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      References.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+  </table>
+  <hr />
+  <a name="intro">
+  </a>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    <b>ex&#8901;em&#8901;pli gra&#8901;ti&#8901;a</b>
+    (&#277;g-z&#277;m<b>&#8242;</b>pl&#299;&#8242;
+    gr&#257;<b>&#8242;</b>sh&#275;-&#1241;, &#301;g-) Abbr.
+    <b>e.g.</b> <i>Latin,</i> For the sake of example; for example.
+   </p>
+   <p align="right">
+    <a href="#ahd1973">
+     [<small>AHD</small> 1973]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   <i>E<small>G</small></i> (pronounced <i>ee-jee</i>) is a
+   program that generates random example strings which are described by a
+   context-free grammar (<small>CFG</small>)
+   <a href="#hop2007">
+    [<small>HOP</small> 2007],
+   </a>
+   and writes them to standard output. It works by translating the grammar to
+   an equivalent tree structure, then doing a random, depth-first traversal of
+   the tree. Heuristics prevent the same parts of the tree from being visited
+   too often.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Because of its simple traversal algorithm,
+   E<small>G</small> works well only for small grammars that translate to
+   shallow trees. Large grammars often have parts that are effectively
+   inaccessible, because those parts are unlikely to be visited during
+   traversal. However, E<small>G</small> has been used successfully to
+   help debug <small>CFG</small>&rsquo;s, and to create random test inputs
+   for other programs. For example, an early version of E<small>G</small>
+   was used to help debug the syntax of the programming language Orson
+   <a href="#moe2014">
+    [<small>MOE</small> 2014],
+   </a>
+   specifically the parts describing <i>case</i> clauses and string
+   literals. It was also used to create test programs for an experimental Orson
+   compiler.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This manual describes
+   E<small>G</small>&rsquo;s language for grammars, which is an extended
+   version of Backus-Naur Form (<small>BNF</small>)
+   <a href="#wir1977">
+    [<small>WIR</small> 1977].
+   </a>
+   The reader is assumed to be familiar with <small>BNF</small> or with
+   <small>CFG</small>&rsquo;s. E<small>G</small> runs under Unix-like
+   operating systems, such as G<small>NU</small>/Linux. The Unix command
+   <tt>man</tt>&nbsp;<tt>eg</tt> shows an online manual page that
+   explains how to run E<small>G</small>, and how to set the parameters
+   that control it.
+  </p>
+  <a name="file">
+  </a>
+  <p>
+   <b>1. Characters and files.</b>
+  </p>
+  <p align="justify">
+   E<small>G</small> uses a 31-bit character set that is a superset of the
+   21-bit Unicode character set
+   <a href="#uni2006">
+    [<small>UNI</small> 2006].
+   </a>
+   Unicode, in turn, is a superset of the 7-bit <small>ASCII</small>
+   character set
+   <a href="#ans1986">
+    [<small>ANS</small> 1986].
+   </a>
+   It is possible to use E<small>G</small> with <small>ASCII</small>
+   characters on computers that do not support Unicode.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; An E<small>G</small> grammar resides on
+   one or more <i>files.</i> Each file is a series of one or more
+   <i>lines.</i> Each line is a series of zero or more visible characters,
+   followed by an invisible unspecified <i>newline</i> character. A
+   <i>blank</i> (U+0020) is considered to be a visible character. The last
+   line in a file need not be terminated by a newline. E<small>G</small>
+   may place limits on the number of files in a grammar, the number of lines in
+   a file, and the number of characters in a line.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Except for newlines, invisible characters
+   like <i>control</i> characters and <i>tabs</i> (U+0009) must not
+   appear in files. This is because they may be handled inconsistently by
+   peripheral devices and by other programs. However, E<small>G</small>
+   grammars can still generate strings that contain invisible characters.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; E<small>G</small> ignores blanks and
+   newlines, called <i>whitespace,</i> except inside
+   <a href="#string">
+    strings,
+   </a>
+   and where it is required to separate adjacent
+   <a href="#name">
+    names.
+   </a>
+   This lets grammars be <i>indented</i> to reflect their logical
+   structure. There are many ways to indent grammars. The way used in this
+   manual is recommended, but not required.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; E<small>G</small> also ignores
+   <i>comments,</i> treating them as whitespace. A comment starts with an
+   exclamation mark &lsquo;<tt>!</tt>&rsquo; (U+0021), is followed by zero
+   or more characters other than newlines, and is terminated by a newline.
+   Since comments are ignored by E<small>G</small>, they can be used to
+   introduce explanatory text into a file.
+  </p>
+  <a name="language">
+  </a>
+  <p>
+   <b>2. Language.</b>
+  </p>
+  <p align="justify">
+   E<small>G</small>&rsquo;s language for context-free grammars is an
+   extended version of <small>BNF</small>. Each
+   <a href="#grammar">
+    grammar
+   </a>
+   is a set of one or more rules. Each
+   <a href="#rule">
+    rule
+   </a>
+   defines a
+   <a href="#name">
+    name
+   </a>
+   to be a disjunction. Each
+   <a href="#disjunct">
+    disjunction
+   </a>
+   is a set of one or more conjunctions. Each
+   <a href="#conjunct">
+    conjunction
+   </a>
+   is a set of one or more terms. Each
+   <a href="#term">
+    term
+   </a>
+   is a unit, with an optional
+   <a href="#range">
+    range.
+   </a>
+   Each
+   <a href="#unit">
+    unit
+   </a>
+   is either a name or a
+   <a href="#string">
+    string.
+   </a>
+   The next few sections describe the parts of E<small>G</small>&rsquo;s
+   language in detail.
+  </p>
+  <a name="unit">
+  </a>
+  <p>
+   <b>2.1. Units.</b>
+  </p>
+  <p align="justify">
+   A <i>unit</i> may be a
+   <a href="#name">
+    <i>name,</i>
+   </a>
+   which represents a nonterminal symbol. It may also be a
+   <a href="#string">
+    <i>string,</i>
+   </a>
+   which represents a terminal symbol.
+  </p>
+  <a name="name">
+  </a>
+  <p>
+   <b>2.1.1. Names.</b>
+  </p>
+  <p align="justify">
+   Each <i>name</i> represents a nonterminal symbol. A name begins with an
+   upper case Roman letter (&lsquo;<tt>A</tt>&rsquo; through
+   &lsquo;<tt>Z</tt>&rsquo;), or a lower case Roman letter
+   (&lsquo;<tt>a</tt>&rsquo; through &lsquo;<tt>z</tt>&rsquo;). It is
+   followed by zero or more digits (&lsquo;<tt>0</tt>&rsquo; through
+   &lsquo;<tt>9</tt>&rsquo;), upper case Roman letters, and lower case
+   Roman letters. The name may have any number of characters, but must fit on a
+   single
+   <a href="#file">
+    line.
+   </a>
+   For example, <tt>a</tt>, <tt>B</tt>, <tt>digit</tt>,
+   <tt>Letter,</tt> and <tt>Ralph124C41</tt> are all names.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Each name must be defined by appearing on the
+   left side of exactly one
+   <a href="#rule">
+    rule.
+   </a>
+   The name generates the strings that are generated by its
+   <i>definition,</i> which is the
+   <a href="#disjunct">
+    disjunction
+   </a>
+   on the right side of the rule. Names can be defined by rules in any order. A
+   name may appear in the right side of the rule that defines it. It may also
+   appear in the right sides of other rules, before and after it is defined:
+   this lets the rules of a grammar appear in any order.
+  </p>
+  <a name="string">
+  </a>
+  <p>
+   <b>2.1.2. Strings.</b>
+  </p>
+  <p align="justify">
+   Each <i>string</i> represents a terminal symbol. A string begins with a
+   <i>quote</i> &lsquo;&nbsp;<tt>"</tt>&nbsp;&rsquo;, is followed by
+   zero or more
+   <a href="#file">
+    visible
+   </a>
+   characters other than quotes, and is terminated by another quote. It may
+   have any number of characters, but must fit on a single
+   <a href="#file">
+    line.
+   </a>
+   For example, <tt>""</tt>, <tt>"A"</tt>, and <tt>"Zarf"</tt>
+   are all strings. Each string generates itself, without its surrounding
+   quotes.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Invisible characters and quotes can be
+   included in strings by using <i>slashed</i> characters. There are two
+   kinds of slashed characters. The first kind consists of a
+   <i>backslash</i> &lsquo;&nbsp;<tt>\</tt>&nbsp;&rsquo; followed by
+   one of the characters in the following table. The table shows each slashed
+   character, the Unicode character that it represents, its official Unicode
+   name, and an unofficial name.
+  </p>
+  <table align="center" border="1" cellpadding="3" cellspacing="0">
+   <tr bgcolor="#D3D3D3" valign="top">
+    <td>
+     <p align="center">
+      <b>&nbsp;&nbsp;Slashed&nbsp;&nbsp;</b>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <b>&nbsp;&nbsp;Code&nbsp;&nbsp;</b>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <b>&nbsp;&nbsp;Official Name&nbsp;&nbsp;</b>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <b>&nbsp;&nbsp;Unofficial Name&nbsp;&nbsp;</b>
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <tt>\A</tt> or <tt>\a</tt>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;U+0007&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<small>CONTROL</small>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<i>Alert</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <tt>\B</tt> or <tt>\b</tt>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;U+0008&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<small>CONTROL</small>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<i>Backspace</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <tt>\E</tt> or <tt>\e</tt>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;U+001B&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<small>CONTROL</small>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<i>Escape</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <tt>\F</tt> or <tt>\f</tt>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;U+000C&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<small>CONTROL</small>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<i>Formfeed</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <tt>\N</tt> or <tt>\n</tt>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;U+000A&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<small>CONTROL</small>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<i>Linefeed</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <tt>\R</tt> or <tt>\r</tt>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;U+000D&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<small>CONTROL</small>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<i>Return</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <tt>\T</tt> or <tt>\t</tt>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;U+0009&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<small>CONTROL</small>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<i>Horizontal tab</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <tt>\V</tt> or <tt>\v</tt>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;U+000B&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<small>CONTROL</small>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<i>Vertical tab</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      &nbsp;<tt>\"</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;U+0022&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<small>QUOTATION MARK</small>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<i>Quote</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      &nbsp;<tt>\\</tt>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      &nbsp;U+005C&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<small>REVERSE SOLIDUS</small>&nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;<i>Backslash</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+  </table>
+  <p align="justify">
+   The second kind of slashed character starts with a backslash and a
+   <i>sharp</i> &lsquo;<tt>#</tt>&rsquo; (U+0023), followed by the
+   hexadecimal code for the character it represents. Within the code, digits
+   have the values 0 through 9; letters &lsquo;<tt>A</tt>&rsquo; through
+   &lsquo;<tt>F</tt>&rsquo; and &lsquo;<tt>a</tt>&rsquo; through
+   &lsquo;<tt>f</tt>&rsquo; have the values 10 through 15. The code must
+   be between <tt>0</tt> and <tt>7FFFFFFF</tt> (2147483647). For
+   example, the string <tt>"Hello,</tt>&nbsp;<tt>world!\#0A"</tt>
+   ends with a linefeed character, whose code is U+000A. It could also have
+   been written as <tt>"Hello,</tt>&nbsp;<tt>world!\N"</tt>.
+  </p>
+  <a name="term">
+  </a>
+  <p>
+   <b>2.2. Terms.</b>
+  </p>
+  <p align="justify">
+   A <i>term</i> may be a
+   <a href="#unit">
+    unit.
+   </a>
+   It may also be a unit followed by a <i>postfix.</i> A postfix may be a
+   <a href="#range">
+    range,
+   </a>
+   a
+   <a href="#star">
+    star,
+   </a>
+   a
+   <a href="#plus">
+    plus,
+   </a>
+   or a
+   <a href="#question">
+    question mark.
+   </a>
+  </p>
+  <a name="number">
+  </a>
+  <p>
+   <b>2.2.1. Numbers.</b>
+  </p>
+  <p align="justify">
+   <i>Numbers</i> can appear as parts of
+   <a href="#range">
+    ranges.
+   </a>
+   A number is a series of one or more digits (&lsquo;<tt>0</tt>&rsquo;
+   through &lsquo;<tt>9</tt>&rsquo;) that fits on a single
+   <a href="#file">
+    line.
+   </a>
+   E<small>G</small> may place an upper limit on how large a number can
+   be.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Unicode infinity symbol
+   &lsquo;<tt>&#8734;</tt>&rsquo; (U+221E) can also be used as a number.
+   Its value may be changed by the user; see the online
+   <a href="#intro">
+    manual
+   </a>
+   page for details. Despite its name, the value of
+   &lsquo;<tt>&#8734;</tt>&rsquo; is typically quite small.
+  </p>
+  <a name="range">
+  </a>
+  <p>
+   <b>2.2.2. Ranges.</b>
+  </p>
+  <p align="justify">
+   Suppose that &#963; is a
+   <a href="#unit">
+    unit.
+   </a>
+   Also suppose that <i>m</i> and <i>n</i> are
+   <a href="#number">
+    numbers,
+   </a>
+   and that <i>m</i> is less than or equal to <i>n.</i> Then the
+   <a href="#term">
+    term
+   </a>
+   &#963;<tt>(</tt><i>m</i><tt>,</tt>&nbsp;<i>n</i><tt>)</tt>
+   is a unit with a <i>range</i> postfix. It generates a random string,
+   constructed by concatenating at least <i>m,</i> but no more than
+   <i>n,</i> of the strings that are generated by &#963;. Concatenating
+   zero strings produces the empty string. If <i>n</i> is omitted from a
+   range, then it defaults to <i>m.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For example, if the
+   <a href="#name">
+    name
+   </a>
+   <tt>letter</tt> is defined to generate a random Roman letter, then the
+   term <tt>letter(2,</tt>&nbsp;<tt>6)</tt> generates a string of two
+   to six random letters. It might generate strings like <tt>aa</tt>,
+   <tt>BB</tt>, <tt>zzA</tt>, or <tt>syzygy</tt>. Similarly, the
+   terms <tt>letter(7,</tt>&nbsp;<tt>7)</tt> and
+   <tt>letter(7)</tt> generate generate strings of exactly seven random
+   letters. They might generate strings like <tt>abxWzGh</tt> or
+   <tt>vulnose.</tt>
+  </p>
+  <a name="star">
+  </a>
+  <p>
+   <b>2.2.3. Stars.</b>
+  </p>
+  <p align="justify">
+   Suppose that &#963; is a
+   <a href="#unit">
+    unit.
+   </a>
+   Then the
+   <a href="#term">
+    term
+   </a>
+   &#963;<tt>&#8727;</tt> is equivalent to a term
+   &#963;<tt>(0,</tt>&nbsp;<tt>&#8734;)</tt> with a
+   <a href="#range">
+    range
+   </a>
+   postfix. It generates a random string, constructed by concatenating zero or
+   more of the strings that are generated by &#963;. For example, if the
+   <a href="#name">
+    name
+   </a>
+   <tt>letter</tt> is
+   <a href="#rule">
+    defined
+   </a>
+   to generate a random Roman letter, then the term <tt>letter&#8727;</tt>
+   might generate the empty string, or strings like <tt>aa</tt>,
+   <tt>BB</tt>, <tt>zzA</tt>, or <tt>Mxyzptlyk</tt>.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The term can be written either as
+   &#963;<tt>*</tt>, with an <small>ASCII</small> asterisk (U+002A),
+   or as &#963;<tt>&#8727;</tt>, with a Unicode asterisk operator
+   (U+2217). The Unicode version is preferred, although the
+   <small>ASCII</small> version is easier to type, and may be used on
+   computers that do not support Unicode.
+  </p>
+  <a name="plus">
+  </a>
+  <p>
+   <b>2.2.4. Pluses.</b>
+  </p>
+  <p align="justify">
+   Suppose that &#963; is a
+   <a href="#unit">
+    unit.
+   </a>
+   Then the
+   <a href="#term">
+    term
+   </a>
+   &#963;<tt>+</tt> is equivalent to a term
+   &#963;<tt>(1,</tt>&nbsp;<tt>&#8734;)</tt> with a
+   <a href="#range">
+    range
+   </a>
+   postfix. It generates a random string, constructed by concatenating one or
+   more of the strings that are generated by &#963;. It is
+   <a href="#star">
+    similar
+   </a>
+   to &#963;<tt>&#8727;</tt>, but it cannot generate the empty string
+   unless &#963; itself does.
+  </p>
+  <a name="question">
+  </a>
+  <p>
+   <b>2.2.5. Question marks.</b>
+  </p>
+  <p align="justify">
+   Suppose that &#963; is a
+   <a href="#unit">
+    unit.
+   </a>
+   Then the
+   <a href="#term">
+    term
+   </a>
+   &#963;<tt>?</tt> is equivalent to a term
+   &#963;<tt>(0,</tt>&nbsp;<tt>1)</tt> with a
+   <a href="#range">
+    range
+   </a>
+   postfix. It generates either the empty string, or else a string that is
+   generated by &#963; itself.
+  </p>
+  <a name="conjunct">
+  </a>
+  <p>
+   <b>2.3. Conjunctions.</b>
+  </p>
+  <p align="justify">
+   A <i>conjunction</i> may be a
+   <a href="#term">
+    term.
+   </a>
+   It may also be two or more terms, separated by
+   <a href="#file">
+    whitespace.
+   </a>
+   The conjunction generates a random string, constructed by concatenating the
+   strings that are generated by its terms. For example, if the
+   <a href="#name">
+    name
+   </a>
+   <tt>letter</tt> is
+   <a href="#rule">
+    defined
+   </a>
+   to generate a random Roman letter, and the name <tt>digit</tt> is
+   defined to generate a random digit, then the conjunction
+   <tt>letter</tt>&nbsp;<tt>digit</tt>&nbsp;<tt>digit</tt>
+   generates a random string consisting of a letter followed by two digits. It
+   might generate strings like <tt>b12</tt>, <tt>F00</tt>, or
+   <tt>x15</tt>.
+  </p>
+  <a name="disjunct">
+  </a>
+  <p>
+   <b>2.4. Disjunctions.</b>
+  </p>
+  <p align="justify">
+   A <i>disjunction</i> may be a
+   <a href="#conjunct">
+    conjunction.
+   </a>
+   It may also be two or more conjunctions, separated by <i>bars</i>
+   &lsquo;<tt>|</tt>&rsquo; (U+007C). The disjunction chooses one of its
+   conjunctions at random, then generates a string using that conjunction. For
+   example, if the
+   <a href="#name">
+    name
+   </a>
+   <tt>letter</tt> is
+   <a href="#rule">
+    defined
+   </a>
+   to generate a random Roman letter, and the name <tt>digit</tt> is
+   defined to generate a random digit, then the disjunction
+   <tt>letter</tt>&nbsp;<tt>|</tt>&nbsp;<tt>digit</tt> generates
+   either a random letter or a random digit.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Each disjunction records the conjunctions it
+   has chosen in the past. It has a slight bias against choosing conjunctions
+   that it has chosen recently before. This is intended to keep
+   E<small>G</small> from being &lsquo;&lsquo;trapped&rsquo;&rsquo; in a
+   small portion of a grammar, and to generate a wide variety of strings.
+   E<small>G</small>&rsquo;s disjunction bias can be adjusted by the user.
+   At one extreme, conjunctions are chosen regardless of whether they were
+   chosen before. At the other extreme, conjunctions are (almost) never chosen
+   if they were chosen before. See the online
+   <a href="#intro">
+    manual
+   </a>
+   page for details.
+  </p>
+  <a name="rule">
+  </a>
+  <p>
+   <b>2.5. Rules.</b>
+  </p>
+  <p align="justify">
+   A <i>rule</i> consists of a
+   <a href="#name">
+    name,
+   </a>
+   followed by a Unicode arrow &lsquo;<tt>&#8594;</tt>&rsquo; (U+2192),
+   followed by a
+   <a href="#disjunct">
+    disjunction,
+   </a>
+   and terminated by a dot &lsquo;<tt>.</tt>&rsquo; (U+002E). Rules are
+   sometimes called <i>productions.</i> The rule <i>defines</i> the
+   name on the left side of the arrow to be the disjunction on the right side.
+   For example, if the name <tt>letter</tt> is defined to generate a
+   random Roman letter, then this rule defines the name <tt>word</tt> to
+   generate a random word.
+  </p>
+  <blockquote>
+   <p>
+    <tt>word &#8594; letter | word letter .</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   For example, after <tt>word</tt> is defined by the rule, it might
+   generate strings like <tt>a</tt>, <tt>BB</tt>, <tt>zzA</tt>,
+   or <tt>pudwucky</tt>.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A rule can also be written with an
+   <small>ASCII</small> equal sign &lsquo;<tt>=</tt>&rsquo; (U+003D)
+   instead of the arrow. The Unicode version is preferred, although the
+   <small>ASCII</small> version is easier to type, and may be used on
+   computers that do not support Unicode.
+  </p>
+  <a name="grammar">
+  </a>
+  <p>
+   <b>2.6. Grammars.</b>
+  </p>
+  <p align="justify">
+   A <i>grammar</i> consists of zero or more
+   <a href="#rule">
+    rules,
+   </a>
+   separated by
+   <a href="#file">
+    whitespace.
+   </a>
+   Each grammar must
+   <a href="#rule">
+    define
+   </a>
+   the
+   <a href="#name">
+    name
+   </a>
+   <tt>start.</tt> It generates the strings that are generated from
+   <tt>start</tt>&rsquo;s
+   <a href="#name">
+    definition.
+   </a>
+   If a grammar resides on more than one
+   <a href="#file">
+    file,
+   </a>
+   then it is equivalent to the grammar that results from concatenating all the
+   files together.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; E<small>G</small> can become trapped in
+   infinite loops when generating strings for some grammars. The simplest such
+   grammar is one consisting of the single rule
+   <tt>start</tt>&nbsp;<tt>&#8594;</tt>&nbsp;<tt>start.</tt>
+   Also, E<small>G</small> may need a very long time to generate strings
+   for some grammars. Most simple grammars can generate short strings quickly.
+   However, complex grammars, especially those that generate long strings, must
+   be carefully designed in order to work efficiently.
+  </p>
+  <a name="example">
+  </a>
+  <p>
+   <b>2.7. Examples.</b>
+  </p>
+  <p align="justify">
+   This section shows three example E<small>G</small> grammars. The first
+   generates Orson <i>case</i> clauses
+   <a href="#moe2014">
+    [<small>MOE</small> 2014].
+   </a>
+   It was used to help debug the <small>BNF</small> rules that describe
+   Orson&rsquo;s syntax. This grammar is designed so that an assignment can
+   appear prefixed by <tt>none</tt> at most once in each <i>case</i>
+   clause. It might generate a string like
+   <tt>(case</tt>&nbsp;<tt>S</tt>&nbsp;<tt>of</tt>&nbsp;<tt>L:</tt>&nbsp;<tt>E;</tt>&nbsp;<tt>L,</tt>&nbsp;<tt>L:</tt>&nbsp;<tt>E;</tt>&nbsp;<tt>L:</tt>&nbsp;<tt>E;</tt>&nbsp;<tt>none:</tt>&nbsp;<tt>E)</tt>.
+  </p>
+  <blockquote>
+   <p>
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start&nbsp;&#8594;&nbsp;caseClause.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;caseClause&nbsp;&#8594;&nbsp;"(case&nbsp;"&nbsp;sequence&nbsp;"&nbsp;of&nbsp;"&nbsp;optCases&nbsp;")".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;optCases&nbsp;&#8594;&nbsp;empty&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;labeledCases&nbsp;optOtherCases&nbsp;optSemicolon&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;noneCase&nbsp;optLabeledCases&nbsp;optSemicolon.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;labeledCases&nbsp;&#8594;&nbsp;labeledCase&nbsp;|&nbsp;labeledCase&nbsp;";&nbsp;"&nbsp;labeledCases.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;labeledCase&nbsp;&#8594;&nbsp;labels&nbsp;":&nbsp;"&nbsp;assignment.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;optOtherCases&nbsp;&#8594;&nbsp;empty&nbsp;|&nbsp;";&nbsp;"&nbsp;noneCase&nbsp;optLabeledCases.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;noneCase&nbsp;&#8594;&nbsp;"none:&nbsp;"&nbsp;assignment.&nbsp;</tt>
+    <br />
+    <tt>optLabeledCases&nbsp;&#8594;&nbsp;empty&nbsp;|&nbsp;";&nbsp;"&nbsp;labeledCases.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;assignment&nbsp;&#8594;&nbsp;"E".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;empty&nbsp;&#8594;&nbsp;"".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;labels&nbsp;&#8594;&nbsp;label&nbsp;|&nbsp;label&nbsp;",&nbsp;"&nbsp;labels.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label&nbsp;&#8594;&nbsp;"L".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;optSemicolon&nbsp;&#8594;&nbsp;empty&nbsp;|&nbsp;";".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sequence&nbsp;&#8594;&nbsp;"S".</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The second example generates Orson string literals, and was also used to
+   help debug the <small>BNF</small> rules for Orson&rsquo;s syntax. A
+   string literal consists of two apostrophes, followed by a series of zero or
+   more characters that do not include two adjacent apostrophes, followed by
+   two more apostrophes. This grammar might generate strings like
+   <tt>''''</tt>, <tt>'''''</tt>, <tt>''c''</tt>,
+   <tt>''cc''</tt>, and <tt>''c'c'ccc'''</tt>.
+  </p>
+  <blockquote>
+   <p>
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start&nbsp;&#8594;&nbsp;stringLiteral.&nbsp;</tt>
+    <br />
+    <tt>stringLiteral&nbsp;&#8594;&nbsp;&nbsp;"''"&nbsp;optString&nbsp;"''"&nbsp;optApostrophe.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;optString&nbsp;&#8594;&nbsp;empty&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;character&nbsp;optString&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"'"&nbsp;character&nbsp;optString.&nbsp;</tt>
+    <br />
+    <tt>optApostrophe&nbsp;&#8594;&nbsp;empty&nbsp;|&nbsp;"'".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;empty&nbsp;&#8594;&nbsp;"".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;character&nbsp;&#8594;&nbsp;"c".</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The third example generates E<small>G</small> grammars themselves.
+   Although it formally describes a context-free approximation to the syntax of
+   an E<small>G</small> grammar, it is very unlikely to generate working
+   grammars, or even comprehensible ones.
+  </p>
+  <blockquote>
+   <p>
+    <tt>!&nbsp;&nbsp;Start.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start&nbsp;&#8594;&nbsp;grammar.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;</tt>
+    <br />
+    <tt>!&nbsp;&nbsp;Grammars.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;grammar&nbsp;&#8594;&nbsp;rule&nbsp;otherRule&#8727;.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rule&nbsp;&#8594;&nbsp;name&nbsp;arrow&nbsp;disjunction&nbsp;".".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arrow&nbsp;&#8594;&nbsp;"&nbsp;=&nbsp;"&nbsp;|&nbsp;"&nbsp;&#8594;&nbsp;".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;otherRule&nbsp;&#8594;&nbsp;"\N"&nbsp;rule.&nbsp;</tt>
+    <br />
+    <tt>disjunction&nbsp;&#8594;&nbsp;conjunction&nbsp;disjunct&#8727;.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;disjunct&nbsp;&#8594;&nbsp;"&nbsp;|&nbsp;"&nbsp;conjunction.&nbsp;</tt>
+    <br />
+    <tt>conjunction&nbsp;&#8594;&nbsp;term&nbsp;conjunct&#8727;.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;conjunct&nbsp;&#8594;&nbsp;"&nbsp;"&nbsp;term.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;term&nbsp;&#8594;&nbsp;unit&nbsp;postfix?.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unit&nbsp;&#8594;&nbsp;name&nbsp;|&nbsp;string.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;postfix&nbsp;&#8594;&nbsp;"*"&nbsp;|&nbsp;"+"&nbsp;|&nbsp;"&#8727;"&nbsp;|&nbsp;range.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;range&nbsp;&#8594;&nbsp;"("&nbsp;lower&nbsp;upper?&nbsp;")".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lower&nbsp;&#8594;&nbsp;number.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;upper&nbsp;&#8594;&nbsp;",&nbsp;"&nbsp;number.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;</tt>
+    <br />
+    <tt>!&nbsp;&nbsp;Tokens.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;&#8594;&nbsp;letter&nbsp;otherChar&#8727;.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;otherChar&nbsp;&#8594;&nbsp;letter&nbsp;|&nbsp;digit.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number&nbsp;&#8594;&nbsp;digit+&nbsp;|&nbsp;"&#8734;".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;&#8594;&nbsp;"\""&nbsp;char*&nbsp;"\"".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char&nbsp;&#8594;&nbsp;nonquote&nbsp;|&nbsp;"\\"&nbsp;slashed.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;slashed&nbsp;&#8594;&nbsp;special&nbsp;|&nbsp;"#"&nbsp;hexit(1,&nbsp;8).&nbsp;</tt>
+    <br />
+    <tt>&nbsp;</tt>
+    <br />
+    <tt>!&nbsp;&nbsp;Characters&nbsp;in&nbsp;tokens.&nbsp;We&nbsp;use&nbsp;only&nbsp;ASCII.&nbsp;</tt>
+    <br />
+    <tt>&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bak&nbsp;&#8594;&nbsp;"\\".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digit&nbsp;&#8594;&nbsp;"0"&nbsp;|&nbsp;"1"&nbsp;|&nbsp;"2"&nbsp;|&nbsp;"3"&nbsp;|&nbsp;"4"&nbsp;|&nbsp;"5"&nbsp;|&nbsp;"6"&nbsp;|&nbsp;"7"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"8"&nbsp;|&nbsp;"9".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hexit&nbsp;&#8594;&nbsp;"A"&nbsp;|&nbsp;"B"&nbsp;|&nbsp;"C"&nbsp;|&nbsp;"D"&nbsp;|&nbsp;"E"&nbsp;|&nbsp;"F"&nbsp;|&nbsp;"a"&nbsp;|&nbsp;"b"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"c"&nbsp;|&nbsp;"d"&nbsp;|&nbsp;"e"&nbsp;|&nbsp;"f"&nbsp;|&nbsp;"0"&nbsp;|&nbsp;"1"&nbsp;|&nbsp;"2"&nbsp;|&nbsp;"3"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"4"&nbsp;|&nbsp;"5"&nbsp;|&nbsp;"6"&nbsp;|&nbsp;"7"&nbsp;|&nbsp;"8"&nbsp;|&nbsp;"9".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;letter&nbsp;&#8594;&nbsp;"A"&nbsp;|&nbsp;"B"&nbsp;|&nbsp;"C"&nbsp;|&nbsp;"D"&nbsp;|&nbsp;"E"&nbsp;|&nbsp;"F"&nbsp;|&nbsp;"G"&nbsp;|&nbsp;"H"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"I"&nbsp;|&nbsp;"J"&nbsp;|&nbsp;"K"&nbsp;|&nbsp;"L"&nbsp;|&nbsp;"M"&nbsp;|&nbsp;"N"&nbsp;|&nbsp;"O"&nbsp;|&nbsp;"P"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Q"&nbsp;|&nbsp;"R"&nbsp;|&nbsp;"S"&nbsp;|&nbsp;"T"&nbsp;|&nbsp;"U"&nbsp;|&nbsp;"V"&nbsp;|&nbsp;"W"&nbsp;|&nbsp;"X"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Y"&nbsp;|&nbsp;"Z"&nbsp;|&nbsp;"a"&nbsp;|&nbsp;"b"&nbsp;|&nbsp;"c"&nbsp;|&nbsp;"d"&nbsp;|&nbsp;"e"&nbsp;|&nbsp;"f"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"g"&nbsp;|&nbsp;"h"&nbsp;|&nbsp;"i"&nbsp;|&nbsp;"j"&nbsp;|&nbsp;"k"&nbsp;|&nbsp;"l"&nbsp;|&nbsp;"m"&nbsp;|&nbsp;"n"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"o"&nbsp;|&nbsp;"p"&nbsp;|&nbsp;"q"&nbsp;|&nbsp;"r"&nbsp;|&nbsp;"s"&nbsp;|&nbsp;"t"&nbsp;|&nbsp;"u"&nbsp;|&nbsp;"v"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"w"&nbsp;|&nbsp;"x"&nbsp;|&nbsp;"y"&nbsp;|&nbsp;"z".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;nonquote&nbsp;&#8594;&nbsp;"&nbsp;"&nbsp;|&nbsp;"!"&nbsp;|&nbsp;quo&nbsp;|&nbsp;"#"&nbsp;|&nbsp;"$"&nbsp;|&nbsp;"%"&nbsp;|&nbsp;"&amp;"&nbsp;|&nbsp;"&rsquo;"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"("&nbsp;|&nbsp;")"&nbsp;|&nbsp;"*"&nbsp;|&nbsp;"+"&nbsp;|&nbsp;","&nbsp;|&nbsp;"-"&nbsp;|&nbsp;"."&nbsp;|&nbsp;"/"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"0"&nbsp;|&nbsp;"1"&nbsp;|&nbsp;"2"&nbsp;|&nbsp;"3"&nbsp;|&nbsp;"4"&nbsp;|&nbsp;"5"&nbsp;|&nbsp;"6"&nbsp;|&nbsp;"7"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"8"&nbsp;|&nbsp;"9"&nbsp;|&nbsp;":"&nbsp;|&nbsp;";"&nbsp;|&nbsp;"&lt;"&nbsp;|&nbsp;"="&nbsp;|&nbsp;"&gt;"&nbsp;|&nbsp;"?"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"@"&nbsp;|&nbsp;"A"&nbsp;|&nbsp;"B"&nbsp;|&nbsp;"C"&nbsp;|&nbsp;"D"&nbsp;|&nbsp;"E"&nbsp;|&nbsp;"F"&nbsp;|&nbsp;"G"&nbsp;|&nbsp;&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"H"&nbsp;|&nbsp;"I"&nbsp;|&nbsp;"J"&nbsp;|&nbsp;"K"&nbsp;|&nbsp;"L"&nbsp;|&nbsp;"M"&nbsp;|&nbsp;"N"&nbsp;|&nbsp;"O"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"P"&nbsp;|&nbsp;"Q"&nbsp;|&nbsp;"R"&nbsp;|&nbsp;"S"&nbsp;|&nbsp;"T"&nbsp;|&nbsp;"U"&nbsp;|&nbsp;"V"&nbsp;|&nbsp;"W"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"X"&nbsp;|&nbsp;"Y"&nbsp;|&nbsp;"Z"&nbsp;|&nbsp;"["&nbsp;|&nbsp;bak&nbsp;|&nbsp;"]"&nbsp;|&nbsp;"^"&nbsp;|&nbsp;"_"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"&lsquo;"&nbsp;|&nbsp;"a"&nbsp;|&nbsp;"b"&nbsp;|&nbsp;"c"&nbsp;|&nbsp;"d"&nbsp;|&nbsp;"e"&nbsp;|&nbsp;"f"&nbsp;|&nbsp;"g"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"h"&nbsp;|&nbsp;"i"&nbsp;|&nbsp;"j"&nbsp;|&nbsp;"k"&nbsp;|&nbsp;"l"&nbsp;|&nbsp;"m"&nbsp;|&nbsp;"n"&nbsp;|&nbsp;"o"&nbsp;|&nbsp;&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"p"&nbsp;|&nbsp;"q"&nbsp;|&nbsp;"r"&nbsp;|&nbsp;"s"&nbsp;|&nbsp;"t"&nbsp;|&nbsp;"u"&nbsp;|&nbsp;"v"&nbsp;|&nbsp;"w"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"x"&nbsp;|&nbsp;"y"&nbsp;|&nbsp;"z"&nbsp;|&nbsp;"{"&nbsp;|&nbsp;"|"&nbsp;|&nbsp;"}"&nbsp;|&nbsp;"~".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;quo&nbsp;&#8594;&nbsp;"\"".&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;special&nbsp;&#8594;&nbsp;"A"&nbsp;|&nbsp;"B"&nbsp;|&nbsp;"F"&nbsp;|&nbsp;"N"&nbsp;|&nbsp;"R"&nbsp;|&nbsp;"T"&nbsp;|&nbsp;"V"&nbsp;|&nbsp;"a"&nbsp;|&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"b"&nbsp;|&nbsp;"f"&nbsp;|&nbsp;"n"&nbsp;|&nbsp;"r"&nbsp;|&nbsp;"t"&nbsp;|&nbsp;"v"&nbsp;|&nbsp;"\""&nbsp;|&nbsp;"\\".</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   This grammar generates
+   <a href="#string">
+    strings
+   </a>
+   using only visible <small>ASCII</small> characters. Of course it is
+   infeasible to write a grammar that generates strings with Unicode
+   characters, as there are so many of them.
+  </p>
+  <hr />
+  <a name="reference">
+  </a>
+  <p align="center">
+   <b>References</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="ahd1973">
+      </a>
+      [<small>AHD</small>&nbsp;1973]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      <i>The American Heritage Dictionary of the English Language.</i>
+      William Morris, editor. American Heritage Publishing Company, Inc.
+      Houghton Mifflin Company. Boston, Massachusetts. 1973. Page 459.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="ans1986">
+      </a>
+      [<small>ANS</small>&nbsp;1986]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      American National Standards Institute. &#8216;&#8216;American National
+      Standard Code for Information Interchange.&#8217;&#8217;
+      A<small>NSI</small> X3.4&#8211;1986.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="hop2007">
+      </a>
+      [<small>HOP</small>&nbsp;2007]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      John E. Hopcroft, Rajeev Motwani, Jeffrey D. Ullman. <i>Introduction to
+      Automata Theory, Languages, and Computation.</i> Third Edition.
+      Addison-Wesley. Boston, Massachusetts. 2007.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2014">
+      </a>
+      [<small>MOE</small>&nbsp;2014]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;Revised&#8315;&#185; Report on the
+      Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
+      2014.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="uni2006">
+      </a>
+      [<small>UNI</small>&nbsp;2006]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      The Unicode Consortium. <i>The Unicode Standard, Version 5.0.</i>
+      Fifth Edition. Addison-Wesley Professional. Reading, Massachusetts. 2006.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="wir1977">
+      </a>
+      [<small>WIR</small>&nbsp;1977]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Niklaus Wirth. &lsquo;&lsquo;What Can We Do About the Unnecessary
+      Diversity of Notation for Syntactic Definitions?&rsquo;&rsquo;
+      <i>Communications of the A<small>CM</small>.</i> Volume 20.
+      Number 1. November, 1977. Pages 822&#8211;823.
+     </p>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

@@ -1,0 +1,3307 @@
+<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:34 PM CST -->
+<html>
+ <head>
+  <title>
+   A Tutorial: Computing Prime Numbers in Orson
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>A Tutorial: Computing Prime Numbers in Orson</b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   June 12, 2013
+  </p>
+  <p align="justify">
+   Copyright &#169; 2013 James B. Moen. Permission is granted to copy,
+   distribute, and/or modify this document under the terms of the
+   G<small>NU</small> Free Documentation License, Version 1.3 or any later
+   version published by the Free Software Foundation; with no Invariant
+   Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the
+   license may be obtained at
+   <a href="http://fsf.org/">
+    <tt>&lt;http://fsf.org/&gt;.</tt>
+   </a>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This document uses special characters.
+   Without proper rendering support, you may see question marks, boxes, or
+   other symbols in place of these characters. This document must be rendered
+   in font where an italic quote &lsquo;&nbsp;<i>"</i>&nbsp;&rsquo; looks
+   different from two apostrophes &lsquo;&nbsp;''&nbsp;&rsquo;.
+  </p>
+  <hr />
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    You may ask how a prime can be factored when it is divisible only by itself
+    and by one. The problem is, for your system, solvable only by your
+    mathematics. Will you do it?
+   </p>
+   <p align="right">
+    <a href="#vog1952">
+     [<small>VOG</small> 1952]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   One way to learn a new language is to read example programs that are written
+   in it. In this essay, I&rsquo;ll show a series of Orson programs that write
+   the prime numbers between 2 and 1000, and explain how those programs work.
+   To make the explanations easy to understand, I&rsquo;ll often tell lies, or
+   otherwise evade the truth. To find out what&rsquo;s really going on, you
+   should read the &lsquo;&lsquo;Revised&#8315;&#185; Report on the Algorithmic
+   Language Orson&rsquo;&rsquo;
+   <a href="#moe2013b">
+    [<small>MOE</small> 2013<small>B</small>].
+   </a>
+   I&rsquo;ll assume you already know a programming language, so I won&rsquo;t
+   bother explaining things like constants, expressions, objects, procedures,
+   recursions, types, and variables.
+  </p>
+  <p>
+   <b>1. Elementary programming.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    Struggle you may with the elementary.
+   </p>
+   <p align="right">
+    <a href="#har1982">
+     [<small>HAR</small> 1982]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   An Orson program is a series of zero or more <i>prog</i> clauses. Each
+   <i>prog</i> clause looks like this.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       (<b>prog</b>
+      </p>
+     </td>
+    </tr>
+   </table>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       <i>t</i><sub>1</sub> <i>n</i><sub>1</sub> :&#8722;
+       <i>e</i><sub>1</sub>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       <i>t</i><sub>2</sub> <i>n</i><sub>2</sub> :&#8722;
+       <i>e</i><sub>2</sub>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       &#8942;
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p align="center">
+       <i>t<sub>k</sub> n<sub>k</sub></i> :&#8722;
+       <i>e<sub>k</sub></i>
+      </p>
+     </td>
+     <td>
+      <p>
+       )
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   Each subscripted triple
+   <i>t</i>&nbsp;<i>n</i>&nbsp;:&#8722;&nbsp;<i>e</i> is called
+   an <i>equate.</i> The equate <i>binds</i> a name <i>n</i> to
+   an <i>object</i> and its <i>type.</i> The object is returned by
+   the expression <i>e,</i> and its type is returned by the expression
+   <i>t.</i> For example, the first equate in the following
+   <i>prog</i> clause binds the name &#949; to the object 0.001 and its
+   type <i>real.</i>
+  </p>
+  <blockquote>
+   <p>
+    (<b>prog</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b></font><i>real</i>&nbsp;&#949;&nbsp;:&#8722;&nbsp;0.001
+   </p>
+  </blockquote>
+  <p align="justify">
+   If I omit the type, then Orson uses the type of the expression on the left
+   of the :&#8722; symbol. For example, I could have written the equate as
+   &#949;&nbsp;:&#8722;&nbsp;0.001, since 0.001 has the type <i>real.</i>
+   The type should be omitted only when it&rsquo;s so obvious that you
+   don&rsquo;t need to state it explicitly.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In this equate, &#949; is the name of the
+   constant 0.001. It is <small>NOT</small> the name of a variable, so it
+   can&rsquo;t be bound to another object. Orson is fussier about
+   distinguishing between constants and variables than other languages.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson programs are written using Unicode
+   <a href="#uni2006">
+    [<small>UNI</small> 2006],
+   </a>
+   a large character set that includes Greek letters and mathematical symbols.
+   That&rsquo;s why I could use &#949;, a Greek lower case <i>epsilon,</i>
+   as a name. You don&rsquo;t have to use Unicode to write Orson programs. You
+   could write them using only A<small>SCII</small> characters
+   <a href="#ans1986">
+    [<small>ANS</small> 1986],
+   </a>
+   but Unicode is more fun and may be easier to read
+   <a href="#kam2010">
+    [<small>KAM</small> 2010].
+   </a>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The next equate in the <i>prog</i>
+   clause binds the name <i>abs</i> to a <i>procedure.</i> The
+   procedure has a single <i>parameter,</i> a real object whose name is
+   <i>number.</i> It returns another real object, the absolute value of
+   <i>number.</i> The parameter name <i>number</i> isn&rsquo;t a
+   variable, so like &#949;, it can&rsquo;t be rebound inside the procedure.
+  </p>
+  <blockquote>
+   <p>
+    <i>abs</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i></font>(<b>proc</b>&nbsp;(<i>real</i>&nbsp;<i>number</i>)&nbsp;<i>real</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>(</font>(<b>if</b>&nbsp;<i>number</i>&nbsp;&lt;&nbsp;0.0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>((</font><b>then</b>&nbsp;&#8722;&nbsp;<i>number</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>((</font><b>else</b>&nbsp;<i>number</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The procedure <i>abs</i> also uses an <i>if</i> clause. An
+   <i>if</i> clause acts something like an <i>if</i> statement in
+   other languages. However, Orson doesn&rsquo;t have statements. Orson is an
+   <i>expression language,</i> which means that (almost) everything you
+   write is an expression that returns an object.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson evaluates the <i>if</i> clause as
+   follows. It first evaluates the integer expression that follows
+   <b>if.</b> If the expression is true, then Orson evaluates the
+   expression that follows <b>then,</b> and the object it returns is also
+   returned by the <i>if</i> clause. If the expression is false, then
+   Orson evaluates the expression that follows <b>else,</b> and the object
+   it returns is returned instead. For example, if <i>number</i> is
+   greater than 0, then the <i>if</i> clause in the procedure
+   <i>abs</i> returns <i>number,</i> but returns
+   &#8722;&nbsp;<i>number</i> otherwise.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson doesn&rsquo;t really have Boolean
+   objects. Instead, it uses the integer 0 to mean false, and it uses any
+   integer other than 0 to mean <i>true.</i> To make things easier to
+   read, it binds the name <i>bool</i> to an integer type, it binds the
+   name <i>false</i> to 0, and it binds the name <i>true</i> to 1. In
+   the rest of this essay, whenever I talk about Boolean objects, I really mean
+   integers that are used in this way.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The procedure returns the object that is
+   returned by its <i>body,</i> which is the expression that follows the
+   colon &lsquo;&nbsp;:&nbsp;&rsquo;. For example, the procedure
+   <i>abs</i> returns the real number that is returned by the
+   <i>if</i> clause. Unlike other languages, Orson doesn&rsquo;t have
+   anything like a <i>return</i> statement, because it doesn&rsquo;t need
+   one.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The next equate defines another procedure
+   called <i>sqrt</i> (pronounced &lsquo;&lsquo;squirt&rsquo;&rsquo;)
+   which is short for <i>square root.</i> It returns the square root of a
+   non-negative real number <i>a,</i> computed by Newton&rsquo;s method.
+   It uses the real constant &#949; to tell it how accurate the square root
+   should be. It also calls the procedure <i>abs.</i> Procedures defined
+   by equates in the same <i>prog</i> clause can call each other freely,
+   so I could have defined <i>sqrt</i> before <i>abs.</i>
+  </p>
+  <blockquote>
+   <p>
+    <i>sqrt</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i></font>(<b>proc</b>&nbsp;(<i>real</i>&nbsp;<i>a</i>)&nbsp;<i>real</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>((<b>w</b></font><b>var</b>&nbsp;<i>real</i>&nbsp;<i>g</i>&nbsp;:&#8722;&nbsp;1.0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>((<b>w</b></font><b>var</b>&nbsp;<i>real</i>&nbsp;<i>h</i>&nbsp;:&#8722;&nbsp;<i>a</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>((</font><b>do</b>&nbsp;(<b>while</b>&nbsp;<i>abs</i>(<i>g</i>&nbsp;&#8722;&nbsp;<i>h</i>)&nbsp;&#8805;&nbsp;&#949;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>g</i>&nbsp;:=&nbsp;(<i>g</i>&nbsp;+&nbsp;<i>h</i>)&nbsp;/&nbsp;2.0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;</font><i>h</i>&nbsp;:=&nbsp;<i>a</i>&nbsp;/&nbsp;<i>g</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>((<b>do</b>&nbsp;</font><i>g</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The procedure <i>sqrt</i> uses a <i>with</i> clause. A
+   <i>with</i> clause has a series of equates that bind names which can be
+   used inside the <i>with</i> clause, but not outside it. This
+   <i>with</i> clause binds the local names <i>g</i> and
+   <i>h</i> to <i>variables.</i> Their types are both
+   <b>var</b>&nbsp;<i>real,</i> which means their <i>values</i>
+   must be real objects. If their types had been <i>real</i> (without the
+   <b>var</b> prefix) then they would have been real constants instead,
+   like &#949;. The initial value of the variable <i>g</i> is 1.0, and the
+   initial value of the variable <i>h</i> is <i>a.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Unlike constants, the values of variables can
+   be changed by an <i>assignment operator,</i> written as
+   &lsquo;&nbsp;:=&nbsp;&rsquo;. An assignment
+   <i>v</i>&nbsp;:=&nbsp;<i>e</i> changes the value of the variable
+   <i>v</i> to be the object returned by the expression <i>e.</i> The
+   expression <i>e</i> must return an object with the same type as the
+   variable <i>v.</i> The assignment returns <i>skip,</i> a dummy
+   object that represents the lack of anything useful.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The procedure <i>sqrt</i> also uses a
+   <i>while</i> clause. It acts like a loop. To evaluate a
+   <i>while</i> clause, Orson first evaluates the expression that follows
+   <b>while.</b> If the expression is true, the Orson evaluates the
+   expression that comes after <b>do,</b> and repeats the entire process.
+   If it is false, then Orson stops the <i>while</i> clause instead. When
+   a <i>while</i> clause stops, it returns the dummy object
+   <i>skip.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The last thing the <i>with</i> clause
+   does is return the value of the variable <i>g,</i> a real object. Then
+   the procedure <i>sqrt</i> returns the object returned by the
+   <i>with</i> clause, which is that same real.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The next equate defines a procedure
+   <i>isPrime.</i> Its single parameter is an integer object whose name is
+   <i>number.</i> It returns a Boolean object: <i>true</i> if
+   <i>number</i> is a prime number, and <i>false</i> if it is not.
+   The procedure <i>isPrime</i> uses the same things I mentioned along
+   with other procedures, like <i>with</i> clauses, variables,
+   <i>while</i> clauses, and assignments.
+  </p>
+  <blockquote>
+   <p>
+    <i>isPrime</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i></font>(<b>proc</b>&nbsp;(<i>int</i>&nbsp;<i>number</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b></font><b>var</b>&nbsp;<i>int</i>&nbsp;<i>factor</i>&nbsp;:&#8722;&nbsp;2&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b></font><b>var</b>&nbsp;<i>bool</i>&nbsp;<i>going</i>&nbsp;:&#8722;&nbsp;<i>true</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b></font><i>int</i>&nbsp;<i>root</i>&nbsp;:&#8722;&nbsp;<i>sqrt</i>(<i>number</i>{<i>real</i>}){<i>int</i>}&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((</font><b>do</b>&nbsp;(<b>while</b>&nbsp;<i>going</i>&nbsp;&#8743;&nbsp;<i>factor</i>&nbsp;&#8804;&nbsp;<i>root</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>going</i>&nbsp;:=&nbsp;<i>number</i>&nbsp;<b>mod</b>&nbsp;<i>factor</i>&nbsp;&#8800;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;</font><i>factor</i>&nbsp;+=&nbsp;1)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>do</b>&nbsp;</font><i>going</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   It also uses some things I haven&rsquo;t mentioned yet. Unlike most other
+   languages, Orson doesn&rsquo;t automatically convert integer objects to real
+   objects. Instead, this must be done by <i>casts,</i> written with curly
+   brackets &lsquo;&nbsp;{&nbsp;}&nbsp;&rsquo;. For example,
+   <i>number</i>{<i>real</i>} converts the integer object
+   <i>number</i> to a real object, and returns it.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The &lsquo;&#8743;&rsquo; operator returns
+   <i>true</i> if both its arguments are true, and it returns
+   <i>false</i> otherwise. It can also be written as <b>and.</b> If
+   its left argument returns false, then its right argument isn&rsquo;t
+   evaluated. Although it isn&rsquo;t used here, the &lsquo;&#8744;&rsquo;
+   operator returns <i>true</i> if one or more of its arguments are true,
+   and it returns <i>false</i> otherwise. It can also be written as
+   <b>or.</b>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The <b>mod</b> operator returns the
+   remainder after division. The &lsquo;&nbsp;&#8800;&nbsp;&rsquo; operator
+   tests for inequality, and can also be written as
+   &lsquo;&nbsp;&lt;&gt;&nbsp;&rsquo;. The &lsquo;&nbsp;+=&nbsp;&rsquo;
+   operator increments a variable. For example,
+   <i>factor</i>&nbsp;+=&nbsp;1 is an abbreviation for
+   <i>factor</i>&nbsp;:=&nbsp;<i>factor</i>&nbsp;+&nbsp;1. Although
+   it isn&rsquo;t used here, the &lsquo;&nbsp;&#8722;=&nbsp;&rsquo; operator
+   decrements a variable in a similar way.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; As a result, the procedure
+   <i>isPrime</i> generates a series of <i>factor</i>s. They range
+   from 2 to <i>root,</i> the integer square root of <i>number.</i>
+   It tests if <i>number</i> is evenly divisible by any of the
+   <i>factor</i>s. If it is, then <i>number</i> can&rsquo;t be prime,
+   so <i>isPrime</i> stops and returns <i>false.</i> If
+   <i>isPrime</i> can&rsquo;t find a <i>factor</i> that evenly
+   divides <i>number,</i> then <i>number</i> is prime, so it returns
+   <i>true</i> instead.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The last equate in the <i>prog</i>
+   clause binds the name <i>main.</i> There&rsquo;s nothing special about
+   that name: I chose it only to emphasize that this is the main program.
+   Unlike the other equates, this one doesn&rsquo;t create a new procedure.
+   Instead, it evaluates a <i>for</i> clause, which acts like a counting
+   loop. Like a <i>while</i> clause, a <i>for</i> clause returns
+   <i>skip.</i>
+  </p>
+  <blockquote>
+   <p>
+    <i>main</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i></font>(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>number</i>&nbsp;<b>in</b>&nbsp;2,&nbsp;1000&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>isPrime</i>(<i>number</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>writeln</i>(<i>number</i>)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The <i>for</i> clause binds the constant name <i>number</i> to the
+   integers 2, 3, 4 ..., 999, 1000, one at a time, one after the other. Each
+   time it binds <i>number</i> to an integer, the <i>if</i> clause
+   calls <i>isPrime</i> to test if <i>number</i> is prime. If it is,
+   then <i>number</i> is written by calling <i>writeln,</i> which
+   writes it on a new line.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; That&rsquo;s the end of the Orson program.
+   All that remains is to finish off the <i>prog</i> clause with a closing
+   parenthesis. As a matter of style, this final parenthesis appears on a line
+   by itself.
+  </p>
+  <blockquote>
+   <p>
+    )
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now here&rsquo;s the whole program again, all in one place. I&rsquo;ve added
+   a <i>load</i> clause&#8212;which I&rsquo;ll explain in a
+   moment&#8212;and some <i>comments.</i> Each comment starts with an
+   exclamation mark &lsquo;&nbsp;!&nbsp;&rsquo;, and stops at the end of the
+   line. Comments are ignored by Orson, so they can be used to put explanatory
+   text into a program. A comment can appear anywhere that the end of a line
+   can appear.
+  </p>
+  <blockquote>
+   <p>
+    (<b>load</b>&nbsp;''lib.file'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font>
+    <br />
+    (<b>prog</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b></font><i>real</i>&nbsp;&#949;&nbsp;:&#8722;&nbsp;0.001&nbsp;&nbsp;!&nbsp;&nbsp;Accuracy&nbsp;of&nbsp;<i>sqrt.</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font>
+    <br />
+    !&nbsp;&nbsp;A<small>BS</small>.&nbsp;Return&nbsp;the&nbsp;absolute&nbsp;value&nbsp;of&nbsp;<i>number.</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>abs</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>a</i></font>(<b>proc</b>&nbsp;(<i>real</i>&nbsp;<i>number</i>)&nbsp;<i>real</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>a</i>(</font>(<b>if</b>&nbsp;<i>number</i>&nbsp;&lt;&nbsp;0.0&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>a</i>((</font><b>then</b>&nbsp;&#8722;&nbsp;<i>number</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>a</i>((</font><b>else</b>&nbsp;<i>number</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;S<small>QRT</small>.&nbsp;Return&nbsp;the&nbsp;square&nbsp;root&nbsp;of&nbsp;nonnegative&nbsp;<i>a</i>&nbsp;to&nbsp;accuracy&nbsp;&#949;.&nbsp;&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!</font><i>sqrt</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>s</i></font>(<b>proc</b>&nbsp;(<i>real</i>&nbsp;<i>a</i>)&nbsp;<i>real</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>s</i>(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>s</i>((<b>w</b></font><b>var</b>&nbsp;<i>real</i>&nbsp;<i>g</i>&nbsp;:&#8722;&nbsp;1.0&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>s</i>((<b>w</b></font><b>var</b>&nbsp;<i>real</i>&nbsp;<i>h</i>&nbsp;:&#8722;&nbsp;<i>a</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>s</i>((</font><b>do</b>&nbsp;(<b>while</b>&nbsp;<i>abs</i>(<i>g</i>&nbsp;&#8722;&nbsp;<i>h</i>)&nbsp;&#8805;&nbsp;&#949;&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>s</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>g</i>&nbsp;:=&nbsp;(<i>g</i>&nbsp;+&nbsp;<i>h</i>)&nbsp;/&nbsp;2.0&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>s</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;</font><i>h</i>&nbsp;:=&nbsp;<i>a</i>&nbsp;/&nbsp;<i>g</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>s</i>((<b>do</b>&nbsp;</font><i>g</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;I<small>S</small>P<small>RIME</small>.&nbsp;Test&nbsp;if&nbsp;<i>number</i>&nbsp;is&nbsp;prime.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!</font><i>isPrime</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>i</i></font>(<b>proc</b>&nbsp;(<i>int</i>&nbsp;<i>number</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>i</i>(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>i</i>((<b>w</b></font><b>var</b>&nbsp;<i>int</i>&nbsp;<i>factor</i>&nbsp;:&#8722;&nbsp;2&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>i</i>((<b>w</b></font><b>var</b>&nbsp;<i>bool</i>&nbsp;<i>going</i>&nbsp;:&#8722;&nbsp;<i>true</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>i</i>((<b>w</b></font><i>int</i>&nbsp;<i>root</i>&nbsp;:&#8722;&nbsp;<i>sqrt</i>(<i>number</i>{<i>real</i>}){<i>int</i>}&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>i</i>((</font><b>do</b>&nbsp;(<b>while</b>&nbsp;<i>going</i>&nbsp;&#8743;&nbsp;<i>factor</i>&nbsp;&#8804;&nbsp;<i>root</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>i</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>going</i>&nbsp;:=&nbsp;<i>number</i>&nbsp;<b>mod</b>&nbsp;<i>factor</i>&nbsp;&#8800;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>i</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;</font><i>factor</i>&nbsp;+=&nbsp;1)&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>i</i>((<b>do</b>&nbsp;</font><i>going</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;M<small>AIN</small>.&nbsp;Write&nbsp;all&nbsp;prime&nbsp;numbers&nbsp;between&nbsp;2&nbsp;and&nbsp;1000.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!</font><i>main</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>m</i></font>(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>number</i>&nbsp;<b>in</b>&nbsp;2,&nbsp;1000&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>m</i>(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>isPrime</i>(<i>number</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!<i>m</i>(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>writeln</i>(<i>number</i>)))&nbsp;
+    <br />
+    )
+   </p>
+  </blockquote>
+  <p align="justify">
+   What&rsquo;s the <i>load</i> clause for? Most Orson programs reside on
+   multiple files. Each file contains a <i>prog</i> clause that binds some
+   names to objects. However, before I can use those objects, I must load the
+   file whose <i>prog</i> clause binds their names.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson comes with a library of such files. In
+   this program, the <i>load</i> clause
+   (<b>load</b>&nbsp;''lib.file'') loads a library file. The
+   <i>prog</i> clause in this file binds names to <i>forms</i> that
+   perform input and output. You&rsquo;ll find out what a form is later, but
+   for now you can think of it as being like a procedure. One of the names it
+   binds is <i>writeln,</i> which is what I used to write
+   <i>number.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Inside the <i>load</i> clause,
+   ''lib.file'' is a string constant. Orson string constants begin and end
+   with two apostrophes &lsquo;&nbsp;''&nbsp;&rsquo;. They&rsquo;re
+   <small>NOT</small> quotation marks
+   &lsquo;&nbsp;<i>"</i>&nbsp;&rsquo;. Orson uses quotation marks for
+   quoted names, which you&rsquo;ll also find out about later.
+  </p>
+  <p>
+   <b>2. How to run an Orson program.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    I have to admit to a deep love-hate relationship with Unix.
+   </p>
+   <p align="right">
+    <a href="#nor1994">
+     [<small>NOR</small> 1994]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Here&rsquo;s how to run the prime number program under a Unix-like operating
+   system
+   <a href="#rit1974">
+    [<small>RIT</small> 1974]
+   </a>
+   such as G<small>NU</small>/Linux. I&rsquo;ll assume that an Orson
+   compiler is installed. You should have the prime number program on a text
+   file called
+   <a href="prime1.os">
+    <tt>prime1.os</tt>
+   </a>
+   (the suffix <tt>os</tt> stands for Orson Source). To compile it, type
+   the following command to the shell.
+  </p>
+  <blockquote>
+   <p>
+    <tt>orson prime.os</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   If all went well, then nothing will be printed. You should now have a file
+   called <tt>a.out</tt> that contains the binary code for the prime
+   number program. To run it, type this.
+  </p>
+  <blockquote>
+   <p>
+    <tt>./a.out</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The program should print the following list of prime numbers, one per line.
+   If it doesn&rsquo;t, then something has gone wrong.
+  </p>
+  <blockquote>
+   <p>
+    <tt>&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;7&nbsp;&nbsp;&nbsp;11&nbsp;&nbsp;&nbsp;13&nbsp;&nbsp;&nbsp;17&nbsp;&nbsp;&nbsp;19&nbsp;&nbsp;&nbsp;23&nbsp;&nbsp;&nbsp;29&nbsp;&nbsp;&nbsp;31&nbsp;&nbsp;&nbsp;37&nbsp;</tt>
+    <br />
+    <tt>&nbsp;41&nbsp;&nbsp;&nbsp;43&nbsp;&nbsp;&nbsp;47&nbsp;&nbsp;&nbsp;53&nbsp;&nbsp;&nbsp;59&nbsp;&nbsp;&nbsp;61&nbsp;&nbsp;&nbsp;67&nbsp;&nbsp;&nbsp;71&nbsp;&nbsp;&nbsp;73&nbsp;&nbsp;&nbsp;79&nbsp;&nbsp;&nbsp;83&nbsp;&nbsp;&nbsp;89&nbsp;</tt>
+    <br />
+    <tt>&nbsp;97&nbsp;&nbsp;101&nbsp;&nbsp;103&nbsp;&nbsp;107&nbsp;&nbsp;109&nbsp;&nbsp;113&nbsp;&nbsp;127&nbsp;&nbsp;131&nbsp;&nbsp;137&nbsp;&nbsp;139&nbsp;&nbsp;149&nbsp;&nbsp;151&nbsp;</tt>
+    <br />
+    <tt>157&nbsp;&nbsp;163&nbsp;&nbsp;167&nbsp;&nbsp;173&nbsp;&nbsp;179&nbsp;&nbsp;181&nbsp;&nbsp;191&nbsp;&nbsp;193&nbsp;&nbsp;197&nbsp;&nbsp;199&nbsp;&nbsp;211&nbsp;&nbsp;223&nbsp;</tt>
+    <br />
+    <tt>227&nbsp;&nbsp;229&nbsp;&nbsp;233&nbsp;&nbsp;239&nbsp;&nbsp;241&nbsp;&nbsp;251&nbsp;&nbsp;257&nbsp;&nbsp;263&nbsp;&nbsp;269&nbsp;&nbsp;271&nbsp;&nbsp;277&nbsp;&nbsp;281&nbsp;</tt>
+    <br />
+    <tt>283&nbsp;&nbsp;293&nbsp;&nbsp;307&nbsp;&nbsp;311&nbsp;&nbsp;313&nbsp;&nbsp;317&nbsp;&nbsp;331&nbsp;&nbsp;337&nbsp;&nbsp;347&nbsp;&nbsp;349&nbsp;&nbsp;353&nbsp;&nbsp;359&nbsp;</tt>
+    <br />
+    <tt>367&nbsp;&nbsp;373&nbsp;&nbsp;379&nbsp;&nbsp;383&nbsp;&nbsp;389&nbsp;&nbsp;397&nbsp;&nbsp;401&nbsp;&nbsp;409&nbsp;&nbsp;419&nbsp;&nbsp;421&nbsp;&nbsp;431&nbsp;&nbsp;433&nbsp;</tt>
+    <br />
+    <tt>439&nbsp;&nbsp;443&nbsp;&nbsp;449&nbsp;&nbsp;457&nbsp;&nbsp;461&nbsp;&nbsp;463&nbsp;&nbsp;467&nbsp;&nbsp;479&nbsp;&nbsp;487&nbsp;&nbsp;491&nbsp;&nbsp;499&nbsp;&nbsp;503&nbsp;</tt>
+    <br />
+    <tt>509&nbsp;&nbsp;521&nbsp;&nbsp;523&nbsp;&nbsp;541&nbsp;&nbsp;547&nbsp;&nbsp;557&nbsp;&nbsp;563&nbsp;&nbsp;569&nbsp;&nbsp;571&nbsp;&nbsp;577&nbsp;&nbsp;587&nbsp;&nbsp;593&nbsp;</tt>
+    <br />
+    <tt>599&nbsp;&nbsp;601&nbsp;&nbsp;607&nbsp;&nbsp;613&nbsp;&nbsp;617&nbsp;&nbsp;619&nbsp;&nbsp;631&nbsp;&nbsp;641&nbsp;&nbsp;643&nbsp;&nbsp;647&nbsp;&nbsp;653&nbsp;&nbsp;659&nbsp;</tt>
+    <br />
+    <tt>661&nbsp;&nbsp;673&nbsp;&nbsp;677&nbsp;&nbsp;683&nbsp;&nbsp;691&nbsp;&nbsp;701&nbsp;&nbsp;709&nbsp;&nbsp;719&nbsp;&nbsp;727&nbsp;&nbsp;733&nbsp;&nbsp;739&nbsp;&nbsp;743&nbsp;</tt>
+    <br />
+    <tt>751&nbsp;&nbsp;757&nbsp;&nbsp;761&nbsp;&nbsp;769&nbsp;&nbsp;773&nbsp;&nbsp;787&nbsp;&nbsp;797&nbsp;&nbsp;809&nbsp;&nbsp;811&nbsp;&nbsp;821&nbsp;&nbsp;823&nbsp;&nbsp;827&nbsp;</tt>
+    <br />
+    <tt>829&nbsp;&nbsp;839&nbsp;&nbsp;853&nbsp;&nbsp;857&nbsp;&nbsp;859&nbsp;&nbsp;863&nbsp;&nbsp;877&nbsp;&nbsp;881&nbsp;&nbsp;883&nbsp;&nbsp;887&nbsp;&nbsp;907&nbsp;&nbsp;911&nbsp;</tt>
+    <br />
+    <tt>919&nbsp;&nbsp;929&nbsp;&nbsp;937&nbsp;&nbsp;941&nbsp;&nbsp;947&nbsp;&nbsp;953&nbsp;&nbsp;967&nbsp;&nbsp;971&nbsp;&nbsp;977&nbsp;&nbsp;983&nbsp;&nbsp;991&nbsp;&nbsp;997</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   A more realistic program would print these prime numbers arranged in a
+   table, as I show them above.
+  </p>
+  <p>
+   <b>3. Forms instead of procedures.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    Why, good Heaven, we are nothing but forms! Think what a lot of our forms
+    you have gone through.
+   </p>
+   <p align="right">
+    <a href="#dic1970">
+     [<small>DIC</small> 1970]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The prime number program used procedures. However, it takes a little extra
+   time to call a procedure, and to return an object from it. This isn&rsquo;t
+   important in a small program that will run only once or twice, but it might
+   be important in a large program, or in one that will run frequently. Orson
+   solves this problem by providing <i>forms</i> as an alternative to
+   procedures. Before I can explain how forms work, I need to talk about how
+   Orson programs are run, or <i>evaluated.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; An Orson program is evaluated in two distinct
+   phases: first <i>transformation,</i> and then <i>execution.</i>
+   During transformation, expressions in the program are
+   <i>transformed</i> to make new expressions. Then, during execution, the
+   new expressions are <i>executed</i> to make new objects, and to perform
+   side effects on those objects.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The results of transformation can affect
+   execution, but the reverse is not true: the results of execution cannot
+   affect transformation. Because of this, Orson can be implemented so that it
+   performs all transformations at compile time, and all executions at run
+   time. In such an implementation, all computations performed during
+   transformation are essentially free. I might want to write programs so they
+   do as much computation during transformation as possible.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Forms let me do that. They&rsquo;re similar
+   to procedures, except that forms are called during transformation, and
+   procedures are called during execution. When a form is called, a copy of the
+   form&rsquo;s body is <i>inserted</i> into the program at the point
+   where it&rsquo;s called, so it takes no extra execution time. Forms resemble
+   the <i>macros</i> of programming languages like C
+   <a href="#ker1988">
+    [<small>KER</small> 1988],
+   </a>
+   but they&rsquo;re not macros. They work directly with expressions, not with
+   strings. They have typed parameters, and they return typed objects. Also,
+   they can perform arbitrary computations during transformation, including
+   recursions.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To demonstrate this, I&rsquo;ll rewrite the
+   prime number program using forms instead of procedures. First, I&rsquo;ll
+   rewrite <i>abs</i> as a form.
+  </p>
+  <blockquote>
+   <p>
+    <i>abs</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i></font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>number</i>)&nbsp;<i>real</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>(</font>(<b>if</b>&nbsp;<i>number</i>&nbsp;&lt;&nbsp;0.0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>((</font><b>then</b>&nbsp;&#8722;&nbsp;<i>number</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>((</font><b>else</b>&nbsp;<i>number</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Here&rsquo;s what happens if the form version of <i>abs</i> is called
+   by the procedure <i>sqrt</i> in the original prime number program. When
+   <i>abs</i>(<i>g</i>&nbsp;&#8722;&nbsp;<i>h</i>) is called in
+   <i>sqrt</i>, the parameter name <i>number</i> is bound to the
+   argument <i>g</i>&nbsp;&#8722;&nbsp;<i>h.</i> Then, in the body of
+   <i>abs,</i> each appearance of <i>number</i> is replaced by the
+   argument to which it is bound. Orson effectively adds parentheses where
+   necessary, another way that forms aren&rsquo;t like C macros. The call to
+   <i>abs</i> then <i>transforms</i> to this <i>if</i> clause.
+  </p>
+  <blockquote>
+   <p>
+    (<b>if</b>&nbsp;<i>g</i>&nbsp;&#8722;&nbsp;<i>h</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>then</b>&nbsp;&#8722;&nbsp;(<i>g</i>&nbsp;&#8722;&nbsp;<i>h</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>else</b>&nbsp;<i>g</i>&nbsp;&#8722;&nbsp;<i>h</i>)
+   </p>
+  </blockquote>
+  <p align="justify">
+   The <i>if</i> clause executes
+   <i>g</i>&nbsp;&#8722;&nbsp;<i>h</i> twice. That isn&rsquo;t a big
+   problem here, because subtraction is fast. However, it might be a problem if
+   I had a more complicated argument than
+   <i>g</i>&nbsp;&#8722;&nbsp;<i>h.</i> And it definitely would be a
+   problem if the argument had side effects (like changing the value of a
+   variable) because then they would happen twice.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To fix this problem, I&rsquo;ll rewrite
+   <i>abs</i> so that <i>number</i> is executed only once. The
+   <i>with</i> clause saves a copy of the object to which
+   <i>number</i> is bound by using another name, <i>number</i>'.
+   Orson names can have apostrophes in them, and <i>number</i>' can
+   be read as &lsquo;&lsquo;number prime.&rsquo;&rsquo; Also, because I
+   didn&rsquo;t mention a type, <i>number</i>' has the same type as
+   <i>number,</i> namely <i>real.</i>
+  </p>
+  <blockquote>
+   <p>
+    <i>abs</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i></font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>number</i>)&nbsp;<i>real</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>(</font>(<b>with</b>&nbsp;<i>number</i>'&nbsp;:&#8722;&nbsp;<i>number</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>((</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>number</i>'&nbsp;&lt;&nbsp;0.0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>((<b>do</b>&nbsp;(</font><b>then</b>&nbsp;&#8722;&nbsp;<i>number</i>'&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>((<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<i>number</i>')))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now if I call
+   <i>abs</i>(<i>g</i>&nbsp;&#8722;&nbsp;<i>h</i>), I get this
+   instead, which executes <i>g</i>&nbsp;&#8722;&nbsp;<i>h</i> only
+   once.
+  </p>
+  <blockquote>
+   <p>
+    (<b>with</b>&nbsp;<i>number</i>'&nbsp;:&#8722;&nbsp;<i>g</i>&nbsp;&#8722;&nbsp;<i>h</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>number</i>'&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;&#8722;&nbsp;<i>number</i>'&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<i>number</i>'))
+   </p>
+  </blockquote>
+  <p align="justify">
+   It can be a hassle to invent new names like <i>number</i>'. Orson
+   therefore provides a <i>past clause,</i> written as
+   (<b>past</b>&nbsp;<i>n</i>), where <i>n</i> is a name. It
+   returns the object to which <i>n</i> was bound outside a
+   <i>with</i> clause. I can rewrite <i>abs</i> using a
+   <i>past</i> clause like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>abs</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i></font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>number</i>)&nbsp;<i>real</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>(</font>(<b>with</b>&nbsp;<i>number</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>number</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>((</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>number</i>&nbsp;&lt;&nbsp;0.0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>((<b>do</b>&nbsp;(</font><b>then</b>&nbsp;&#8722;&nbsp;<i>number</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>a</i>((<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<i>number</i>)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   If a form uses a parameter more than once, then it should use a
+   <i>with</i> clause to save a copy of that parameter, in the way that I
+   just demonstrated. This rule doesn&rsquo;t apply to parameters that will be
+   replaced by constants, or to parameters that will be replaced by
+   variables&#8212;only to those that are replaced by arbitrary expressions.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; With this rule in mind, I&rsquo;ll turn the
+   procedures of the original prime number program into forms. The result is
+   shown below. It&rsquo;s on the file
+   <a href="prime2.os">
+    <tt>prime2.os</tt>
+   </a>
+   if you want to run it.
+  </p>
+  <blockquote>
+   <p>
+    (<b>load</b>&nbsp;''lib.file'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font>
+    <br />
+    (<b>prog</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b></font><i>real</i>&nbsp;&#949;&nbsp;:&#8722;&nbsp;0.001&nbsp;&nbsp;!&nbsp;&nbsp;Accuracy&nbsp;of&nbsp;<i>sqrt.</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font>
+    <br />
+    !&nbsp;&nbsp;A<small>BS</small>.&nbsp;Return&nbsp;the&nbsp;absolute&nbsp;value&nbsp;of&nbsp;<i>number.</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>abs</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>a</i></font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>number</i>)&nbsp;<i>real</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>a</i>(</font>(<b>with</b>&nbsp;<i>real</i>&nbsp;<i>number</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>number</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>a</i>((</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>number</i>&nbsp;&lt;&nbsp;0.0&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>a</i>((<b>do</b>&nbsp;(</font><b>then</b>&nbsp;&#8722;&nbsp;<i>number</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>a</i>((<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<i>number</i>)))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;S<small>QRT</small>.&nbsp;Return&nbsp;the&nbsp;square&nbsp;root&nbsp;of&nbsp;nonnegative&nbsp;<i>a</i>&nbsp;to&nbsp;accuracy&nbsp;&#949;.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>sqrt</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i></font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>a</i>)&nbsp;<i>real</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>w</b></font><b>var</b>&nbsp;<i>real</i>&nbsp;<i>g</i>&nbsp;:&#8722;&nbsp;1.0&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>w</b></font><b>var</b>&nbsp;<i>real</i>&nbsp;<i>h</i>&nbsp;:&#8722;&nbsp;<i>a</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((</font><b>do</b>&nbsp;(<b>while</b>&nbsp;<i>abs</i>(<i>g</i>&nbsp;&#8722;&nbsp;<i>h</i>)&nbsp;&#8805;&nbsp;&#949;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>g</i>&nbsp;:=&nbsp;(<i>g</i>&nbsp;+&nbsp;<i>h</i>)&nbsp;/&nbsp;2.0&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;</font><i>h</i>&nbsp;:=&nbsp;<i>a</i>&nbsp;/&nbsp;<i>g</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>do</b>&nbsp;</font><i>g</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;I<small>S</small>P<small>RIME</small>.&nbsp;Test&nbsp;if&nbsp;<i>number</i>&nbsp;is&nbsp;prime.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>isPrime</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>number</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>((<b>w</b></font><i>int</i>&nbsp;<i>number</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>number</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>((<b>w</b></font><b>var</b>&nbsp;<i>int</i>&nbsp;<i>factor</i>&nbsp;:&#8722;&nbsp;2&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>((<b>w</b></font><b>var</b>&nbsp;<i>bool</i>&nbsp;<i>going</i>&nbsp;:&#8722;&nbsp;<i>true</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>((<b>w</b></font><i>int</i>&nbsp;<i>root</i>&nbsp;:&#8722;&nbsp;<i>sqrt</i>(<i>number</i>{<i>real</i>}){<i>int</i>}&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>((</font><b>do</b>&nbsp;(<b>while</b>&nbsp;<i>going</i>&nbsp;&#8743;&nbsp;<i>factor</i>&nbsp;&#8804;&nbsp;<i>root</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>going</i>&nbsp;:=&nbsp;<i>number</i>&nbsp;<b>mod</b>&nbsp;<i>factor</i>&nbsp;&#8800;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;</font><i>factor</i>&nbsp;+=&nbsp;1)&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>((<b>do</b>&nbsp;</font><i>going</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;M<small>AIN</small>.&nbsp;Write&nbsp;all&nbsp;prime&nbsp;numbers&nbsp;between&nbsp;2&nbsp;and&nbsp;1000.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>main</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>m</i></font>(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>number</i>&nbsp;<b>in</b>&nbsp;2,&nbsp;1000&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>m</i>(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>isPrime</i>(<i>number</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>m</i>(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>writeln</i>(<i>number</i>)))&nbsp;
+    <br />
+    )
+   </p>
+  </blockquote>
+  <p align="justify">
+   During transformation, each form call in this program turns into a copy of
+   its body, with parameters replaced by their corresponding arguments. As a
+   result, after transformation, I end up with a program that looks like this.
+  </p>
+  <blockquote>
+   <p>
+    (<b>load</b>&nbsp;''lib.file'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font>
+    <br />
+    (<b>prog</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b></font><i>main</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i></font>(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>number</i>&nbsp;<b>in</b>&nbsp;2,&nbsp;1000&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b></font><b>var</b>&nbsp;<i>int</i>&nbsp;<i>factor</i>&nbsp;:&#8722;&nbsp;2&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b></font><b>var</b>&nbsp;<i>bool</i>&nbsp;<i>going</i>&nbsp;:&#8722;&nbsp;<i>true</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b></font><i>root</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b><i>r</i></font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b><i>r</i>(<b>w</b></font><b>var</b>&nbsp;<i>real</i>&nbsp;<i>g</i>&nbsp;:&#8722;&nbsp;1.0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b><i>r</i>(<b>w</b></font><b>var</b>&nbsp;<i>real</i>&nbsp;<i>h</i>&nbsp;:&#8722;&nbsp;<i>number</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b><i>r</i>(</font><b>do</b>&nbsp;(<b>while</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b><i>r</i>(<b>do</b>&nbsp;(</font>(<b>with</b>&nbsp;<i>number</i>&nbsp;:&#8722;&nbsp;<i>g</i>&nbsp;&#8722;&nbsp;<i>h</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b><i>r</i>(<b>do</b>&nbsp;((</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>number</i>&nbsp;&lt;&nbsp;0.0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b><i>r</i>(<b>do</b>&nbsp;((<b>do</b>&nbsp;(</font><b>then</b>&nbsp;&#8722;&nbsp;<i>number</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b><i>r</i>(<b>do</b>&nbsp;((<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<i>number</i>))&nbsp;&#8805;&nbsp;&#949;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b><i>r</i>(<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>g</i>&nbsp;:=&nbsp;(<i>g</i>&nbsp;+&nbsp;<i>h</i>)&nbsp;/&nbsp;2.0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b><i>r</i>(<b>do</b>&nbsp;(<b>do</b>&nbsp;</font><i>h</i>&nbsp;:=&nbsp;<i>a</i>&nbsp;/&nbsp;<i>g</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>w</b><i>r</i>(<b>do</b>&nbsp;</font><i>g</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((</font><b>do</b>&nbsp;(<b>while</b>&nbsp;<i>going</i>&nbsp;&#8743;&nbsp;<i>factor</i>&nbsp;&#8804;&nbsp;<i>root</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>going</i>&nbsp;:=&nbsp;<i>number</i>&nbsp;<b>mod</b>&nbsp;<i>factor</i>&nbsp;&#8800;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>do</b>&nbsp;(<b>do</b>&nbsp;</font><i>factor</i>&nbsp;+=&nbsp;1)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;((<b>do</b>&nbsp;</font><i>going</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>m</i>(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>writeln</i>(<i>number</i>)))&nbsp;
+    <br />
+    )
+   </p>
+  </blockquote>
+  <p align="justify">
+   The transformed program is harder to read than the original, because
+   it&rsquo;s no longer broken into smaller parts by forms. However, that
+   doesn&rsquo;t matter, because you never see it. It exists only behind the
+   scenes, inside the Orson compiler.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In many Orson programs, forms are used more
+   often than procedures. Most operators are implemented as forms whose calls
+   are replaced by machine instructions called <i>hooks,</i> although I
+   didn&rsquo;t show that in the example. The <i>for</i> clause is
+   implemented as a form whose call is replaced by a <i>with</i> clause
+   and a <i>while</i> clause, but I didn&rsquo;t show that either. I also
+   didn&rsquo;t show how a call to the form <i>writeln</i> is replaced by
+   an unspecified expression that outputs an integer.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Defining these things as forms lets me
+   redefine them if I want. For example, if I define a new kind of numbers,
+   different from integers or reals, then I can redefine the plus operator to
+   work with them. I can even redefine the <i>for</i> clause so it turns
+   into something other than a counting loop. I&rsquo;ll show how to do some of
+   these things later.
+  </p>
+  <p>
+   <b>4. Computation during transformation.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    How can the mere transformation of an expression be of practical
+    consequence?
+   </p>
+   <p align="right">
+    <a href="#wit1983">
+     [<small>WIT</small> 1983]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Forms are more than just fast alternatives to procedures. As I mentioned
+   before, they can also perform arbitrary computations with constants during
+   transformation. To demonstrate this, I&rsquo;ll rewrite the form
+   <i>isPrime</i> so that if I call it with a constant, it will transform
+   to a constant. For example, the call <i>isPrime</i>(4) will transform
+   to the constant <i>false,</i> and <i>isPrime</i>(5) will transform
+   to the constant <i>true.</i> This program is on the file
+   <a href="prime3.os">
+    <tt>prime3.os</tt>
+   </a>
+   if you want to run it.
+  </p>
+  <blockquote>
+   <p>
+    (<b>load</b>&nbsp;''lib.file'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font>
+    <br />
+    (<b>prog</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font>
+    <br />
+    !&nbsp;&nbsp;I<small>S</small>P<small>RIME</small>.&nbsp;Test&nbsp;if&nbsp;<i>number</i>&nbsp;is&nbsp;prime&nbsp;during&nbsp;transformation.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>isPrime</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>number</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>((<b>w</b></font><i>real</i>&nbsp;&#949;&nbsp;:&#8722;&nbsp;0.001&nbsp;&nbsp;!&nbsp;&nbsp;Accuracy&nbsp;of&nbsp;<i>sqrt.</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;A<small>BS</small>.&nbsp;Return&nbsp;the&nbsp;absolute&nbsp;value&nbsp;of&nbsp;<i>number.</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;A<small>BS</small></font><i>abs</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;A<small>BS</small><i>a</i></font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>number</i>)&nbsp;<i>real</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;A<small>BS</small><i>a</i>(</font>(<b>with</b>&nbsp;<i>real</i>&nbsp;<i>number</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>number</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;A<small>BS</small><i>a</i>((</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>number</i>&nbsp;&lt;&nbsp;0.0&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;A<small>BS</small><i>a</i>((<b>do</b>&nbsp;(</font><b>then</b>&nbsp;&#8722;&nbsp;<i>number</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;A<small>BS</small><i>a</i>((<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<i>number</i>)))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;S<small>QRT</small>.&nbsp;Return&nbsp;the&nbsp;square&nbsp;root&nbsp;of&nbsp;<i>a</i>&nbsp;with&nbsp;accuracy&nbsp;&#949;.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;S<small>QR</small></font><i>sqrt</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;S<small>QR</small><i>s</i></font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>a</i>)&nbsp;<i>real</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;S<small>QR</small><i>s</i>(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;S<small>QR</small><i>s</i>((<b>w</b></font><i>sqrting</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;S<small>QR</small><i>s</i>((<b>w</b><i>s</i></font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>g</i>,&nbsp;<i>real</i>&nbsp;<i>h</i>)&nbsp;<i>real</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;S<small>QR</small><i>s</i>((<b>w</b><i>s</i>(</font>(<b>if</b>&nbsp;<i>abs</i>(<i>g</i>&nbsp;&#8722;&nbsp;<i>h</i>)&nbsp;&lt;&nbsp;&#949;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;S<small>QR</small><i>s</i>((<b>w</b><i>s</i>((</font><b>then</b>&nbsp;<i>g</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;S<small>QR</small><i>s</i>((<b>w</b><i>s</i>((</font><b>else</b>&nbsp;(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;S<small>QR</small><i>s</i>((<b>w</b><i>s</i>((<b>else</b>&nbsp;(<b>w</b></font><i>g</i>'&nbsp;:&#8722;&nbsp;(<i>g</i>&nbsp;+&nbsp;<i>h</i>)&nbsp;/&nbsp;2.0&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;S<small>QR</small><i>s</i>((<b>w</b><i>s</i>((<b>else</b>&nbsp;(<b>w</b></font><i>h</i>'&nbsp;:&#8722;&nbsp;<i>a</i>&nbsp;/&nbsp;<i>g</i>'&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;S<small>QR</small><i>s</i>((<b>w</b><i>s</i>((<b>else</b>&nbsp;(</font><b>do</b>&nbsp;<i>sqrting</i>(<i>g</i>',&nbsp;<i>h</i>'))))&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;S<small>QR</small><i>s</i>((</font><b>do</b>&nbsp;<i>sqrting</i>(1.0,&nbsp;<i>a</i>)))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;I<small>S</small>P<small>RIMING</small>.&nbsp;Test&nbsp;if&nbsp;some&nbsp;<i>divisor</i>&nbsp;evenly&nbsp;divides&nbsp;<i>number.</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;I<small>S</small>P</font><i>isPriming</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;I<small>S</small>P<i>i</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>divisor</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;I<small>S</small>P<i>i</i>(</font>(<b>if</b>&nbsp;<i>divisor</i>&nbsp;=&nbsp;1&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;I<small>S</small>P<i>i</i>((</font><b>then</b>&nbsp;<i>true</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;I<small>S</small>P<i>i</i>((</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>number</i>&nbsp;<b>mod</b>&nbsp;<i>divisor</i>&nbsp;=&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;I<small>S</small>P<i>i</i>((<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;I<small>S</small>P<i>i</i>((<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>isPriming</i>(<i>divisor</i>&nbsp;&#8722;&nbsp;1)))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;Test&nbsp;if&nbsp;<i>number</i>&nbsp;is&nbsp;prime.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;&nbsp;Te</font><b>do</b>&nbsp;<i>isInt</i>(<i>number</i>)&nbsp;&#8743;&nbsp;<i>number</i>&nbsp;&gt;&nbsp;1&nbsp;&#8743;&nbsp;<i>isPriming</i>(<i>sqrt</i>(<i>number</i>{<i>real</i>}){<i>int</i>})))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;M<small>AIN</small>.&nbsp;Write&nbsp;<tt>true</tt>&nbsp;if&nbsp;5&nbsp;is&nbsp;prime,&nbsp;and&nbsp;write&nbsp;<tt>false</tt>&nbsp;otherwise.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>main</i>&nbsp;:&#8722;&nbsp;<i>writeln</i>((<b>if</b>&nbsp;<i>isPrime</i>(5)&nbsp;<b>then</b>&nbsp;''true''&nbsp;<b>else</b>&nbsp;''false''))&nbsp;
+    <br />
+    )
+   </p>
+  </blockquote>
+  <p align="justify">
+   <i>While</i> clauses, variables, and procedure calls are evaluated only
+   during execution. As a result, I rewrote the forms <i>sqrt</i> and
+   <i>isPrime</i> so they don&rsquo;t use those things, and so they use
+   recursion instead of iteration. The recursions are done by two new forms,
+   called <i>sqrting</i> and <i>isPriming.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To show how the new <i>isPrime</i>
+   works, I&rsquo;ll step through the transformation of <i>isPrime</i>(5).
+   The parameter <i>number</i> becomes bound to the constant argument 5,
+   and then <i>isPrime</i>&rsquo;s body is evaluated. Since the body is a
+   <i>with</i> clause, the name &#949; becomes bound to a real constant,
+   and the names <i>abs, sqrt,</i> and <i>isPriming</i> become bound
+   to forms. Only the body of the <i>with</i> clause remains. After
+   <i>number</i> is replaced by the object to which it is bound, I get
+   this expression.
+  </p>
+  <blockquote>
+   <p>
+    <i>isInt</i>(5)&nbsp;&#8743;&nbsp;5&nbsp;&gt;&nbsp;1&nbsp;&#8743;&nbsp;<i>isPriming</i>(<i>sqrt</i>(5{<i>real</i>}){<i>int</i>}))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Then name <i>isInt</i> is bound to a form by Orson. Its call is
+   evaluated during transformation: the call transforms to <i>true</i> if
+   its argument is an integer constant, and it transforms to <i>false</i>
+   otherwise. All the forms defined inside <i>isPrime</i> assume their
+   arguments are constants, so I use <i>isInt</i> to make sure they really
+   are. Since 5 is an integer constant, <i>isInt</i>(5) transforms to
+   <i>true,</i> so I get this.
+  </p>
+  <blockquote>
+   <p>
+    <i>true</i>&nbsp;&#8743;&nbsp;5&nbsp;&gt;&nbsp;1&nbsp;&#8743;&nbsp;<i>isPriming</i>(<i>sqrt</i>(5{<i>real</i>}){<i>int</i>}))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Of course 5 is greater than 1, so the expression 5&nbsp;&gt;&nbsp;1
+   transforms to <i>true.</i> Most expressions that involve Orson&rsquo;s
+   arithmetic operators transform to constants if they are given constant
+   arguments. As a result, I get this.
+  </p>
+  <blockquote>
+   <p>
+    <i>true</i>&nbsp;&#8743;&nbsp;<i>true</i>&nbsp;&#8743;&nbsp;<i>isPriming</i>(<i>sqrt</i>(5{<i>real</i>}){<i>int</i>}))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Orson next evaluates the cast 5{<i>real</i>}, which converts the
+   integer constant 5 into the real constant 5.0. The result of the cast is
+   substituted back into the original expression, so I get this:
+  </p>
+  <blockquote>
+   <p>
+    <i>true</i>&nbsp;&#8743;&nbsp;<i>true</i>&nbsp;&#8743;&nbsp;<i>isPriming</i>(<i>sqrt</i>(5.0){<i>int</i>}))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now Orson calls the form <i>sqrt</i> with the constant real argument
+   5.0. I could follow the recursive computation inside <i>sqrt</i>, but
+   this would require lots of boring detail. Instead, I&rsquo;ll just say that
+   if the tests needed to control the recursion involve constants, then they
+   can be done during transformation. As a result, the call to <i>sqrt</i>
+   transforms to a constant real approximation to the square root of 5.0, which
+   is about 2.236.
+  </p>
+  <blockquote>
+   <p>
+    <i>true</i>&nbsp;&#8743;&nbsp;<i>true</i>&nbsp;&#8743;&nbsp;<i>isPriming</i>(2.236{<i>int</i>})
+   </p>
+  </blockquote>
+  <p align="justify">
+   Orson casts 2.236 to an integer, giving 2. Casts transforms to constants if
+   their arguments are constants.
+  </p>
+  <blockquote>
+   <p>
+    <i>true</i>&nbsp;&#8743;&nbsp;<i>true</i>&nbsp;&#8743;&nbsp;<i>isPriming</i>(2)
+   </p>
+  </blockquote>
+  <p align="justify">
+   Orson calls the form <i>isPriming</i> with the integer constant
+   argument 2. When it applies <i>isPriming</i>, the parameter
+   <i>number</i> is replaced by 5, and the parameter <i>divisor</i>
+   is replaced by 2, so the call transforms to this <i>if</i> clause.
+  </p>
+  <blockquote>
+   <p>
+    (<b>if</b>&nbsp;2&nbsp;=&nbsp;1&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>then</b>&nbsp;<i>true</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>else</b>&nbsp;<b>if</b>&nbsp;5&nbsp;<b>mod</b>&nbsp;2&nbsp;=&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>isPriming</i>(2&nbsp;&#8722;&nbsp;1))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Since 2&nbsp;=&nbsp;1 transforms to <i>false</i>, and
+   5&nbsp;<b>mod</b>&nbsp;2&nbsp;=&nbsp;0 also transforms to
+   <i>false</i>, the <i>if</i> clause transforms to the call
+   <i>isPriming</i>(2&nbsp;&#8722;&nbsp;1), which in turn transforms to
+   the call <i>isPriming</i>(1). This is a recursive call, so Orson
+   transforms the body of <i>isPriming</i> to this.
+  </p>
+  <blockquote>
+   <p>
+    (<b>if</b>&nbsp;1&nbsp;=&nbsp;1&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>then</b>&nbsp;<i>true</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>else</b>&nbsp;<b>if</b>&nbsp;5&nbsp;<b>mod</b>&nbsp;1&nbsp;=&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>isPriming</i>(1&nbsp;&#8722;&nbsp;1))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Since 1&nbsp;=&nbsp;1 transforms to 1, the <i>if</i> clause transforms
+   to <i>true,</i> so that the call <i>isPriming</i>(2) is also
+   <i>true.</i> Orson finally replaces the call by <i>true</i> back
+   in the original expression, so I end up with this.
+  </p>
+  <blockquote>
+   <p>
+    <i>true</i>&nbsp;&#8743;&nbsp;<i>true</i>&nbsp;&#8743;&nbsp;<i>true</i>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Orson transforms this expression to <i>true</i>, so the value of
+   <i>isPrime</i>(5) is also <i>true.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; At this point you may wonder why anyone would
+   want to test if a number is prime during transformation. One reason is that
+   there are objects like <i>hash tables</i> whose sizes must be prime
+   numbers. An Orson implementation of hash tables might test if their sizes
+   are prime during transformation, so it need not do so later during
+   execution.
+  </p>
+  <p>
+   <b>5. The Sieve of Eratosthenes.</b>
+  </p>
+  <blockquote>
+   <p>
+    And&nbsp;his&nbsp;answer&nbsp;trickled&nbsp;through&nbsp;my&nbsp;head,&nbsp;
+    <br />
+    Like&nbsp;water&nbsp;through&nbsp;a&nbsp;sieve.
+   </p>
+   <p align="right">
+    <a href="#car1998">
+     [<small>CAR</small> 1998]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now I want to talk about a different program for finding prime numbers
+   between 2 and a positive number <i>n.</i> It&rsquo;s the <i>Sieve of
+   Eratosthenes,</i> named after a Greek mathematician of the third century
+   <small>BCE</small>
+   <a href="#llo1973">
+    [<small>LLO</small> 1973],
+   </a>
+   and it works like this.
+  </p>
+  <ol>
+   <li>
+   <p align="justify">
+    <a name="step1">
+    </a>
+    Make an empty set.
+   </p>
+   <li>
+   <p align="justify">
+    <a name="step2">
+    </a>
+    Add integers 2, 3 ..., <i>n</i> to the set.
+   </p>
+   <li>
+   <p align="justify">
+    <a name="step3">
+    </a>
+    Visit each integer in the set. Whenever you visit an integer, remove all
+    other integers from the set that are multiples of it. For example, when you
+    visit the integer 2, remove the integers 4, 6, 8, etc.
+   </p>
+   <li>
+   <p align="justify">
+    <a name="step4">
+    </a>
+    The integers left in the set are primes. Write them.
+   </p>
+  </ol>
+  <p align="justify">
+   For example, suppose I want to find the prime numbers between 2 and 25. I
+   start with a set of the following numbers.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <b>2</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>3</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>4</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>5</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>6</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>7</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>8</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>9</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>10</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>11</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>12</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>13</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>14</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>15</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>16</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>17</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>18</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>19</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>20</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>21</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>22</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>23</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>24</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>25</b>&nbsp;&nbsp;
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   When I visit the integer 2 (it&rsquo;s underlined) I remove all other
+   integers that are multiples of 2 (they turn gray) so the set looks like
+   this.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <b><u>2</u></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>3</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">4</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>5</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">6</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>7</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">8</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>9</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">10</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>11</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">12</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>13</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">14</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>15</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">16</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>17</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">18</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>19</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">20</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>21</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">22</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>23</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">24</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>25</b>&nbsp;&nbsp;
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   Then I visit 3, removing integers that are multiples of 3.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <b>2</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><u>3</u></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">4</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>5</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">6</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>7</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">8</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">9</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">10</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>11</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">12</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>13</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">14</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">15</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">16</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>17</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">18</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>19</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">20</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">21</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">22</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>23</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">24</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>25</b>&nbsp;&nbsp;
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   And I visit 5, removing integers that are multiples of 5.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <b>2</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>3</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">4</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><u>5</u></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">6</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>7</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">8</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">9</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">10</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>11</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">12</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>13</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">14</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">15</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">16</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>17</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">18</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>19</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">20</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">21</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">22</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b>23</b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">24</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       <b><font color="#A9A9A9">25</font></b>&nbsp;&nbsp;
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   The Sieve algorithm continues in this way, visiting multiples of 7, 11, 13,
+   etc. However, I know that there are no more primes in the set after I visit
+   5, so I&rsquo;ll stop the example here.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Unlike the previous prime number algorithm,
+   the Sieve doesn&rsquo;t need square roots, or even multiplication, so
+   I&rsquo;ll discard everything I&rsquo;ve written before. I&rsquo;ll write
+   the Sieve as a form called <i>sieve,</i> whose call transforms into an
+   expression that will be executed later. The form <i>sieve</i> takes an
+   integer parameter <i>n</i> that tells it how many prime numbers to
+   find. For simplicity, I&rsquo;ll assume that <i>n</i> is a constant
+   nonnegative integer.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Let&rsquo;s start with step
+   <a href="#step1">
+    1
+   </a>
+   of the algorithm, which makes an empty set. The three dots
+   &lsquo;&lsquo;...&rsquo;&rsquo; stand for parts of the form I haven&rsquo;t
+   written yet.
+  </p>
+  <blockquote>
+   <p>
+    (<b>prog</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b></font><i>sieve</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>n</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>(</font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>set</i>(<i>n</i>)&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((</font><b>do</b>&nbsp;<i>init</i>(<i>s</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;</font>...))&nbsp;
+    <br />
+    )
+   </p>
+  </blockquote>
+  <p align="justify">
+   The equate inside the <i>with</i> clause makes a set variable called
+   <i>s</i> that can contain integers from 0 to <i>n,</i> inclusive.
+   It&rsquo;s different from the equates you&rsquo;ve seen before, in two ways.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; First, the type of the variable is
+   <b>var</b>&nbsp;<i>set</i>(<i>n</i>). The expression
+   <i>set</i>(<i>n</i>) calls a form <i>set</i> with the
+   argument <i>n,</i> a constant nonnegative integer. Form calls can
+   transform into types, in the same way that they can transform into anything
+   else. I&rsquo;ll show how to write <i>set</i> later.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Second, the equate doesn&rsquo;t have a
+   &lsquo;&nbsp;:&#8722;&nbsp;&rsquo; symbol. That means it makes a variable
+   with a known type, but an unknown value. I can use an equate like this only
+   when I make a variable, and only when I intend to give that variable a known
+   value later. I initialize <i>s</i> to be the empty set, by calling a
+   form <i>init.</i> I&rsquo;ll write <i>init</i> later, after
+   I&rsquo;ve written <i>set.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Step
+   <a href="#step2">
+    2
+   </a>
+   of the Sieve says that the integers 2 through <i>n</i> must be added to
+   the set variable <i>s.</i> The <i>for</i> clause binds the name
+   <i>k</i> to integers 2 through <i>n,</i> and the expression
+   <i>s</i>&nbsp;+=&nbsp;<i>k</i> adds each integer <i>k</i> to
+   the set <i>s.</i>
+  </p>
+  <blockquote>
+   <p>
+    (<b>prog</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b></font><i>sieve</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>n</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>(</font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>set</i>(<i>n</i>)&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((</font><b>do</b>&nbsp;<i>init</i>(<i>s</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;</font>(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>k</i>&nbsp;<b>in</b>&nbsp;2,&nbsp;<i>n</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>s</i>&nbsp;+=&nbsp;<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;</font>...&nbsp;))&nbsp;
+    <br />
+    )
+   </p>
+  </blockquote>
+  <p align="justify">
+   Earlier, I said that most of Orson&rsquo;s operators are actually forms. The
+   expression <i>s</i>&nbsp;+=&nbsp;<i>k</i> is actually an
+   abbreviation for the expression
+   <i>"</i>+=<i>"</i>(<i>s,</i>&nbsp;<i>k</i>). In other
+   words, it calls a form whose name is <i>"</i>+=<i>"</i> with the
+   arguments arguments <i>s</i> and <i>k.</i> I&rsquo;ll write the
+   form <i>"</i>+=<i>"</i> later too.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; By the way, the name
+   <i>"</i>+=<i>"</i> is written with quotation marks, so it&rsquo;s
+   what Orson calls a <i>quoted name.</i> It&rsquo;s
+   <small>NOT</small> a string, because strings aren&rsquo;t names. Orson
+   strings are written with two apostrophes, not with quotation marks. Quoted
+   names are like the names you&rsquo;ve seen before, but they can have
+   characters other than letters, digits, and apostrophes in them.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Step
+   <a href="#step3">
+    3
+   </a>
+   of the algorithm says that I must visit each integer element of the set
+   variable <i>s.</i> I can do that by using another <i>for</i>
+   clause, which binds the name <i>k</i> to integers 2 through
+   <i>n.</i> Inside the <i>for</i> clause, I test if <i>k</i> is
+   in <i>s</i> by using the expression
+   <i>k</i>&nbsp;&#8714;&nbsp;<i>s.</i> It returns <i>true</i>
+   if <i>k</i> is in <i>s,</i> and it returns <i>false</i>
+   otherwise. As you&rsquo;ve probably guessed,
+   <i>k</i>&nbsp;&#8714;&nbsp;<i>s</i> is an abbreviation for the
+   form call
+   <i>"</i>&#8714;<i>"</i>(<i>k,</i>&nbsp;<i>s</i>).
+   I&rsquo;ll write <i>"</i>&#8714;<i>"</i> later.
+  </p>
+  <blockquote>
+   <p>
+    (<b>prog</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b></font><i>sieve</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>n</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>(</font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>set</i>(<i>n</i>)&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((</font><b>do</b>&nbsp;(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>k</i>&nbsp;<b>in</b>&nbsp;2,&nbsp;<i>n</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>s</i>&nbsp;+=&nbsp;<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;</font>(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>k</i>&nbsp;<b>in</b>&nbsp;2,&nbsp;<i>n</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>k</i>&nbsp;&#8714;&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;...&nbsp;))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;</font>...))&nbsp;
+    <br />
+    )
+   </p>
+  </blockquote>
+  <p align="justify">
+   Step
+   <a href="#step3">
+    3
+   </a>
+   also says that whenever I find an integer <i>k</i> in the set, then I
+   must remove all other elements from the set that are multiples of
+   <i>k.</i> I&rsquo;ll do that using another <i>for</i> clause that
+   binds <i>m</i> to the multiples of <i>k.</i> It binds
+   <i>m</i> to a series of integers starting with
+   <i>k</i>&nbsp;+&nbsp;<i>k,</i> and ending with <i>n,</i> in
+   steps of <i>k.</i> Each time I bind <i>m</i> to a new multiple of
+   <i>k,</i> the expression <i>s</i>&nbsp;&#8722;=&nbsp;<i>m</i>
+   removes <i>m</i> from the set <i>s.</i> Of course this is an
+   abbreviation for
+   <i>"</i>&#8722;=<i>"</i>(<i>s,</i>&nbsp;<i>m</i>),
+   another form that I&rsquo;ll write later.
+  </p>
+  <blockquote>
+   <p>
+    (<b>prog</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b></font><i>sieve</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>n</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>(</font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>set</i>(<i>n</i>)&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((</font><b>do</b>&nbsp;(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>k</i>&nbsp;<b>in</b>&nbsp;2,&nbsp;<i>n</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>s</i>&nbsp;+=&nbsp;<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;</font>(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>k</i>&nbsp;<b>in</b>&nbsp;2,&nbsp;<i>n</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>k</i>&nbsp;&#8714;&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>m</i>&nbsp;<b>in</b>&nbsp;<i>k</i>&nbsp;+&nbsp;<i>k</i>,&nbsp;<i>n</i>,&nbsp;<i>k</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;<i>s</i>&nbsp;&#8722;=&nbsp;<i>m</i>)))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>s</i>((<b>do</b>&nbsp;</font>...))&nbsp;
+    <br />
+    )
+   </p>
+  </blockquote>
+  <p align="justify">
+   Finally, step
+   <a href="#step4">
+    4
+   </a>
+   says that any integers left in the set <i>s</i> are primes, so I must
+   write them. I&rsquo;ll do that using another <i>for</i> clause, along
+   with the form <i>"</i>&#8714;<i>".</i> That gives me the final
+   Orson program for the Sieve, which looks like this. The first
+   <i>load</i> clause gets <i>writeln</i> from Orson&rsquo;s library,
+   and the second gets the forms that work with sets.
+  </p>
+  <blockquote>
+   <p>
+    (<b>load</b>&nbsp;''lib.file'')&nbsp;
+    <br />
+    (<b>load</b>&nbsp;''set'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font>
+    <br />
+    (<b>prog</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font>
+    <br />
+    !&nbsp;&nbsp;S<small>IEVE</small>.&nbsp;Write&nbsp;the&nbsp;prime&nbsp;numbers&nbsp;between&nbsp;2&nbsp;and&nbsp;<i>n.</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>sieve</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>n</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>(</font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>set</i>(<i>n</i>)&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((</font><b>do</b>&nbsp;(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>k</i>&nbsp;<b>in</b>&nbsp;2,&nbsp;<i>n</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>s</i>&nbsp;+=&nbsp;<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>do</b>&nbsp;</font>(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>k</i>&nbsp;<b>in</b>&nbsp;2,&nbsp;<i>n</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>k</i>&nbsp;&#8714;&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>m</i>&nbsp;<b>in</b>&nbsp;<i>k</i>&nbsp;+&nbsp;<i>k</i>,&nbsp;<i>n</i>,&nbsp;<i>k</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;<i>s</i>&nbsp;&#8722;=&nbsp;<i>m</i>)))&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>do</b>&nbsp;</font>(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>k</i>&nbsp;<b>in</b>&nbsp;2,&nbsp;<i>n</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>k</i>&nbsp;&#8714;&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>writeln</i>(<i>k</i>)))))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;M<small>AIN</small>.&nbsp;Write&nbsp;the&nbsp;prime&nbsp;numbers&nbsp;between&nbsp;2&nbsp;and&nbsp;1000.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>main</i>&nbsp;:&#8722;&nbsp;<i>sieve</i>(1000)&nbsp;
+    <br />
+    )
+   </p>
+  </blockquote>
+  <p align="justify">
+   Because I&rsquo;ve assumed that the parameter <i>n</i> is a nonnegative
+   integer constant, it doesn&rsquo;t matter how many times it appears in the
+   body of the form <i>sieve.</i> If I hadn&rsquo;t made that assumption,
+   I would have used a <i>with</i> clause to make a copy of <i>n.</i>
+   The program shown above is on the file
+   <a href="prime4.os">
+    <tt>prime4.os</tt>
+   </a>
+   if you want to run it.
+  </p>
+  <p>
+   <b>6. Sets as abstract data structures.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    Let no one imagine that representation is bad in itself; a realistic form
+    may be as significant, in its place as part of the design, as an abstract.
+   </p>
+   <p align="right">
+    <a href="#bel1981">
+     [<small>BEL</small> 1981]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   In the previous example, I promised to write the forms that implement sets.
+   These forms are summarized in the following table.
+  </p>
+  <table align="center" border="1" cellpadding="3" cellspacing="0">
+   <tr bgcolor="#D3D3D3" valign="top">
+    <td>
+     <p align="center">
+      <b>&nbsp;<small>EXPRESSION</small> &nbsp;</b>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <b>&nbsp;<small>FORM CALL</small>&nbsp;</b>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <b>&nbsp;<small>PURPOSE</small>&nbsp;</b>
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <i>set</i>(<i>n</i>)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <i>set</i>(<i>n</i>)
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Return the type of a set of integers, 0 to <i>n.</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <i>init</i>(<i>s</i>)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <i>init</i>(<i>s</i>)
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Initialize a set variable <i>s.</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <i>s</i> += <i>k</i>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <i>"</i>+=<i>"</i>(<i>s, k</i>)
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Add an integer <i>k</i> to a set variable <i>s.</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <i>s</i> &#8722;= <i>k</i>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <i>"</i>&#8722;=<i>"</i>(<i>s, k</i>)
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Remove an integer <i>k</i> from a set variable
+      <i>s.</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p align="center">
+      <i>k</i> &#8714; <i>s</i>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <i>"</i>&#8714;<i>"</i>(<i>k, s</i>)
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;Test if an integer <i>k</i> is a member of a set variable
+      <i>s.</i>&nbsp;
+     </p>
+    </td>
+   </tr>
+  </table>
+  <p align="justify">
+   Before I explain how to write them, I&rsquo;ll talk about two kinds of
+   objects that I haven&rsquo;t mentioned yet, called arrays and tuples. These
+   objects exist only during execution.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; An <i>array</i> is a finite sequence of
+   zero or more objects, all of the same type, called <i>elements.</i> The
+   number of elements in an array is a nonnegative integer constant, called its
+   <i>length.</i> Each element in the array has an <i>index,</i> a
+   nonnegative integer that is less than its length. The index of the first
+   element is 0, the index of the second element is 1, etc. The index of the
+   last element is the array&rsquo;s length minus 1.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The type of an array is written as the
+   expression [<i>k</i>]&nbsp;<i>t,</i> where <i>k</i> is the
+   array&rsquo;s length, and <i>t</i> is the type of the array&rsquo;s
+   elements. For example, an array of ten integers has the type
+   [10]&nbsp;<i>int,</i> and an array of two reals has the type
+   [2]&nbsp;<i>real.</i> Since a form call can return a type,
+   [<i>k</i>]&nbsp;<i>t</i> is an abbreviation for the form call
+   <i>"</i>&#9251;[]<i>"</i>(<i>k,</i>&nbsp;<i>t</i>).
+   I&rsquo;ve written a blank as &lsquo;&#9251;&rsquo; to emphasize its
+   presence.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Like an array, a <i>tuple</i> is also a
+   finite sequence of zero or more objects, called its <i>slots.</i>
+   Unlike an array, however, a tuple&rsquo;s slots can have different types,
+   and they have names instead of indexes. The type of a tuple is written like
+   this.
+  </p>
+  <blockquote>
+   <p>
+    (<b>tuple</b>&nbsp;<i>t</i><sub>1</sub>&nbsp;<i>n</i><sub>1</sub>,&nbsp;<i>t</i><sub>2</sub>&nbsp;<i>n</i><sub>2</sub>&nbsp;...,&nbsp;<i>t<sub>k</sub></i>&nbsp;<i>n<sub>k</sub></i>)
+   </p>
+  </blockquote>
+  <p align="justify">
+   Each subscripted pair <i>t</i>&nbsp;<i>n</i> describes a slot,
+   where <i>t</i> is the slot&rsquo;s type, and <i>n</i> is its name.
+   For example, the tuple type
+   (<b>tuple</b>&nbsp;<i>real</i>&nbsp;<i>x,</i>&nbsp;<i>real</i>&nbsp;<i>y,</i>&nbsp;<i>real</i>&nbsp;<i>z</i>)
+   might describe an object that represents a point in three-dimensional space.
+   It has three slots with the type <i>real,</i> whose names are <i>x,
+   y,</i> and <i>z.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The tuple type
+   (<b>tuple</b>&nbsp;[1001]&nbsp;<i>bool</i>&nbsp;<i>bits,</i>&nbsp;<i>int</i>&nbsp;<i>count</i>)
+   describes an object that represents a set of 1001 integers between 0 and
+   1000, which is what I need for the Sieve. The slot <i>bits</i> is an
+   array of 1001 Booleans, and the slot <i>count</i> is an integer. If the
+   element at index <i>k</i> of <i>bits</i> is <i>true,</i> then
+   <i>k</i> is a member of the set. If it is <i>false,</i> then
+   <i>k</i> is not a member of the set. The slot <i>count</i> holds
+   the number of <i>true</i> elements in <i>bits,</i> so it&rsquo;s
+   the number of members in the set.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The form call <i>set</i>(<i>n</i>)
+   transforms to the type of a set of integers that might range from 0 to
+   <i>n.</i> I can write the form <i>set</i> using the array and
+   tuple representation that I just described, like this. The length of the
+   array is <i>n</i>&nbsp;+&nbsp;1, and not just <i>n,</i> so that
+   <i>n</i> itself will fit in the set. The form <i>set</i> uses two
+   more things you haven&rsquo;t seen yet: jokers and type types.
+  </p>
+  <blockquote>
+   <p>
+    <i>set</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i></font>(<b>form</b>&nbsp;(<i>inj</i>&nbsp;<i>n</i>)&nbsp;<b>type</b>&nbsp;<i>tup</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(</font>(<b>tuple</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>((<b>t</b></font>[<i>n</i>&nbsp;+&nbsp;1]&nbsp;<i>bool</i>&nbsp;<i>Bits</i>,&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>((<b>t</b></font><i>int</i>&nbsp;<i>Count</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The names <i>inj</i> and <i>tup</i> are bound to types called
+   <i>jokers.</i> Each type you&rsquo;ve seen before describes only a
+   finite number of objects. For example, the type <i>int</i> describes a
+   finite range of integers that can be represented in a computer. However, a
+   joker describes an infinite number of objects. For example, the joker
+   <i>inj</i> describes any integer, and the joker <i>tup</i>
+   describes any tuple.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson binds many names to predefined jokers.
+   You can&rsquo;t make an object whose type is a joker: since it describes
+   infinitely many objects, an object whose type is a joker would be infinitely
+   large. However, you can use a joker to describe a form&rsquo;s argument, or
+   to describe another type. By the way, the name <i>joker</i> comes from
+   card games in which a joker card is &lsquo;&lsquo;wild.&rsquo;&rsquo; A
+   joker type can describe other types in somewhat the same way that a joker
+   card can match other cards.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The expression
+   <b>type</b>&nbsp;<i>e</i> returns the type of any expression
+   <i>e.</i> For example, <b>type</b>&nbsp;3.14159 returns the type
+   <i>real,</i> and <b>type</b>&nbsp;''abcd'' returns the type
+   <i>string.</i> It works even if <i>e</i> itself is a type. For
+   example, if I write <b>type</b>&nbsp;<i>int,</i> I get the type of
+   the type <i>int.</i> In Orson, all objects have types, even types
+   themselves. For example, the joker <i>tup</i> is the type of any tuple,
+   so the type <b>type</b>&nbsp;<i>tup</i> must be the type of any
+   tuple type. The type of a type is called a <i>type type.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The form <i>set</i> takes a single
+   argument of type <i>inj,</i> meaning that it can be called with any
+   integer. It returns an object of type <b>type</b>&nbsp;<i>tup,</i>
+   meaning that the call can transform to any tuple type. As you can see from
+   <i>set</i>&rsquo;s body, it actually returns a tuple type that
+   describes a set.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Now, the call <i>set</i>(<i>n</i>)
+   transforms to the type of a set that can contain a specific range of
+   elements, from 0 to <i>n.</i> I also need the type of a set that holds
+   any range of elements. I need it to write the rest of the forms that deal
+   with sets, since they must work with sets of any range. Suppose I rewrite
+   <i>set</i> like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>set</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i></font>(<b>form</b>&nbsp;()&nbsp;<b>type</b>&nbsp;<i>tup</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(</font>(<b>tuple</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>((<b>t</b></font>[]&nbsp;<i>bool</i>&nbsp;<i>bits</i>,&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>((<b>t</b></font><i>int</i>&nbsp;<i>count</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The expression []&nbsp;<i>t</i> returns a joker that describes an array
+   of any length, and whose elements have the type <i>t.</i> For example,
+   []&nbsp;<i>bool</i> returns a joker that describes an array of any
+   length, whose elements are Booleans. As you probably guessed,
+   []&nbsp;<i>t</i> is an abbreviation for the form call
+   <i>"</i>[]&#9251;<i>"</i>(<i>t</i>).
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The form call <i>set</i>() transforms to
+   the type of a set with any range of elements. It returns a type with a joker
+   inside it that acts something like a joker itself. However, I can&rsquo;t
+   make an object of type <i>set</i>() because it would have infinite
+   size. I must still write <i>set</i>(<i>n</i>) to describe
+   specific, finite sets.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; How can I reconcile the two versions of
+   <i>set,</i> since I need both of them? I could give them two different
+   names, like <i>specificSet</i> and <i>generalSet,</i> but that
+   would be ugly. I&rsquo;d rather write <i>set</i> so it can be called in
+   two different ways, either as <i>set</i>() or as
+   <i>set</i>(<i>n</i>). I can do that by using an <i>alternate
+   form,</i> as shown below.
+  </p>
+  <blockquote>
+   <p>
+    <i>set</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i></font>(<b>alt</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(</font>(<b>form</b>&nbsp;()&nbsp;<b>type</b>&nbsp;<i>tup</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>((</font>(<b>tuple</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(((<b>t</b></font>[]&nbsp;<i>bool</i>&nbsp;<i>bits</i>,&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(((<b>t</b></font><i>int</i>&nbsp;<i>count</i>)),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(</font>(<b>form</b>&nbsp;(<i>inj</i>&nbsp;<i>n</i>)&nbsp;<b>type</b>&nbsp;<i>tup</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>((</font>(<b>tuple</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(((<b>t</b></font>[<i>n</i>&nbsp;+&nbsp;1]&nbsp;<i>bool</i>&nbsp;<i>bits</i>,&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>s</i>(((<b>t</b></font><i>int</i>&nbsp;<i>count</i>)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   An alternate form has two or more forms inside it, called <i>member
+   forms.</i> When Orson calls an alternate form, it tries to call the first
+   member form. If the first member form can&rsquo;t be called, because the
+   arguments aren&rsquo;t right for it, then Orson tries calling the second
+   member form, then the third, etc. If Orson finds a member form that it can
+   call, then it calls that member form in the usual way. For example,
+   <i>set</i>() calls the first member form, and <i>set</i>(1000)
+   calls the second member form. It&rsquo;s an error if Orson can&rsquo;t call
+   any of the member forms.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; After I&rsquo;ve defined <i>set,</i> I
+   can go on to define the other forms that work with sets. The first form is
+   called <i>init,</i> which is short for <i>initialize.</i> It takes
+   a set variable <i>s</i> as its argument, sets all elements of
+   <i>s</i>&rsquo;s array slot <i>bits</i> to <i>false,</i> and
+   sets <i>s</i>&rsquo;s integer slot <i>count</i> to zero. As a
+   result, it makes <i>s</i> be empty.
+  </p>
+  <blockquote>
+   <p>
+    <i>init</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>(</font>(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>e</i>&nbsp;<b>in</b>&nbsp;0,&nbsp;<i>length</i>(<i>s</i>.<i>bits</i>)&nbsp;&#8722;&nbsp;1&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((</font><b>do</b>&nbsp;<i>s</i>.<i>bits</i>[<i>e</i>]&nbsp;:=&nbsp;<i>false</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>(</font><i>s</i>.<i>count</i>&nbsp;:=&nbsp;0)
+   </p>
+  </blockquote>
+  <p align="justify">
+   If <i>a</i> is an array, then the form call
+   <i>length</i>(<i>a</i>) returns the constant number of elements in
+   <i>a.</i> For example,
+   <i>length</i>(<i>s</i>.<i>bits</i>)&nbsp;&#8722;&nbsp;1
+   returns the largest index in the array <i>s</i>.<i>bits.</i> The
+   name <i>length</i> is bound to a predefined form by Orson.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If <i>t</i> is a tuple, and
+   <i>n</i> is the name of a slot, then the expression
+   <i>t</i>.<i>n</i> returns the object in the slot <i>n</i>
+   that belongs to the tuple <i>t.</i> For example, the expression
+   <i>s</i>.<i>bits</i> returns the array in the slot
+   <i>bits</i> that belongs to the tuple <i>s.</i> The expression
+   <i>t</i>.<i>n</i> is an abbreviation for the form call
+   <i>"</i>.<i>"</i>(<i>t,</i>&nbsp;$<i>n</i>), where
+   $<i>n</i> is an object that represents the name <i>n.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If <i>a</i> is an array, and
+   <i>k</i> is an integer, then the expression
+   <i>a</i>[<i>k</i>] returns the element of <i>a</i> at index
+   <i>k.</i> For example,
+   <i>set</i>.<i>bits</i>[<i>element</i>] returns the integer at
+   the index <i>element</i> of the array in the slot <i>bits</i> that
+   belongs to the tuple <i>set.</i> The expression
+   <i>a</i>[<i>k</i>] is an abbreviation for the form call
+   <i>"</i>&#9251;[]<i>"</i>(<i>a,</i>&nbsp;<i>k</i>).
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The second form that works with sets is
+   called <i>"</i>+=<i>",</i> which adds an integer element
+   <i>e</i> to a set variable <i>s.</i> It first tests if
+   <i>e</i> is already a member of <i>s,</i> using the form
+   <i>"</i>&#8714;<i>".</i> If it isn&rsquo;t a member, then it makes
+   the element of <i>bits</i> at index <i>e</i> be <i>true,</i>
+   and it increments <i>count.</i> I haven&rsquo;t defined
+   <i>"</i>&#8714;<i>"</i> yet, but that&rsquo;s not a problem,
+   because forms defined by equates in the same <i>prog</i> clause can
+   call each other freely.
+  </p>
+  <blockquote>
+   <p>
+    <i>"</i>+=<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>,&nbsp;<i>int</i>&nbsp;<i>e</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(</font>(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>e</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>e</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((</font><b>do</b>&nbsp;(<b>if</b>&nbsp;&#172;&nbsp;(<i>e</i>&nbsp;&#8714;&nbsp;<i>s</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>s</i>.<i>bits</i>[<i>e</i>]&nbsp;:=&nbsp;<i>true</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((<b>do</b>&nbsp;(<b>then</b>&nbsp;</font><i>s</i>.<i>count</i>&nbsp;+=&nbsp;1)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The expression &#172;&nbsp;<i>e</i> is read as &lsquo;&lsquo;not
+   <i>e.</i>&rsquo;&rsquo; It returns <i>true</i> if <i>e</i> is
+   <i>false,</i> and it returns <i>false</i> if <i>e</i> is
+   <i>true.</i> Of course it&rsquo;s an abbreviation for the form call
+   <i>"</i>&#172;<i>"</i>(<i>e</i>).
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The third form is called
+   <i>"</i>&#8722;=<i>",</i> and it removes an integer element
+   <i>e</i> from a set variable <i>s,</i> so it&rsquo;s the opposite
+   of "+=". It first tests if <i>e</i> is a member of <i>s.</i> If
+   it&rsquo;s a member, then it makes the element of <i>bits</i> at index
+   <i>e</i> be <i>false,</i> and it decrements <i>count.</i>
+  </p>
+  <blockquote>
+   <p>
+    <i>"</i>&#8722;=<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>,&nbsp;<i>int</i>&nbsp;<i>e</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(</font>(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>e</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>e</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>e</i>&nbsp;&#8714;&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>s</i>.<i>bits</i>[<i>e</i>]&nbsp;:=&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((<b>do</b>&nbsp;(<b>then</b>&nbsp;</font><i>s</i>.<i>count</i>&nbsp;&#8722;=&nbsp;1)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now you may wonder how I can use <i>"</i>+=<i>"</i> to add an
+   integer to a set variable, and also to increment an integer variable. You
+   may also wonder how I can use <i>"</i>&#8722;=<i>"</i> to remove
+   an integer from a set, and also to decrement an integer variable. How does
+   Orson know which one I mean?
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Suppose that a name was previously bound to a
+   form, and that I rebind that name to a new form. Then Orson automatically
+   binds that name to an alternate form, whose member forms are the new form,
+   followed by the previous form. As a result, it&rsquo;s as if
+   <i>"</i>+=<i>"</i> and <i>"</i>&#8722;=<i>"</i> were
+   defined like this, where &lsquo;&lsquo;...&rsquo;&rsquo; stands for the form
+   to which each name was previously bound.
+  </p>
+  <blockquote>
+   <p>
+    <i>"</i>+=<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i></font>(<b>alt</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(</font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>,&nbsp;<i>int</i>&nbsp;<i>e</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((</font>(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>e</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>e</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(((</font><b>do</b>&nbsp;(<b>if</b>&nbsp;&#172;&nbsp;(<i>e</i>&nbsp;&#8714;&nbsp;<i>s</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(((<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>s</i>.<i>bits</i>[<i>e</i>]&nbsp;:=&nbsp;<i>true</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(((<b>do</b>&nbsp;(<b>then</b>&nbsp;</font><i>s</i>.<i>count</i>&nbsp;+=&nbsp;1))),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((</font>...)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i></font>
+    <br />
+    <i>"</i>&#8722;=<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i></font>(<b>alt</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(</font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>,&nbsp;<i>int</i>&nbsp;<i>e</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((</font>(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>e</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>e</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(((</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>e</i>&nbsp;&#8714;&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(((<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>s</i>.<i>bits</i>[<i>e</i>]&nbsp;:=&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(((<b>do</b>&nbsp;(<b>then</b>&nbsp;</font><i>s</i>.<i>count</i>&nbsp;&#8722;=&nbsp;1))),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(</font>...)
+   </p>
+  </blockquote>
+  <p align="justify">
+   The fourth form that works with sets is called
+   <i>"</i>&#8714;<i>",</i> and it tests if an integer <i>e</i>
+   is a member of a set variable <i>s.</i> All I do is get the Boolean
+   element of <i>bits</i> at index <i>e.</i>
+  </p>
+  <blockquote>
+   <p>
+    <i>"</i>&#8714;<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>e</i>,&nbsp;<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>(<b>f</b></font><i>s</i>.<i>bits</i>[<i>e</i>])
+   </p>
+  </blockquote>
+  <p align="justify">
+   The fifth form is called <i>card,</i> which is short for
+   <i>cardinality.</i> It returns the number of members in the set
+   variable <i>s.</i> This is easy to write, since the number of members
+   is in the slot <i>count.</i> I don&rsquo;t need <i>card</i> for
+   the Sieve, but I might need it if I ever use sets for something else.
+  </p>
+  <blockquote>
+   <p>
+    <i>card</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>)&nbsp;<i>int</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i>(<b>f</b></font><i>s</i>.<i>count</i>)
+   </p>
+  </blockquote>
+  <p align="justify">
+   The sixth form is called <i>isEmpty,</i> and it tests if the set
+   variable <i>s</i> has no members. I just test if <i>s</i>&rsquo;s
+   cardinality is 0. I don&rsquo;t need <i>isEmpty</i> to implement the
+   Sieve either.
+  </p>
+  <blockquote>
+   <p>
+    <i>isEmpty</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>set</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>(<b>f</b></font><i>card</i>(<i>set</i>)&nbsp;=&nbsp;0)
+   </p>
+  </blockquote>
+  <p align="justify">
+   Finally, here&rsquo;s a <i>prog</i> clause that contains all the set
+   forms. It&rsquo;s on the file
+   <a href="set.os">
+    <tt>set.os</tt>
+   </a>
+   so the Sieve program
+   <a href="prime4.os">
+    <tt>prime4.os</tt>
+   </a>
+   can load it.
+  </p>
+  <blockquote>
+   <p>
+    (<b>prog</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font>
+    <br />
+    !&nbsp;&nbsp;S<small>ET</small>.&nbsp;Return&nbsp;the&nbsp;type&nbsp;of&nbsp;set&nbsp;with&nbsp;<i>n</i>&nbsp;elements,&nbsp;or&nbsp;a&nbsp;joker&nbsp;describing&nbsp;all&nbsp;such&nbsp;sets.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>set</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i></font>(<b>alt</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>(</font>(<b>form</b>&nbsp;()&nbsp;<b>type</b>&nbsp;<i>tup</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((</font>(<b>tuple</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>(((<b>t</b></font>[]&nbsp;<i>bool</i>&nbsp;<i>Bits</i>,&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>(((<b>t</b></font><i>int</i>&nbsp;<i>Count</i>)),&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>(</font>(<b>form</b>&nbsp;(<i>inj</i>&nbsp;<i>n</i>)&nbsp;<b>type</b>&nbsp;<i>tup</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>((</font>(<b>tuple</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>(((<b>t</b></font>[<i>n</i>&nbsp;+&nbsp;1]&nbsp;<i>bool</i>&nbsp;<i>Bits</i>,&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>s</i>(((<b>t</b></font><i>int</i>&nbsp;<i>Count</i>)))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;I<small>NIT</small>.&nbsp;Initialize&nbsp;a&nbsp;set&nbsp;variable&nbsp;<i>s</i>&nbsp;to&nbsp;have&nbsp;zero&nbsp;elements.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>init</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>(</font>(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>e</i>&nbsp;<b>in</b>&nbsp;0,&nbsp;<i>length</i>(<i>s</i>.<i>Bits</i>)&nbsp;&#8722;&nbsp;1&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>((</font><b>do</b>&nbsp;<i>s</i>.<i>Bits</i>[<i>e</i>]&nbsp;:=&nbsp;<i>false</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>(</font><i>s</i>.<i>Count</i>&nbsp;:=&nbsp;0)&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;<i>"</i>+=<i>".</i>&nbsp;Add&nbsp;an&nbsp;integer&nbsp;<i>e</i>&nbsp;to&nbsp;a&nbsp;set&nbsp;variable&nbsp;<i>s.</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>"</i>+=<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>"</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>,&nbsp;<i>int</i>&nbsp;<i>e</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>"</i>(</font>(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>e</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>e</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>"</i>((</font><b>do</b>&nbsp;(<b>if</b>&nbsp;&#172;&nbsp;(<i>e</i>&nbsp;&#8714;&nbsp;<i>s</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>"</i>((<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>s</i>.<i>Bits</i>[<i>e</i>]&nbsp;:=&nbsp;<i>true</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>"</i>((<b>do</b>&nbsp;(<b>then</b>&nbsp;</font><i>s</i>.<i>Count</i>&nbsp;+=&nbsp;1)))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;<i>"</i>&#8722;=<i>".</i>&nbsp;Remove&nbsp;an&nbsp;integer&nbsp;<i>e</i>&nbsp;from&nbsp;a&nbsp;set&nbsp;variable&nbsp;<i>s.</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>"</i>&#8722;=<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>"</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>,&nbsp;<i>int</i>&nbsp;<i>e</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>"</i>(</font>(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>e</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>e</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>"</i>((</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>e</i>&nbsp;&#8714;&nbsp;<i>s</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>"</i>((<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>s</i>.<i>Bits</i>[<i>s</i>]&nbsp;:=&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>"</i>((<b>do</b>&nbsp;(<b>then</b>&nbsp;</font><i>s</i>.<i>Count</i>&nbsp;&#8722;=&nbsp;1)))&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;<i>"</i>&#8714;<i>".</i>&nbsp;Test&nbsp;if&nbsp;an&nbsp;integer&nbsp;<i>e</i>&nbsp;is&nbsp;a&nbsp;member&nbsp;of&nbsp;a&nbsp;set&nbsp;variable&nbsp;<i>s.</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>"</i>&#8714;<i>"</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>"</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>e</i>,&nbsp;<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>"</i>(<b>f</b></font><i>s</i>.<i>Bits</i>[<i>e</i>])&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;C<small>ARD</small>.&nbsp;Return&nbsp;the&nbsp;number&nbsp;of&nbsp;elements&nbsp;in&nbsp;a&nbsp;set&nbsp;variable&nbsp;<i>s.</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>card</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>c</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>)&nbsp;<i>int</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>c</i>(<b>f</b></font><i>s</i>.<i>Count</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    !&nbsp;&nbsp;I<small>S</small>E<small>MPTY</small>.&nbsp;Test&nbsp;if&nbsp;a&nbsp;set&nbsp;variable&nbsp;<i>s</i>&nbsp;has&nbsp;zero&nbsp;elements.&nbsp;
+    <br />
+    <font color="#FFFFFF">!</font>
+    <br />
+    <font color="#FFFFFF">!&nbsp;</font><i>isEmpty</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>set</i>()&nbsp;<i>s</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">!&nbsp;<i>i</i>(<b>f</b></font><i>card</i>(<i>s</i>)&nbsp;=&nbsp;0)&nbsp;
+    <br />
+    )
+   </p>
+  </blockquote>
+  <p align="justify">
+   I&rsquo;ve changed the names of the slots <i>Bits</i> and
+   <i>Count</i> so they start with upper case Roman letters
+   (&lsquo;<i>A</i>&rsquo; through &lsquo;<i>Z</i>&rsquo;). Such
+   names are called <i>secret names.</i> A secret name exists inside a
+   <i>prog</i> clause, but not outside it. For example, if you write
+   another <i>prog</i> clause that mentions the names <i>Bits</i> or
+   <i>Count,</i> then Orson considers them to be different from the names
+   <i>Bits</i> and <i>Count</i> in the <i>prog</i> clause shown
+   above.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If a <i>prog</i> clause creates an
+   object with a secret name, then the object can be used outside the
+   <i>prog</i> clause only by calling forms and procedures that are
+   defined inside it. As a result, the object can be used only in ways that
+   these forms and procedures allow. It can&rsquo;t be used in ways that
+   don&rsquo;t make sense, either by mistake or deliberately. For example, the
+   <i>Count</i> slot of a set can be incremented only when a member is
+   added by <i>"</i>+=<i>",</i> and it can be decremented only when a
+   member is removed by <i>"</i>&#8722;=<i>".</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Because of this, my implementation of sets is
+   an <i>abstract data structure.</i> In an abstract data structure, some
+   objects are hidden, and are manipulated only in well-defined ways. A
+   <i>prog</i> clause can implement an abstract data structure by giving
+   these hidden objects secret names, and by giving plain or quoted names to
+   the forms and procedures that manipulate them.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Most Orson programs should be implemented
+   using high level abstract objects, like sets. Low level concrete objects,
+   like arrays and tuples, should be used primarily to implement these abstract
+   objects. Implementations of many commonly used abstract objects can be
+   loaded from Orson&rsquo;s library.
+  </p>
+  <p>
+   <b>7. Conclusion.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    With this handful of building blocks, it&rsquo;s possible to write useful
+    programs of considerable size, and it would probably be a good idea if you
+    paused long enough to do so.
+   </p>
+   <p align="right">
+    <a href="#ker1988">
+     [<small>KER</small> 1988]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   I haven&rsquo;t tried to explain the entire Orson language in this essay.
+   Here are some important things I&rsquo;ve left out. They&rsquo;re fully
+   described in the &lsquo;&lsquo;Revised&#8315;&#185; Report on the
+   Algorithmic Language Orson&rsquo;&rsquo;
+   <a href="#moe2013b">
+    [<small>MOE</small> 2013<small>B</small>].
+   </a>
+  </p>
+  <ul>
+   <li>
+   <p align="justify">
+    <i>Case</i> clauses select among alternatives faster than
+    <i>if</i> clauses.
+   </p>
+   <li>
+   <p align="justify">
+    <i>Catch</i> and <i>throw</i> clauses handle unexpected
+    situations during execution.
+   </p>
+   <li>
+   <p align="justify">
+    The form <i>error</i> handles unexpected situations during
+    transformation.
+   </p>
+   <li>
+   <p align="justify">
+    <i>Generic</i> forms require the types of their arguments to have
+    certain relationships to each other.
+   </p>
+   <li>
+   <p align="justify">
+    <i>Iterators</i> are predefined <i>for</i> clauses that visit
+    parts of objects.
+   </p>
+   <li>
+   <p align="justify">
+    <i>Pointers</i> implement objects that change their size and shape,
+    like chains, trees, and graphs.
+   </p>
+  </ul>
+  <p align="justify">
+   If you&rsquo;re interested in seeing more example Orson programs, then you
+   might check the source files for the Orson library. They contain Orson
+   implementations of many classical abstract data structures, including binary
+   search trees, hash tables, queues, and stacks. You may also want to check
+   the source files for <i>Bracy</i>
+   <a href="#moe2014a">
+    [<small>MOE</small> 2014<small>A</small>],
+   </a>
+   a simple document compiler that is written in Orson. I used Bracy to write
+   most of Orson&rsquo;s <small>HTML</small> documentation.
+  </p>
+  <hr />
+  <p align="center">
+   <b>References</b>
+  </p>
+  <p align="justify">
+   Many works cited here are available in more recent versions. These are the
+   ones I have on my bookshelf, or that were available to me in libraries.
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="ans1986">
+      </a>
+      [<small>ANS</small>&nbsp;1986]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      American National Standards Institute. <i>American National Standard
+      Code for Information Interchange.</i> A<small>NSI</small>
+      X3.4&#8211;1986.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="bel1981">
+      </a>
+      [<small>BEL</small>&nbsp;1981]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Clive Bell. <i>Art.</i> Perigee Books. G. P. Putnam&rsquo;s Sons.
+      New York, New York. 1981. Page 25.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="car1998">
+      </a>
+      [<small>CAR</small>&nbsp;1998]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Lewis Carroll. &lsquo;&lsquo;Through the Looking-Glass and What Alice
+      Found There.&rsquo;&rsquo; In <i>The Annotated Alice.</i> Martin
+      Gardner, editor. Wings Books. New York, New York. 1998. Page 311.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="dic1970">
+      </a>
+      [<small>DIC</small>&nbsp;1970]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Charles Dickens. <i>Little Dorrit.</i> Oxford University Press.
+      London, United Kingdom. 1970. Page 736.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="har1982">
+      </a>
+      [<small>HAR</small>&nbsp;1982]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      George Harrison. &lsquo;&lsquo;Dream Away.&rsquo;&rsquo; George Harrison,
+      Ray Cooper, Phil McDonald, producers. Dark Horse/Warner Brothers Records.
+      1982.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="kam2010">
+      </a>
+      [<small>KAM</small>&nbsp;2010]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Poul-Henning Kamp. &lsquo;&lsquo;Sir, Please Step Away from the
+      <small>ASR</small>-33.&rsquo;&rsquo; <i>Communications of the
+      A<small>CM</small>.</i> Volume 53. Number 11. 2010. Pages
+      56&#8211;57.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="ker1988">
+      </a>
+      [<small>KER</small>&nbsp;1988]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Brian W. Kernighan, Dennis M. Ritchie. <i>The C Programming
+      Language.</i> Second Edition. Prentice-Hall. Upper Saddle River, New
+      Jersey. 1988.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="llo1973">
+      </a>
+      [<small>LLO</small>&nbsp;1973]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      G. E. R. Lloyd. <i>Greek Science After Aristotle.</i> W. W. Norton.
+      New York, New York. 1973. Page 49.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2014a">
+      </a>
+      [<small>MOE</small>&nbsp;2014<small>A</small>]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;The Bracy Manual.&rsquo;&rsquo; Unpublished
+      technical report. 2014.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2013b">
+      </a>
+      [<small>MOE</small>&nbsp;2013<small>B</small>]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;Revised&#8315;&#185; Report on the
+      Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
+      2013.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="nor1994">
+      </a>
+      [<small>NOR</small>&nbsp;1994]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Donald Norman. &lsquo;&lsquo;Foreword.&rsquo;&rsquo; In <i>The Unix
+      Haters&rsquo; Handbook.</i> Simson Garfinkel, Daniel Weise, Steven
+      Strassmann, editors. IDG Books. San Mateo, California. 1994. Page
+      <small>XVII</small>.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="rit1974">
+      </a>
+      [<small>RIT</small>&nbsp;1974]
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Dennis M. Ritchie, Ken Thompson. &lsquo;&lsquo;The
+      U<small>NIX</small> Time-Sharing System.&rsquo;&rsquo;
+      <i>Communications of the A<small>CM</small>.</i> Volume 17.
+      Number 7. 1974. Pages 364&#8211;375.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="uni2006">
+      </a>
+      [<small>UNI</small>&nbsp;2006]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      The Unicode Consortium. <i>The Unicode Standard, Version 5.0.</i>
+      Fifth Edition. Addison-Wesley Professional. Reading, Massachusetts. 2006.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="vog1952">
+      </a>
+      [<small>VOG</small>&nbsp;1952]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      A. E. van Vogt. &lsquo;&lsquo;Vault of the Beast.&rsquo;&rsquo; In
+      <i>The Astounding Science Fiction Anthology.</i> John W. Campbell,
+      Jr., editor. Simon and Schuster. New York, New York. 1952. Pages
+      60&#8211;83.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="wit1983">
+      </a>
+      [<small>WIT</small>&nbsp;1983]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Ludwig Wittgenstein. <i>Remarks on the Foundation of
+      Mathematics.</i> Revised edition. G. H. von Wright, R. Rhees, G. E. M.
+      Anscombe, editors. G. E. M. Anscombe, translator. MIT Press. Boston,
+      Massachusetts. 1983. Page 357.
+     </p>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

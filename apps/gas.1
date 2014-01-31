@@ -1,0 +1,104 @@
+.TH GAS 1 "December 12, 2013"
+.DD December 12, 2013
+
+.SH NAME
+gas - Show the alignment and size of a GNU C type.
+
+.SH SYNOPSIS
+.B gas \c
+.I type\c
+ [\c
+.I file\c
+\& ...]
+.RE
+
+.SH DESCRIPTION
+The form
+.I c's
+lets a
+.B gcc
+type appear in an Orson program, but it requires the type's alignment and size
+as arguments.
+The program
+.B gas
+shows the alignment and size of such a type.
+
+.PP
+Suppose that
+.I type
+is the name of a
+.B gcc
+type, and that the
+.I file\c
+\&'s are the names of zero or more
+.B gcc
+header files that define
+.I type\c
+\&.
+Then
+.B gas
+writes the alignment and size of
+.B type
+to stdout, as determined by the header files.
+For example,
+.B gas\ FILE\ stdio.h
+writes the alignment and size of the type
+.B FILE\c
+\&,
+as defined by the header file
+.B stdio.h\c
+\&.
+
+.PP
+.B Gas
+works by making a short temporary
+.B gcc
+program.
+It compiles the program, then runs it, and finally deletes it.
+
+.SH ENVIRONMENT
+.B Gas
+creates the scratch file
+.B /tmp/Temp.c
+to hold its temporary
+.B gcc
+program.
+It also creates the file
+.B /tmp/a.out
+to hold the binary code that results from compiling the program.
+Both files are deleted when
+.B gas
+finishes running.
+
+.SH COPYING
+Copyright (C) 2013 James B. Moen.
+Permission is granted to copy, distribute, and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.3 or any later
+version published by the Free Software Foundation; with no Invariant
+Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license may be obtained at <http://fsf.org/>.
+
+.SH VERSION
+Version 0.1.
+
+.SH REFERENCES
+James B. Moen.
+"The Unrevised Report on the Algorithmic Language Orson."
+Unpublished technical report.
+2013.
+
+.PP
+James B. Moen.
+"Orson's Interface to GNU C."
+Unpublished technical report.
+2013.
+
+.SH AUTHOR
+James B. Moen
+
+.SH SEE ALSO
+.B gcc\c
+(1),
+.B orson\c
+(1).
+

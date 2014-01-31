@@ -1,0 +1,280 @@
+.TH EG 1 "January 17, 2014"
+.DD January 17, 2014
+
+.SH NAME
+eg - Generate example strings according to a context-free grammar.
+
+.SH SYNOPSIS
+.B eg\c
+ [\c
+.BI -b \ bias\c
+] [\c
+.BI -c \ count\c
+] [\c
+.BI -d \ depth\c
+] [\c
+.BI -e \ count\c
+] [\c
+.BI -l \ length\c
+] [\c
+.BI -h \ length\c
+]
+.RS 3
+[\c
+.BI -m \ max\c
+] [\c
+.B -n\c
+] [\c
+.BI -s \ seed\c
+] [\c
+.B -t\c
+] [\c
+.B -v\c
+] [\c
+.I file\c
+\&...]
+.RE
+
+.SH DESCRIPTION
+.B Eg
+(\c
+.I exempli gratia\c
+) first reads a context-free grammar from the UTF-8 encoded files whose
+pathnames appear on the command line.
+Grammars are expressed in a language similar to BNF; a description of this
+language appears in "The Eg Manual."
+Each file name must have the suffix
+.B .eg\c
+\&.
+
+.PP
+.B Eg
+then generates a random series of strings described by the grammar and writes
+them to stdout, starting a new line for each string.
+Text in English or other natural languages may be formatted by piping
+.B eg\c
+\&'s output through
+.B fmt\c
+\&.
+
+.PP
+.B Eg
+recognizes the following options.
+Options must precede pathnames on the command line.
+The argument to any option may be separated from it by blanks.
+All numeric arguments must be nonnegative integers.
+If an option doesn't appear on the command line, then the option's default
+takes effect.
+
+.TP
+.BI -b \ bias
+Bias.
+When
+.B eg
+generates strings from a disjunction such as
+.I a\c
+\ |\ \c
+.I b\c
+\ ...\ |\ \c
+.I z\c
+,
+it visits one of the disjuncts
+.I a\c
+,
+.I b\c
+ ..., \c
+.I z
+at random and generates strings from it.
+In an attempt to generate a wide variety of strings,
+.B eg
+is biased against revisiting disjuncts that it has visited recently.
+If
+.I bias
+is 0, then
+.B eg
+visits disjuncts purely at random.
+As
+.I bias
+increases,
+.B eg
+becomes less likely to revisit disjuncts.
+The default is 1.
+
+.TP
+.BI -c \ count
+Count.
+Write
+.I count
+strings to stdout, starting a new line for each one.
+The default is 1.
+
+.TP
+.BI -d \ depth
+Depth.
+Perform at most
+.I depth
+recursive calls while traversing a grammar to generate a string.
+The default is 1024.
+
+.TP
+.BI -e \ count
+Errors.
+Write only the first
+.I count
+error messages for each source file.
+If
+.I count
+is 0, then
+.B eg
+writes no error messages.
+If
+.I count
+is
+.B all\c
+\&, then it writes all error messages.
+The default is 5.
+
+.TP
+.BI -l \ length
+(Ell.) Low.
+Generate strings containing at least
+.I length
+Unicode characters.
+The default is 1, so empty strings cannot be generated.
+
+.TP
+.BI -h \ length
+High.
+Generate strings containing no more than
+.I length
+Unicode characters.
+The default is 2147483647 (the most positive 32-bit two's complement integer),
+so there is effectively no upper bound on the length of generated strings.
+
+.TP
+.BI -m \ max
+Maximum.
+Let the infinity symbol (U+221E) be equivalent to
+.I max\c
+\&.
+As a result,
+.I s\c
+* is equivalent to
+.I s\c
+(0,\ \c
+.I max\c
+) and
+.I s\c
++ is equivalent to
+.I s\c
+(1,\ \c
+.I max\c
+).
+The default is 10.
+
+.TP
+.B -n
+Null.
+Write empty (null) strings if they are generated.
+The default is to write only nonempty strings.
+
+.TP
+.BI -s \ seed
+Seed.
+Use
+.I seed
+as the seed when generating a sequence of random numbers.
+.B Eg
+always generates the same sequence of random numbers for a given seed.
+As a result, it always generates the same sequence of strings for a given seed
+and a given grammar.
+The default is to use a seed derived from the current time (in
+milliseconds).
+
+.TP
+.B -t
+Trace.
+Write a debugging trace to stdout.
+Each line of the trace shows the current recursive depth of the generator and
+the fragment of the grammar from which the generator is producing strings.
+This trace may be piped through
+.B more\c
+\&.
+The default is not to write a debugging trace.
+
+.TP
+.B -v
+Version.
+Write version information to stdout and halt without generating any strings.
+This is the exception mentioned above: it works even if there are no files on
+the command line.
+
+.SH FILES
+.B Eg
+creates a temporary file in
+.B /tmp
+that holds a string as it is generated.
+This file is deleted when
+.B eg
+terminates.
+
+.SH BUGS
+With some grammars,
+.B eg
+can enter an infinite loop, or can take a very long time to generate some
+strings.
+Many simple grammars can generate short strings quickly.
+However, complex grammars, especially those that generate long strings, must be
+carefully designed in order to work efficiently.
+
+.PP
+Many complex grammars generate bizarre strings that look like gibberish.
+However, this might not really be a bug, since bizarre strings are often useful
+as test inputs to programs for debugging.
+
+.SH COPYING
+Copyright (C) 2014 James B. Moen.
+Permission is granted to copy, distribute, and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.3 or any later
+version published by the Free Software Foundation; with no Invariant
+Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license may be obtained at <http://fsf.org/>.
+
+.SH VERSION
+Version 0.1.
+
+.SH REFERENCES
+John E. Hopcroft, Rajeev Motwani, Jeffrey D. Ullman.
+.I Introduction to Automata Theory, Languages, and Computation.
+Third Edition.
+Addison-Wesley.
+Boston, Massachusetts.
+2007.
+
+.PP
+James B. Moen.
+"The Eg Manual."
+Unpublished technical report.
+2014.
+
+.PP
+The Unicode Consortium.
+.I The Unicode Standard, Version 5.0.
+Fifth Edition.
+Addison-Wesley Professional.
+Reading, Massachusetts.
+2006.
+
+
+.SH AUTHOR
+James B. Moen
+
+.SH SEE ALSO
+.B fmt\c
+(1),
+.B more\c
+(1),
+.B unicode\c
+(7),
+.B utf-8\c
+(7).

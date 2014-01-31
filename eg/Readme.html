@@ -1,0 +1,399 @@
+<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:29 PM CST -->
+<html>
+ <head>
+  <title>
+   Eg
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>E<small>G</small></b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   January 17, 2014
+  </p>
+  <blockquote>
+   <p align="justify">
+    Once you have the grammatical model, you just put the metal around it and
+    it goes like gangbusters.
+   </p>
+   <p align="right">
+    <a href="#poh1973">
+     [<small>POH</small> 1973]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   This directory contains source code for <i>E<small>G</small></i>
+   (pronounced <i>ee-jee</i>), a program that generates example strings
+   described by a context-free grammar
+   <a href="#hop2007">
+    [<small>HOP</small> 2007].
+   </a>
+   E<small>G</small> is written in Orson
+   <a href="#moe2014">
+    [<small>MOE</small> 2014],
+   </a>
+   and is intended to run under Unix-like systems, such as
+   G<small>NU</small>/Linux. These files contain Orson source code for
+   E<small>G</small>.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="char.os">
+        <tt>char.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Read characters and report errors.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="codon.os">
+        <tt>codon.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Objects that represent grammar rules.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="debug.os">
+        <tt>debug.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Write grammar fragments for debugging.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="eg.os">
+        <tt>eg.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Write random strings from a context-free grammar.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="generate.os">
+        <tt>generate.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Generate strings.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="parse.os">
+        <tt>parse.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Translate grammar rules to internal form.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="token.os">
+        <tt>token.os</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Read tokens.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   These files contain documentation, sample grammars, and other supporting
+   material for E<small>G</small>.
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./Makefile">
+        <tt>Makefile</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Compile, install, uninstall E<small>G</small>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="Manual.by">
+        <tt>Manual.by</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Bracy source code for <tt>Manual.html</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="Manual.html">
+        <tt>Manual.html</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;The E<small>G</small> manual.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="./README">
+        <tt>README</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Short text version of <tt>Readme.html</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="Readme.by">
+        <tt>Readme.by</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Bracy source for <tt>Readme.html</tt>.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="Readme.html">
+        <tt>Readme.html</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;What you&rsquo;re reading now.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="case.eg">
+        <tt>case.eg</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Generate example Orson <i>case</i> clauses.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="economy.eg">
+        <tt>economy.eg</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Generate sentences that might be spoken by economists.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="grammar.eg">
+        <tt>grammar.eg</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Generate example E<small>G</small> grammars.
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       <a href="string.eg">
+        <tt>string.eg</tt>
+       </a>
+      </p>
+     </td>
+     <td>
+      <p>
+       &nbsp;&nbsp;&nbsp;Generate example Orson string tokens.
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   E<small>G</small> is available under the terms of the
+   G<small>NU</small> General Public License (<small>GPL</small>)
+   version 3. An Orson compiler is also available from the author under the
+   same terms.
+  </p>
+  <hr />
+  <p align="center">
+   <b>References</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="hop2007">
+      </a>
+      [<small>HOP</small>&nbsp;2007]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      John E. Hopcroft, Rajeev Motwani, Jeffrey D. Ullman. <i>Introduction to
+      Automata Theory, Languages, and Computation.</i> Third Edition.
+      Addison-Wesley. Boston, Massachusetts. 2007.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2014">
+      </a>
+      [<small>MOE</small> 2014]
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;Revised&#8315;&#185; Report on the
+      Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
+      2014.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="poh1973">
+      </a>
+      [<small>POH</small>&nbsp;1973]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Frederik Pohl. &lsquo;&lsquo;The Gold at the Starbow&rsquo;s
+      End.&rsquo;&rsquo; In <i>Analog 9.</i> Ben Bova, editor. Doubleday
+      &amp; Company, Inc. Garden City, New York. 1973. Page 61.
+     </p>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

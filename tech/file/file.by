@@ -1,0 +1,910 @@
+{title Input and Output in Orson}
+
+{center
+ {b Input and Output in Orson}
+
+ James B. Moen
+ November 15, 2013}
+
+{justify
+  Copyright © 2013 James B. Moen.
+  Permission is granted to copy, distribute, and/or modify this document under
+  the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
+  version published by the Free Software Foundation; with no Invariant
+  Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license may be obtained at
+  {goto http://fsf.org/ {t <http://fsf.org/>.}}
+
+  This document uses special characters.
+  Without proper rendering support, you may see question marks, boxes, or other
+  symbols in place of these characters.
+  This document must be rendered in a font where an italic quote `\ {i "}\ '
+  looks different from two apostrophes `\ {q ''}\ '.}
+
+{rule}
+
+{center {b Contents}}
+
+{layout
+ {row
+  {left {goto intro 1.} \ }
+  {left Introduction.}}
+ {row
+  {left {goto fileos 2.} \ }
+  {left The library file {i file.os}.}}
+ {row
+  {left \ }
+  {layout
+   {row
+    {left {goto character 2.1.} \ }
+    {left {i eol,} {i eop,} and {i ill.}}}
+   {row
+    {left {goto standard 2.2.} \ }
+    {left {i errput,} {i input,} and {i output.}}}
+   {row
+    {left {goto close 2.3.} \ }
+    {left {i close.}}}
+   {row
+    {left {goto flush 2.4.} \ }
+    {left {i flush.}}}
+   {row
+    {left {goto get 2.5.} \ }
+    {left {i get.}}}
+   {row
+    {left {goto index 2.6.} \ }
+    {left {i index.}}}
+   {row
+    {left {goto open 2.7.} \ }
+    {left {i open.}}}
+   {row
+    {left {goto opened 2.8.} \ }
+    {left {i opened.}}}
+   {row
+    {left {goto put 2.9.} \ }
+    {left {i put.}}}
+   {row
+    {left {goto read 2.10.} \ }
+    {left {i read.}}}
+   {row
+    {left {goto reset 2.11.} \ }
+    {left {i reset.}}}
+   {row
+    {left {goto unget 2.12.} \ }
+    {left {i unget.}}}
+   {row
+    {left {goto unread 2.13.} \ }
+    {left {i unread.}}}
+   {row
+    {left {goto write 2.14.} \ }
+    {left {i write.}}}
+   {row
+    {left {goto writeln 2.15.} \ }
+    {left {i writeln.}}}}}
+ {row
+  {left {goto extend 3.} \ }
+  {left Extension conventions.}}
+ {row
+  {left {goto references 4.} \ }
+  {left References.}}
+ {row
+  {left \ }
+  {left \ }}}
+
+{rule}
+
+{label intro}
+{left {b 1. Introduction.}}
+
+{narrow
+ {display
+Anything goes in.
+Anything goes out!
+Fish, bananas, old pyjamas,
+Mutton! Beef! and Trout!}
+ {right
+  {goto cha1989 {c [cha 1989]}}}}
+
+{justify
+  The programming language Orson {goto moe2013b {c [moe 2013b]}} can perform
+  input and output on Unix streams {goto ste2005 {c [ste 2005].}}
+  A stream is an ordered series of zero or more unsigned bytes.
+  Orson's standard prelude binds the name {i stream} to an execution type that
+  describes a stream.
+
+  {i Opening} a stream associates it with a file.
+  (A stream may also be associated with a peripheral device or a program, but
+  that isn't discussed here.)
+  It may be opened as an {i input stream,} which allows reading unsigned bytes
+  from the file, or as an {i output stream,} which allows writing unsigned
+  bytes to the file.
+  It may also be opened for both input and output.
+  {i Closing} an open stream breaks its association with a file.
+  Reading or writing a closed stream has undefined results.
+
+  Each unsigned byte in an open stream is identified by a nonnegative integer
+  called its {i index.}
+  The stream's {i position} is the index of the next unsigned byte to be read
+  or written.
+  When a stream is read or written, its position is incremented.
+  Its position may also be changed without reading or writing anything.
+
+  Orson represents unsigned bytes as nonnegative integers.
+  The standard prelude binds the name {i eos} to a negative integer that may be
+  read from an input stream.
+  The integer {i eos} does not represent an unsigned byte, but acts as a
+  sentinel that represents the end of the stream.}
+
+{label fileos}
+{left {b 2. The library file {i file.os.}}}
+
+{justify
+  The library file {i file.os} provides forms that perform input and output on
+  streams.
+  Some of these forms read and write single characters.
+  Others read a series of characters that notates an integer, a real, or a
+  string.
+  Still others write a series of characters that notates an integer, a real, a
+  string, or a pointer.
+  Orson uses a 31-bit character set that includes the familiar 21-bit Unicode
+  {goto uni2006 {c [uni 2006]}} and 7-bit {c ascii}
+  {goto ans1986 {c [ans 1986]}} character sets as subsets.
+  Each character is read or written as a series of one to six unsigned bytes in
+  the {c utf}-8 encoding {goto uni2006 {c [uni 2006].}}
+
+  The rest of this note discusses forms and other objects that are provided by
+  {i file.os.}
+  They include the characters
+  {goto character {i eol,}}
+  {goto character {i eop,}}
+  and
+  {goto character {i ill,}}
+  the streams
+  {goto standard {i errput,}}
+  {goto standard {i input}} and
+  {goto standard {i output,}}
+  and the forms
+  {goto close {i close,}}
+  {goto flush {i flush,}}
+  {goto get {i get,}}
+  {goto index {i index,}}
+  {goto open {i open,}}
+  {goto opened {i opened,}}
+  {goto put {i put,}}
+  {goto read {i read,}}
+  {goto reset {i reset,}}
+  {goto unget {i unget,}}
+  {goto unread {i unread,}}
+  {goto write {i write,}} and
+  {goto writeln {i writeln.}}
+  Many of these forms return Boolean values that tell whether they performed
+  successfully.
+  Most were suggested by procedures from the programming languages C
+  {goto ker1988 {c [ker 1988]}} and Pascal {goto jen1974 {c [jen 1974].}}
+
+  Orson is currently implemented as a translator that converts Orson programs
+  to {c gnu} C programs {goto sta2008 {c [sta 2008]}} which run under Unix-like
+  operating systems, such as {c Gnu}/Linux.
+  As a result, many forms provided by {i file.os} are actually just sugared
+  versions of C and Unix functions.
+  They use the form {i c}{q '}{i s} {goto moe2013a {c [moe 2013a]}} to call
+  these functions from Orson.
+  Readers who wish more information may consult the Unix {i man} pages for the
+  functions that are called in this way.
+  For example, information about the format strings used by
+  {goto write {i write}} and {goto writeln {i writeln}} may be found in the
+  {i man} page for the function {t fprintf.}}
+
+{label character}
+{left {b 2.1. {i eol,} {i eop,} and {i ill.}}}
+
+{justify
+  The names {i eol,} {i eop,} and {i ill} are bound in the following way.}
+
+{narrow
+ {layout
+  {row
+   {orson
+cha eol}
+   {center \ :−\ }
+   {orson
+'\\N'}}
+  {row
+   {orson
+cha eop}
+   {center \ :−\ }
+   {orson
+'\\F'}}
+  {row
+   {orson
+cha ill}
+   {center \ :−\ }
+   {orson
+'\\#FFFD'}}}}
+
+{justify
+  The name {i eol} is bound to an invisible character that terminates a line.
+  Writing {i eol} to a text file will end the current line and start a new one.
+  The name {i eop} is bound to an invisible character that some programs use to
+  terminate a page.
+  Writing {i eop} to a text file will end the current page and start a new one.
+  The name {i ill} is bound to the Unicode replacement character {q '�'.}
+  It is used in place of a character whose value is unknown, or that cannot be
+  represented in Unicode {goto uni2006 {c [uni 2006].}}}
+
+{label standard}
+{left {b 2.2. {i errput,} {i input,} and {i output.}}}
+
+{justify
+  The names {i errput,} {i input,} and {i output} are bound in the following
+  way.}
+
+{narrow
+ {layout
+  {row
+   {orson
+errput}
+    {center \ :−\ }
+   {orson
+c's(stream, ''{t stderr}'')}}
+  {row
+   {orson
+input}
+   {center \ :−\ }
+   {orson
+c's(stream, ''{t stdin}'')}}
+  {row
+   {orson
+output}
+   {center \ :−\ }
+   {orson
+c's(stream, ''{t stdout}'')}}}}
+
+{justify
+  The names {i input} and {i output} are bound to streams that are associated,
+  respectively, with a standard input device and a standard output device.
+  The stream {i input} is usually associated with the console display, and the
+  stream {i output} is usually associated with the keyboard.
+  However, some programs may associate {i input} and {i output} with files.
+
+  The name {i errput} is bound to an {goto flush unbuffered} stream that is
+  associated with the same standard output device as {i output.}
+  It is used to write error messages and other diagnostic information to the
+  user.}
+
+{label close}
+{left {b 2.3. {i close.}}}
+
+{justify
+  The name {i close} is bound in the following way.}
+
+{narrow{orson
+close :−
+ (form (stream s) bool:
+   c's(int, ''{t fclose}'': s) = 0)}}
+
+{justify
+  The form {i close} takes a stream {i s} as its single argument.
+  If {i s} is an output stream, then it is {goto flush flushed.}
+  The form {i close} then severs the association between {i s} and a file or
+  peripheral device.}
+
+{label flush}
+{left {b 2.4. {i flush.}}}
+
+{justify
+  The name {i flush} is bound in the following way.}
+
+{narrow{orson
+flush :−
+ (alt
+  (form () bool:
+    flush(nil)),
+  (form (stream s) bool:
+    c's(int, ''{t fflush}'': s) = 0))}}
+
+{justify
+  If {i flush} is called with an {goto open} output stream {i s} as its
+  argument, and {i s} has a buffer, then all bytes in the buffer will be
+  written to {i s.}
+  The stream {i s} remains open after it has been flushed in this way.
+  If {i flush} is called with no arguments, then it will flush all open output
+  streams that belong to the current program.}
+
+{label get}
+{left {b 2.5. {i get.}}}
+
+{justify
+  The name {i get} is bound in the following way.}
+
+{narrow{orson
+get :−
+ (alt
+  (form () int:
+    get(input)),
+  (form (stream s) int:
+    c's(int, ''{t fgetc}'': s)))}}
+
+{justify
+  If {i get} is called with an {goto open} input stream {i s} as its argument,
+  then it will read the next unsigned byte from {i s} and return it as an
+  {i int.}
+  If no unsigned bytes remain to be read from {i s,} then {i get} will return
+  {i eos} instead.
+  If {i get} is called with no arguments, then it reads from the input stream
+  {goto standard {i input.}}}
+
+{label index}
+{left {b 2.6. {i index.}}}
+
+{justify
+  The name {i index} is bound in the following way.}
+
+{narrow{orson
+index :−
+ (form (stream s) int:
+   c's(int, ''{t ftell}'': s))}}
+
+{justify
+  If {i index} is called with an {goto open} stream {i s} as its argument, then
+  it will return the current index of {i s.}}
+
+{label open}
+{left {b 2.7. {i open.}}}
+
+{justify
+  The name {i open} is bound in the following way.}
+
+{narrow{orson
+open :−
+ (alt
+  (with values :− (tuple bool success, stream stream)
+   do (alt
+       (form () values:
+        (with var values v
+         do v.stream := c's(stream, ''{t tmpfile}'':)
+            v.success := v.stream ≠ nil
+            v)),
+       (form (string p, string m) values:
+        (with var values v
+         do v.stream := c's(stream, ''{t fopen}'': p, m)
+            v.success := v.stream ≠ nil
+            v)))),
+  (form (var stream s) bool:
+    s := c's(stream, ''{t tmpfile}'':)
+    s ≠ nil),
+  (form (var stream s, string p, string m) bool:
+    s := c's(stream, ''{t fopen}'': p, m)
+    s ≠ nil))}}
+
+{justify
+  The form {i open} opens a file, and returns a stream that is associated with
+  that file.
+  It is usually called with two arguments, {i p} and {i m.}
+  The string {i p} is a pathname to the file that will be opened.
+  The string {i m} is a {i mode} that specifies the input and operations which
+  will be allowed on the file.
+  Modes and their meanings are described in the following table.}
+
+{narrow
+ {table
+  {row
+   {center {bc mode}}
+   {center {bc meaning}}}
+  {row
+   {center {q ''{t a}''}}
+   {justify
+     Open the file for writing.
+     If the file does not exist, then create a new file.
+     The stream is positioned at the end of the file.}}
+  {row
+   {center {q ''{t a+}''}}
+   {justify
+     Open the file for reading and writing.
+     If the file does not exist, then create a new file.
+     The stream is positioned at the end of the file.}}
+  {row
+   {center {q ''{t r}''}}
+   {justify
+     Open an existing file for reading.
+     The stream is positioned at the beginning of the file.}}
+  {row
+   {center {q ''{t r+}''}}
+   {justify
+     Open the file for both reading and writing.
+     The stream is positioned at the beginning of the file.}}
+  {row
+   {center {q ''{t w}''}}
+   {justify
+     Open the file for writing.
+     If the file exists, then truncate it to zero length.
+     If it does not exist, then create a new file.
+     The stream is positioned at the beginning of the file.}}
+  {row
+   {center {q ''{t w+}''}}
+   {justify
+     Open the file for reading and writing.
+     If the file exists, then truncate it to zero length.
+     If it does not exist, then create a new file.
+     The stream is positioned at the beginning of the file.}}}}
+
+{justify
+  If {i open} is called with only {i p} and {i m,} then it will return a tuple
+  with two slots, {i success} and {i stream.}
+  If the Boolean slot {i success} is {i true,} then the file was opened
+  successfully, and {i stream} is the stream that is associated with the file.
+  If {i success} is {i false,} then the file could not be opened with the
+  requested mode, and {i stream} is undefined.
+
+  If {i open} is called with three arguments {i s,} {i p,} and {i m,} then it
+  will return a Boolean value.
+  If it returns {i true,} then the file was opened successfully, and the
+  variable {i s} is set to the stream that is associated with the file.
+  If it returns {i false,} then the file could not be opened with the requested
+  mode, and {i s} is undefined.
+
+  If {i p} and {i m} are missing, then they default to specify a temporary file
+  that allows reading and writing.
+  The temporary file will be deleted automatically when its stream is closed.}
+
+{label opened}
+{left {b 2.8. {i opened.}}}
+
+{justify
+  The name {i opened} is bound in the following way.}
+
+{narrow{orson
+opened :−
+ (alt
+  (form () foj:
+   (form (form (bool, stream) obj body) bool:
+    (with
+      stream s :− c's(stream, ''{t tmpfile}'':)
+      bool f :− s ≠ nil
+     do body(f, s)
+        f ∧ close(s)))),
+ (form (string p, string m) foj:
+  (form (form (bool, stream) obj body) bool:
+   (with
+     stream s :− c's(stream, ''{t fopen}'': p, m)
+     bool f :− s ≠ nil
+    do body(f, s)
+       f ∧ close(s)))))}}
+
+{justify
+  The form {i opened} is a wrapper that acts like a call to {goto {i open}}
+  followed by a call to {goto close {i close.}}
+  The {i for} clause
+  ({b for}\ {i bool}\ {i b,}\ {i stream}\ {i s}\ {b in}\ {i opened}({i p,}\ {i m})\ {b do}\ {i d})
+  makes a stream that is associated with a file whose pathname is the string
+  {i p.}
+  The stream allows input and output operations described by the string {i m,}
+  its {goto open {i mode.}}
+
+  If the file was opened successfully, then {i d} is executed with {i b} bound
+  to {i true} and {i s} bound to the stream.
+  After {i d} has finished executing, the stream is closed.
+  The {i for} clause returns {i true} if the stream was closed successfully,
+  and returns {i false} otherwise.
+  If {i d} terminates the {i for} clause by calling {i throw,} then the stream
+  will not be closed.
+
+  If the file was not opened successfully, then {i d} is executed with {i b}
+  bound to {i false} and {i s} bound to an undefined stream.
+  After {i d} has finished executing, the stream is not closed, and the {i for}
+  clause simply returns {i false.}
+
+  If {i p} and {i m} are missing, then they default to specify a temporary file
+  that allows reading and writing.
+  The temporary file will be deleted automatically when it is closed.}
+
+{label put}
+{left {b 2.9. {i put.}}}
+
+{justify
+  The name {i put} is bound in the following way.}
+
+{narrow{orson
+put :−
+ (alt
+  (form (int b) bool:
+    put(output, b)),
+  (form (stream s, int b) bool:
+    c's(int, ''{t fputc}'': s, b) ≠ c's(int, ''{t EOF}'')))}}
+
+{justify
+  If {i put} is called with a output stream {i s} and an integer {i b} that
+  represents an unsigned byte, then it will write {i b} to {i s} at its
+  current {goto index index.}
+  If {i put} is called with no arguments, then it will write {i b} to the
+  stream {goto standard {i output.}}}
+
+{label read}
+{left {b 2.10. {i read.}}}
+
+{justify
+  The name {i read} is bound in the following way.}
+
+{narrow{orson
+read :−
+ (alt
+  (form () int:
+    read(input)),
+  (form (type char) int:
+    read(input, char)),
+  (form (string f, list l) int:
+    read(input, f, l)),
+  (form (stream s) int:
+    read(s, char)),
+  (form (stream s, type char) int:
+    Read(s)),
+  (form (stream s, string f, list l) int:
+    c's(int, ''{t fscanf}'': s, f, l)))}}
+
+{justify
+  If {i read} is called with an input stream {i s} as its only argument, or if
+  it is called with a stream {i s} and the type {i char,} then it will read a
+  Unicode {goto uni2006 {c [uni 2006]}} character from {i s} and return it as
+  an {i int.}
+  (This is done by a secret procedure {i Read,} whose definition is not shown.)
+  If there are no characters that remain to be read from {i s,} then {i read}
+  will return {i eos.}
+  If it reads a character with an illegal {c utf}-8 encoding
+  {goto uni2006 {c [uni 2006],}} then it will return {goto character {i ill.}}
+
+  If {i read} is called with a stream {i s,} a format string {i f,} and a
+  list of variables {i l,} then it will read the notations of objects
+  specified by {i f} from {i s,} and assign the variables in {i l} to those
+  objects.
+  The number of bytes read from {i s} is then returned.
+  Results are undefined if {i read} encounters a series of characters that do
+  not notate the objects specified by {i f.}
+
+  In all the above cases, if the stream argument {i s} does not appear, then
+  the stream {goto standard {i input}} is assumed to appear in its place.}
+
+{label reset}
+{left {b 2.11. {i reset.}}}
+
+{justify
+  The name {i reset} is bound in the following way.}
+
+{narrow{orson
+reset :−
+ (alt
+  (form (stream s) bool:
+    c's(int, ''{t fseek}'': s, 0, c's(int, ''{t SEEK_END}'')) = 0),
+  (form (stream s, int i) bool:
+    c's(int, ''{t fseek}'': s, i, c's(int, ''{t SEEK_SET}'')) = 0))}}
+
+{justify
+  If {i reset} is called with a stream {i s} and a nonnegative integer {i i}
+  as its arguments, then it will reset the {goto index} of {i s} to {i i.}
+  For example, {i reset}({i s,}\ 0) will reposition {i s} to its first byte.
+
+  If the argument {i i} does not appear, then the maximum index of {i s} is
+  assumed to appear in its place.
+  As a result, {i reset}({i s}) positions the stream {i s} to its end.
+  This is somewhat nonintuitive, and is the {i opposite} of what the procedure
+  {i reset} did in Pascal {goto jen1974 {c [jen 1974].}}}
+
+{label unget}
+{left {b 2.12. {i unget.}}}
+
+{justify
+  The name {i unget} is bound in the following way.}
+
+{narrow{orson
+unget :−
+ (alt
+  (form (int b) bool:
+    unget(input, b)),
+  (form (stream s, int b) bool:
+    c's(int, ''{t ungetc}'': b, s) ≠ c's(int, ''{t EOF}'')))}}
+
+{justify
+  If {i unget} is called with an input stream {i s} and an integer {i b} that
+  represents an unsigned byte, then it sends {i b} back to {i s} so that it may
+  be read again.
+  Calling {i unget} two or more times in a row on the same input stream has
+  undefined results.
+  If the stream argument {i s} does not appear, then the stream
+  {goto standard {i input}} is assumed to appear in its place.}
+
+{label unread}
+{left {b 2.13. {i unread.}}}
+
+{justify
+  The name {i unread} is bound in the following way.}
+
+{narrow{orson
+unread :−
+ (alt
+  (form (cha c) bool:
+    unread(input, c)),
+  (form (stream s, char0 c) bool:
+    unget(s, c\{int\})),
+  (form (stream s, char1 c) bool:
+    Unread(s, c\{int\})))}}
+
+{justify
+  If {i unread} is called with an input stream {i s} and a character {i c,}
+  then it sends {i c} back to {i s} so that it may be read again.
+  (This is done either by {goto unget {i unget,}} or by a secret procedure
+  {i Unread,} whose definition is not shown.)
+  Calling {i unread} two or more times in a row on the same input stream has
+  undefined results.
+  If the stream argument {i s} does not appear, then the stream
+  {goto standard {i input}} is assumed to appear in its place.}
+
+{label write}
+{left {b 2.14. {i write.}}}
+
+{justify
+  The name {i write} is bound in the following way.}
+
+{narrow{orson
+write :−
+ (alt
+  (form (cha c) int:
+    write(output, c)),
+  (form (inj i) int:
+    write(output, i)),
+  (form (rej r) int:
+    write(output, r)),
+  (form (string s) int:
+    write(output, s)),
+  (form (row exe p) int:
+    write(output, p)),
+  (form (string f, list l) int:
+    write(output, f, l)),
+  (form (stream s, char0 c) int:
+    put(s, c\{int\})),
+  (form (stream s, char1 c) int:
+    Write(s, c\{int\})),
+  (form (stream s, inj i) int:
+    write(s, ''{t %i}'': i)),
+  (form (stream s, rej r) int:
+    write(s, ''{t %G}'': r)),
+  (form (stream s, string t) int:
+    write(s, ''{t %s}'': t)),
+  (form (stream s, row exe p) int:
+    write(s, ''{t %08X}'': p)),
+  (form (stream s, string f, list l) int:
+    c's(int, ''{t fprintf}'': s, f, l)))}}
+
+{justify
+  If {i write} is called with an output stream {i s} and a character {i c} as
+  its arguments, then it writes {i c} to {i s.}
+  (This is done either by {goto put {i put,}} or by a secret procedure
+  {i Write,} whose definition is not shown.)
+
+  If {i write} is called with an output stream {i s} and an integer, a real, a
+  string, or a pointer (other than a string) as its arguments, then it will
+  write to {i s} a series of characters that notate its second argument.
+  A string is written without surrounding quotation marks.
+  A pointer that is not a string is written as a series of hexadecimal digits.
+
+  If {i write} is called with a stream {i s,} a format string {i f,} and a
+  list of objects {i l,} then it will write the notations of the objects in
+  {i l} to {i s,} in a way specified by {i f.}
+
+  In all of the above cases, {i write} returns the number of bytes that were
+  written to the stream {i s.}
+  Also, if the stream argument {i s} does not appear, then
+  {goto standard {i output}} is assumed to appear in its place.}
+
+{label writeln}
+{left {b 2.15. {i writeln.}}}
+
+{justify
+  The name {i writeln} is bound in the following way.}
+
+{narrow{orson
+writeln :−
+ (alt
+  (form () int:
+    writeln(output)),
+  (form (stream s) int:
+    c's(int, ''{t fprintf}'': s, ϵ & eol)),
+  (form (cha c) int:
+    writeln(output, c)),
+  (form (inj i) int:
+    writeln(output, i)),
+  (form (rej r) int:
+    writeln(output, r)),
+  (form (string t) int:
+    writeln(output, t)),
+  (form (row exe p) int:
+    writeln(output, p)),
+  (form (string f, list l) int:
+    writeln(output, f, l)),
+  (form (stream s, char0 c) int:
+    writeln(s, ''{t %c}'': c)),
+  (form (stream s, char1 c) int:
+    Write(s, c\{int\}) + 1 also put(s, eol)),
+  (form (stream s, inj i) int:
+    writeln(s, ''{t %i}'': i)),
+  (form (stream s, rej r) int:
+    writeln(s, ''{t %G}'': r)),
+  (form (stream s, string t) int:
+    writeln(s, ''{t %s}'': t)),
+  (form (stream s, row exe p) int:
+    writeln(s, ''{t %08X}'': p)),
+  (form (stream s, string f, list l) int:
+   (if isString(f)
+    then c's(int, ''{t fprintf}'': s, f & eol, l)
+    else c's(int, ''{t fprintf}'': s, f, l) + write(s, eol))))}}
+
+{justify
+  If {i writeln} is called with an output stream {i s} as its single argument,
+  then it writes the character {goto character {i eol}} to {i s,} thereby
+  terminating the most recent line written to {i s.}
+
+  Otherwise, a call to {i writeln} is equivalent to calling {i write} with the
+  same arguments, then writing {i eol} to the same output stream.
+  For example, if {i i} is an integer, then calling {i writeln}({i s,}\ {i i})
+  is equivalent to {i write}({i s,}\ {i i}) followed by
+  {i write}({i s,}\ {i eol}).
+
+  In all the above cases, {i writeln} returns the number of bytes that were
+  written to the stream {i s,} including the final {i eol.}
+  Also, if the stream argument {i s} does not appear, then
+  {goto standard {i output}} is assumed to appear in its place.}
+
+{label extend}
+{left {b 3. Extension conventions.}}
+
+{justify
+  Some Orson programs define representations for objects and methods that
+  operate on those objects.
+  For example, a program might define a type {i comp} to represent complex
+  numbers, and define methods like {i "}+{i ",} {i "}−{i ",} {i "}×{i ",} and
+  {i "}/{i "} to operate on them.
+  The program might then be placed in a library so it could be used as part of
+  larger programs.
+
+  By convention, a program that defines a type {i t} and its operations should
+  also extend the form {goto {i read}} so it can read notations for objects of
+  type {i t.}
+  For example, the complex number program should define
+  {i read}({i s,}\ {i comp}) to read a notation like {t 2.0i}\ {t +}\ {t 3.0}
+  from a stream {i s,} then return the corresponding complex number.
+  Similarly, the program should extend the form {goto {i write}} so it can
+  write notations for objects of type {i t.}
+  For example, the complex number program should define
+  {i write}({i s,}\ {i z}) so it works when {i z} is a {i comp.}
+
+  Also by convention, if {i read}({i s,}\ {i t}) reads a notation from {i s,}
+  then {i read}({i t}) should read the same notation from
+  {goto standard {i input.}}
+  Similarly, if {i write}({i s,}\ {i o}) writes a notation to {i s,} then
+  {i write}({i o}) should write the same notation to
+  {goto standard {i output.}}
+  The form {goto {i writeln}} should be extended so that it behaves the same
+  way as {i write,} except that it terminates its output with
+  {goto character {i eol.}}}
+
+{rule}
+
+{label references}
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label ans1986}
+   {c [ans\ 1986]\ \ }}
+  {justify
+    American National Standards Institute.
+    {i American National Standard Code for Information Interchange.}
+    {c Ansi} X3.4–1986.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label cha1989}
+   {c [cha\ 1989]\ \ }}
+  {justify
+    Graham Chapman, John Cleese, Terry Gilliam, Eric Idle, Terry Jones,
+    Michael Palin.
+    {i Monty Python's Flying Circus: All The Words.}
+    Volume Two.
+    Pantheon Books.
+    New York, New York.
+    1989.
+    Page 282.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label jen1974}
+   {c [jen\ 1974]\ \ }}
+  {justify
+    Kathleen Jensen, Niklaus Wirth.
+    {i {c Pascal} User Manual and Report.}
+    Lecture Notes in Computer Science Number 18.
+    Springer Verlag.
+    Berlin, Germany.
+    1974.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label ker1988}
+   {c [ker\ 1988]\ \ }}
+  {justify
+    Brian W. Kernighan, Dennis M. Ritchie.
+    {i The C Programming Language.}
+    Second Edition.
+    Prentice-Hall.
+    Upper Saddle River, New Jersey.
+    1988.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label moe2013a}
+   {c [moe\ 2013a]\ \ }}
+  {justify
+    James B. Moen.
+    ``Orson's Interface to {c Gnu} C.''
+    Unpublished technical report.
+    2013.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label moe2013b}
+   {c [moe\ 2013b]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2013.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label sta2008}
+   {c [sta\ 2008]\ \ }}
+  {justify
+    Richard M. Stallman, the {c Gcc} Developer Community.
+    ``Using and Porting the {c Gnu} Compiler Collection.''
+    Free Software Foundation.
+    Boston, Massachusetts.
+    2008.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label ste2005}
+   {c [ste\ 2005]\ \ }}
+  {justify
+    W. Richard Stevens, Stephen A. Rago.
+    {i Advanced Programming in the Unix Environment.}
+    Second Edition.
+    Addison-Wesley.
+    Upper Saddle River, New Jersey.
+    2005.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label uni2006}
+   {c [uni\ 2006]\ \ }}
+  {justify
+    The Unicode Consortium.
+    {i The Unicode Standard, Version 5.0.}
+    Fifth Edition.
+    Addison-Wesley Professional.
+    Reading, Massachusetts.
+    2006.}}}
+

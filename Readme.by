@@ -1,0 +1,328 @@
+{title Orson}
+
+{center
+ {b Orson}
+
+ James B. Moen
+ January 30, 2014}
+
+{narrow
+ {justify
+   The best hope a language inventor has for the survival of his or her project
+   is to find a group of people who will use it, and then hand it over and let
+   them ruin its perfection.}
+ {right
+  {goto okr2009 {c [okr 2009]}}}}
+
+{left {b 0. Overview.}}
+
+{justify
+  {i Orson} {goto moe2014 {c [moe 2014]}} is a small, general purpose
+  programming language, designed to be used by individuals and small groups.
+  It emphasizes efficiency, expressiveness, and extensibility, allowing access
+  to low level representations of objects like that of the programming language
+  C {goto ker1988 {c [ker 1988].}}
+  Its name is not an acronym, so it doesn't appear in capital letters.
+  Orson is not named after any person, place, or thing.
+
+  Orson programs are made up of expressions that work in two phases, called
+  {i transformation} and {i execution.}
+  During transformation, Orson applies {i forms} to produce new expressions.
+  Forms are similar to macros, but are written in a lexically scoped
+  applicative language that can perform arbitrary computations.
+  During execution, Orson evaluates the expressions that were produced during
+  transformation.
+
+  Orson is currently implemented so that transformation occurs at compile time,
+  and execution occurs at run time.
+  This allows writing with forms in an abstract and general way, while still
+  producing efficient programs.
+  For example, forms can be used as inline substitutes for some procedures.
+  Most operators are implemented as forms, so they can be redefined.
+  Abstract data types can be implemented as forms that take types as their
+  arguments and return types as their results.
+  Control structures can be implemented as higher-order forms that take forms
+  as arguments and return forms as their results.
+
+  Orson was developed on Intel {i x}86 computers running Debian and Ubuntu
+  {c Gnu}/Linux, so it should work on similar systems.
+  The Orson compiler itself is written in {c Gnu} C
+  {goto sta2008 {c [sta 2008].}}
+  It translates Orson source programs to equivalent {c Gnu} C programs, and
+  then invokes the {c Gnu} C compiler {c gcc} to compile them.
+  Orson is distributed with many example programs, most of which are
+  themselves written in Orson.
+  These were written to test the Orson language and its compiler.}
+
+{left {b 1. Licensing.}}
+
+{justify
+  Orson and its accompanying programs are free software: you can redistribute
+  them and/or modify them under the terms of the {c Gnu} General Public License
+  as published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+
+  Orson and its accompanying programs are distributed in the hope that they
+  will be useful, but {c without any warranty;} without even the implied
+  warranty of {c merchantability} or {c fitness for a particular purpose.}
+  See the {c Gnu} General Public License for more details.
+
+  You should have received a copy of the {c Gnu} General Public License along
+  with Orson and its accompanying programs.
+  If not, see
+  {goto http://www.gnu.org/licenses/ {t <http://www.gnu.org/licenses/>.}}}
+
+{left {b 2. Contents.}}
+
+{justify
+  The following directories contain the Orson compiler and its example
+  programs.
+  Follow the links for more information.}
+  
+{narrow
+ {layout
+  {row
+   {left {goto apps/Readme.html {t apps/}}}
+   {left \ \ \ \ Various small applications.}}
+  {row
+   {left {goto bracy/Readme.html {t bracy/}}}
+   {left \ \ \ \ Simple document compiler that produces {c html} files.}}
+  {row
+   {left {goto eg/Readme.html {t eg/}}}
+   {left \ \ \ \ Generate example strings from context-free grammars.}}
+  {row
+   {left {goto library/Readme.html {t library/}}}
+   {left \ \ \ \ Orson library.}}
+  {row
+   {left {goto licenses/Readme.html {t licenses/\ \ }}}
+   {left \ \ \ \ {c Gnu} General Public Licenses.}}
+  {row
+   {left {goto orson/Readme.html {t orson/}}}
+   {left \ \ \ \ Orson compiler.}}
+  {row
+   {left {goto ox/Readme.html {t ox/}}}
+   {left \ \ \ \ Cross-reference generator for Orson source programs.}}
+  {row
+   {left {goto scam/Readme.html {t scam/}}}
+   {left \ \ \ \ Interpreter for a toy Scheme-like language.}}
+  {row
+   {left {goto tlh/Readme.html {t tlh/}}}
+   {left \ \ \ \ Make two-level perfect hash functions for string keys.}}}}
+
+{justify
+  These files contain documentation and other supporting material.}
+
+{narrow
+ {layout
+  {row
+   {left {goto ./LICENSE {t LICENSE}}}
+   {left \ \ \ \ Short statement about licensing.}}
+  {row
+   {left {goto ./README {t README}}}
+   {left \ \ \ \ Short text version of {t Readme.html}.}}
+  {row
+   {left {goto {t Readme.by}}}
+   {left \ \ \ \ Bracy source for {t Readme.html.}}}
+  {row
+   {left {goto {t Readme.html}}}
+   {left \ \ \ \ What you're reading now.}}
+  {row
+   {left {goto ./Test {t Test}}}
+   {left \ \ \ \ Compile Orson source files for debugging.}}
+  {row
+   {left {goto tech/Readme.html {t tech/}}}
+   {left \ \ \ \ Orson technical reports.}}}}
+
+{justify
+  Orson's example programs and documentation contain special characters.
+  Without proper rendering support, you may see question marks, boxes, or other
+  symbols in place of these characters.}
+
+{left {b 3. Makefiles.}}
+
+{justify
+  Orson and many of its accompanying programs are installed by Unix
+  {i makefiles} {goto sta2010 {c [sta 2010].}}
+  The next few sections describe how these makefiles compile, install, and
+  uninstall programs.
+  I assume only a minimal knowledge of Unix.
+  Readers who are familiar with Unix can skip section {goto root 3.1} and skim
+  the rest.}
+
+{label root}
+{left {b 3.1. Root.}}
+
+{justify
+  Unix systems have a special user (sometimes called the {i superuser}) whose
+  name is {i root.}
+  The root user can do almost anything without the system objecting.
+  If you're root, you can read any file, write any file, delete any file, and
+  make files in any directory.
+  You can become root if you have the right password.
+  This is potentially dangerous, so you shouldn't become root unless you must,
+  and even then you should stay root for as short a time as you can.
+
+  You must become root to install Orson and the programs that accompany it.
+  This is because these programs must be placed in directories that you
+  ordinarily aren't allowed to make files in.
+  If you can't become root for some reason, or you don't want to, then you can
+  still experiment with Orson and its accompanying programs without installing
+  them.
+  I'll explain how to do that in section {goto compile 3.4.}
+
+  There are at least two different ways to become root.
+  On some systems, you become root only for the duration of a single command.
+  Suppose you want to execute the command {t tenhut} as root.
+  Then you type {t sudo}\ {t tenhut} to the shell, and type a password.
+  (I guess {t sudo} stands for {i su do,} or maybe it's a pun on the word
+  {i pseudo.})
+  The command {t sudo} doesn't explicitly put you into a new shell, it just
+  executes {t tenhut} as if you're root.
+
+  On other systems, you type {t su} to the shell, then type a password.
+  (I guess {t su} stands for {i superuser.})
+  On others, you type {t su}\ {t root}, or {t sudo}\ {t su}, or
+  {t sudo}\ {t su}\ {t root}.
+  This puts you into a new shell where you can type commands that are executed
+  as if you're root.
+  When you're done, you exit the new shell by typing the command {t exit} or by
+  typing the character {i control-D.}
+
+  The commands {t sudo} and {t su} may remember the root password for a short
+  time, so you don't have to keep typing it if you do several {t sudo}'s or
+  {t su}'s one after the other.
+  You can get more information about {t sudo} and {t su} by typing the commands
+  {t man}\ {t sudo} and {t man}\ {t su} to the shell.}
+
+{label install}
+{left {b 3.2. Installing.}}
+
+{justify
+  To install a program, first {t cd} to the directory that contains the source
+  code for it.
+  There should be a file called {t Makefile} in that directory.
+  It contains Unix commands that can compile, install, and uninstall the
+  program.
+  It also contains comments that describe exactly what it will do to your
+  system when you run it.
+  Read {t Makefile,} and if you've satisfied yourself that it won't do anything
+  bad, then execute the command {t make}\ {t install} as root.
+  (See section {goto root 3.1} if you don't know how to do that.)
+  The {t make} command will write a list of the things it's doing to install
+  the program.
+
+  After the program is installed, you can run it.
+  Just type its name to the shell, maybe followed by some options.
+  If you don't know what its options are, you can find out by typing the
+  command {t man}\ {i p,} where {i p} is the name of the program: you should
+  see a manual page for {i p} on the screen.
+  If you can't get the manual page, then something has gone wrong with the
+  installation.
+  If you can't run the program, then something has gone wrong as well.}
+
+{left {b 3.3. Uninstalling.}}
+
+{justify
+  If something did go wrong, or you decide you didn't want to install the
+  program after all, then you can uninstall it.
+  Just {t cd} to the directory that contains the program you installed, and
+  execute the command {t make}\ {t uninstall} as root.
+  (See section {goto root 3.1} if you don't know how to do that.)
+  As before, the {t make} command will print a list of things it's doing to
+  uninstall the program.
+  Once you are no longer root, everything that {t make}\ {t install} did should
+  be undone.}
+
+{label compile}
+{left {b 3.4. Rootlessness.}}
+
+{justify
+  What if you can't become root?
+  Maybe you're a student working in a school lab, and you don't have the root
+  password for the computer you're using.
+  You can still compile and run these programs.
+  Just {t cd} to the directory that contains the program you want, and type
+  the command {t make.}
+  As before, the {t make} command will print a list of things it's doing to
+  compile the program.
+  It will then leave the compiled program in the directory.
+
+  Now, if the program you've just compiled is named {i p,} then you can run it
+  by typing the command {t ./}{i p} to the shell, maybe followed by some
+  options.
+  (That's {i dot slash pee.})
+  If you don't know what its options are, you can read its manual page by
+  typing the command {t man}\ {t -l}\ {i p}{t .1} to the shell.
+  (That's {i man space dash ell space pee dot one,} so don't confuse a lower
+  case {t l} with the digit {t 1.})
+  You should see the manual page for the program {i p.}}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label ker1988}
+   {c [ker\ 1988]\ \ }}
+  {justify
+    Brian W. Kernighan, Dennis M. Ritchie.
+    {i The C Programming Language.}
+    Second Edition.
+    Prentice-Hall.
+    Upper Saddle River, New Jersey.
+    1988.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label moe2014}
+   {c [moe\ 2014]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2014.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label okr2009}
+   {c [okr\ 2009]\ \ }}
+  {justify
+    Arika Okrent.
+    {i In the Land of Invented Languages.}
+    Spiegel and Grau.
+    New York, New York.
+    2009.
+    Page 262.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label sta2008}
+   {c [sta\ 2008]\ \ }}
+  {justify
+    Richard M. Stallman, the {c Gcc} Developer Community.
+    ``Using and Porting the {c Gnu} Compiler Collection.''
+    Free Software Foundation.
+    Boston, Massachusetts.
+    2008.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label sta2010}
+   {c [sta\ 2010]\ \ }}
+  {justify
+    Richard M. Stallman, Ronald McGrath, Paul D. Smith.
+    ``{c Gnu} Make: A Program for Directing Recompilation.''
+    Edition 0.71.
+    Free Software Foundation.
+    Boston, Massachusetts.
+    July 19, 2010.}}}

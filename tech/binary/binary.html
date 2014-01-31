@@ -1,0 +1,1733 @@
+<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:34 PM CST -->
+<html>
+ <head>
+  <title>
+   Automatically Building Search Trees from IF clauses.
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Automatically Building Search Trees From <i>if</i> Clauses</b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   June 26, 2013
+  </p>
+  <p align="center">
+   <b>Abstract</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    Orson forms can build binary search trees automatically, using nested
+    <i>if</i> clauses. Three such forms are discussed that produce
+    progressively more efficient trees. Although the trees are probably slower
+    than hash tables, they&rsquo;re probably faster than binary search on
+    arrays, since they don&rsquo;t need index calculations.
+   </p>
+  </blockquote>
+  <p align="justify">
+   Copyright &#169; 2013 James B. Moen. Permission is granted to copy,
+   distribute, and/or modify this document under the terms of the
+   G<small>NU</small> Free Documentation License, Version 1.3 or any later
+   version published by the Free Software Foundation; with no Invariant
+   Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the
+   license may be obtained at
+   <a href="http://fsf.org/">
+    <tt>&lt;http://fsf.org/&gt;.</tt>
+   </a>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This document uses special characters.
+   Without proper rendering support, you may see question marks, boxes, or
+   other symbols in place of these characters. This document must be rendered
+   in a font in which an italic quote &lsquo;&nbsp;<i>"</i>&nbsp;&rsquo;
+   looks different from two apostrophes &lsquo;&nbsp;''&nbsp;&rsquo;.
+  </p>
+  <hr />
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <blockquote>
+   <p>
+    &lsquo;&lsquo;There&rsquo;s&nbsp;been&nbsp;an&nbsp;accident!&rsquo;&rsquo;&nbsp;they&nbsp;said,&nbsp;
+    <br />
+    &lsquo;&lsquo;Your&nbsp;servant&rsquo;s&nbsp;cut&nbsp;in&nbsp;half;&nbsp;he&rsquo;s&nbsp;dead.&rsquo;&rsquo;&nbsp;
+    <br />
+    &lsquo;&lsquo;Indeed!&rsquo;&rsquo;&nbsp;said&nbsp;Mr.&nbsp;Jones,&nbsp;&lsquo;&lsquo;and&nbsp;please&nbsp;
+    <br />
+    Give&nbsp;me&nbsp;the&nbsp;half&nbsp;that&rsquo;s&nbsp;got&nbsp;my&nbsp;keys.&rsquo;&rsquo;
+   </p>
+   <p align="right">
+    <a href="#gra1974">
+     [<small>GRA</small> 1974]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Suppose you want to test if a string is a member of a set of constant
+   strings, and you want to do it with as few comparisons as possible. For
+   example, if you&rsquo;re writing the lexical scanner for a compiler, you
+   might want to test if a string is a reserved name.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Probably the fastest way is to use a hash
+   table
+   <a href="#wir1976">
+    [<small>WIR</small> 1976].
+   </a>
+   If you can design a hash function that&rsquo;s carefully tailored to the set
+   of reserved names, then you can make the test in <i>O</i>(1)
+   comparisons. Unfortunately, designing such a hash function isn&rsquo;t easy.
+   It may not even exist for some sets. Also, you may have to design a new hash
+   function each time the set of reserved names changes.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Maybe the next best alternative is binary
+   search
+   <a href="#wir1976">
+    [<small>WIR</small> 1976].
+   </a>
+   If there are <i>n</i> names in the set, binary search can make the test
+   in <i>O</i>(<i>log</i>&nbsp;<i>n</i>) comparisons. This
+   isn&rsquo;t as good as <i>O</i>(1), but it&rsquo;s still fast, and you
+   don&rsquo;t have to invent a hash function. I&rsquo;ll therefore consider
+   only binary search here.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The idea behind binary search is that you
+   represent the set as a list of strings, in alphabetical order. This differs
+   from most textbook treatments of binary search, which use arrays instead of
+   lists, but you&rsquo;ll see later that this doesn&rsquo;t matter. I&rsquo;ll
+   call this list <i>v,</i> and the string that you&rsquo;re looking for
+   I&rsquo;ll call <i>k.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If you want to test if <i>k</i> is
+   reserved, you compare it with the string in the middle of the list, which
+   I&rsquo;ll call <i>middle</i>(<i>v</i>). If <i>k</i> is less
+   than <i>middle</i>(<i>v</i>), then you know that if <i>k</i>
+   is in the list, it must be on the left of <i>v.</i> You therefore
+   repeat the process with <i>left</i>(<i>v</i>), a list of the
+   strings on the left of the middle. Similarly, if <i>k</i> is greater
+   than <i>middle</i>(<i>v</i>), then you know that if <i>k</i>
+   is in the list, it must be on the right of <i>v.</i> You therefore
+   repeat the process with <i>right</i>(<i>v</i>), a list of strings
+   on the right of the middle.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If <i>k</i> is neither less than or
+   greater than <i>middle</i>(<i>v</i>), then it must be equal, so
+   you&rsquo;ve found the string you&rsquo;re looking for, and you can stop
+   searching. If <i>v</i> ever becomes empty, then you know <i>k</i>
+   isn&rsquo;t in the list, so you can also stop. Each time you repeat the
+   process, you divide <i>v</i> in half, so that binary search takes
+   <i>O</i>(<i>log</i>&nbsp;<i>length</i>(<i>v</i>)) string
+   comparisons.
+  </p>
+  <p>
+   <b>1. First version.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    [T]o have you listen at all, it is necessary to talk about trees.
+   </p>
+   <p align="right">
+    <a href="#ric1995">
+     [<small>RIC</small> 1995]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   It&rsquo;s easy to translate the English text of the introduction into an
+   Orson
+   <a href="#moe2013">
+    [<small>MOE</small> 2013]
+   </a>
+   program. Actually, when I wrote this, I started with the program and
+   translated it to English.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I&rsquo;ll use the predefined form
+   <i>comp</i> to compare strings lexicographically. It takes two strings
+   <i>l</i> and <i>r</i> as its arguments. It returns an integer less
+   than 0 if <i>l</i> is less than <i>r,</i> returns 0 if
+   <i>l</i> equals <i>r,</i> and returns an integer greater than 0 if
+   <i>l</i> is greater than <i>r.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Using <i>comp,</i> I can then write a
+   form <i>isIn</i> that takes a string <i>k</i> and a list
+   <i>v</i> as its arguments. I&rsquo;ll assume that the elements of
+   <i>v</i> are string constants, and that they&rsquo;re sorted in
+   alphabetical order. The form <i>isIn</i> returns <i>true</i> if
+   <i>k</i> is a member of <i>v,</i> and returns <i>false</i>
+   otherwise.
+  </p>
+  <blockquote>
+   <p>
+    (<b>prog</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b></font><i>isIn</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i></font>(<b>form</b>&nbsp;(<i>string</i>&nbsp;<i>k</i>,&nbsp;<i>list</i>&nbsp;<i>v</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>((<b>w</b></font><i>k</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>((<b>w</b></font><i>isInning</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>((<b>w</b><i>i</i></font>(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>v</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>((<b>w</b><i>i</i>(</font>(<b>if</b>&nbsp;<i>isEmpty</i>(<i>v</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>((<b>w</b><i>i</i>((</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>((<b>w</b><i>i</i>((</font><b>else</b>&nbsp;(<b>with</b>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;<i>middle</i>(<i>v</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>isInning</i>(<i>left</i>(<i>v</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>isInning</i>(<i>right</i>(<i>v</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>p</b><i>i</i>((</font><b>do</b>&nbsp;<i>isInning</i>(<i>v</i>)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Note that I use a helper form <i>isInning</i> that does all the work
+   for <i>isIn.</i> By convention, if I write a form called
+   <i>foo,</i> then I&rsquo;ll call its helper forms something like
+   <i>fooing.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I haven&rsquo;t yet defined the forms
+   <i>left, middle,</i> and <i>right,</i> but they should work as
+   described in the introduction. It&rsquo;s a little tricky to get them right.
+   I&rsquo;ve heard that the late Edsger Dijkstra used to ask famous computer
+   scientists to write (from scratch) a binary search algorithm for arrays.
+   Most of them got it wrong. I&rsquo;ll avoid these problems by using Orson
+   lists instead of arrays, and by not being famous.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I&rsquo;ll guess that
+   <i>middle</i>(<i>v</i>) is at index
+   <i>length</i>(<i>v</i>)&nbsp;/&nbsp;2 in <i>v.</i> This is
+   correct when <i>v</i> has an odd number of elements, and is off by one
+   when it has an even number. Since I&rsquo;m using lists instead of arrays,
+   this is the only index calculation I&rsquo;ll need to do.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; That leaves only <i>left</i> and
+   <i>right.</i> I&rsquo;ll make a table with lists of various lengths to
+   see what <i>left, middle,</i> and <i>right</i> should return for
+   each one. By looking at the table, maybe I can see a pattern that will tell
+   me how to write the code for these forms.
+  </p>
+  <table align="center" border="1" cellpadding="3" cellspacing="0">
+   <tr bgcolor="#D3D3D3" valign="top">
+    <td>
+     <p align="center">
+      <b><i>v</i></b>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <b><i>left</i>(<i>v</i>)</b>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <b><i>middle</i>(<i>v</i>)</b>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <b><i>right</i>(<i>v</i>)</b>
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      (: <i>a</i>)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      (:)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <i>a</i>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      (:)
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      (: <i>a, b</i>)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      (: <i>a</i>)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <i>b</i>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      (:)
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      (: <i>a, b, c</i>)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      (: <i>a</i>)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <i>b</i>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      (: <i>c</i>)
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      (: <i>a, b, c, d</i>)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      (: <i>a, b</i>)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <i>c</i>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      (: <i>d</i>)
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      (: <i>a, b, c, d, e</i>)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      (: <i>a, b</i>)
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      <i>c</i>
+     </p>
+    </td>
+    <td>
+     <p align="center">
+      (: <i>d, e</i>)
+     </p>
+    </td>
+   </tr>
+  </table>
+  <p align="justify">
+   Here&rsquo;s the pattern. If the middle element is at index <i>j,</i>
+   then to compute <i>left</i>(<i>v</i>), I need to make a list of
+   the first <i>j</i> elements in <i>v.</i> To compute
+   <i>right</i>(<i>v</i>), I need to delete the first
+   <i>j</i>&nbsp;+&nbsp;1 elements from <i>v.</i> Now that I know
+   this, it&rsquo;s easy to write <i>left, middle,</i> and
+   <i>right.</i> The extra parenthesis at the end closes the program.
+  </p>
+  <blockquote>
+   <p>
+    <i>left</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>l</i></font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>l</i>(<b>w</b></font><i>lefting</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>l</i>(<b>w</b><i>l</i></font>(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>v</i>,&nbsp;<i>inj</i>&nbsp;<i>j</i>)&nbsp;<i>list</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>l</i>(<b>w</b><i>l</i>(</font>(<b>if</b>&nbsp;<i>j</i>&nbsp;=&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>l</i>(<b>w</b><i>l</i>((</font><b>then</b>&nbsp;(:)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>l</i>(<b>w</b><i>l</i>((</font><b>else</b>&nbsp;<i>cons</i>(<i>car</i>(<i>v</i>),&nbsp;<i>lefting</i>(<i>cdr</i>(<i>v</i>),&nbsp;<i>j</i>&nbsp;&#8722;&nbsp;1))))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>l</i>(</font><b>do</b>&nbsp;(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>v</i>)&nbsp;<i>list</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>l</i>(<b>do</b>&nbsp;(<b>f</b></font><i>lefting</i>(<i>v</i>,&nbsp;<i>length</i>(<i>v</i>)&nbsp;/&nbsp;2)))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>l</i></font>
+    <br />
+    <i>middle</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i></font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b></font><i>middling</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i></font>(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>v</i>,&nbsp;<i>inj</i>&nbsp;<i>j</i>)&nbsp;<i>list</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>(</font>(<b>if</b>&nbsp;<i>j</i>&nbsp;=&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((</font><b>then</b>&nbsp;<i>car</i>(<i>v</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((</font><b>else</b>&nbsp;<i>middling</i>(<i>cdr</i>(<i>v</i>),&nbsp;<i>j</i>&nbsp;&#8722;&nbsp;1)))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font><b>do</b>&nbsp;(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>v</i>)&nbsp;<i>obj</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>do</b>&nbsp;(<b>f</b></font><i>middling</i>(<i>v</i>,&nbsp;<i>length</i>(<i>v</i>)&nbsp;/&nbsp;2)))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i></font>
+    <br />
+    <i>right</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>r</i></font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>r</i>(<b>w</b></font><i>righting</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>r</i>(<b>w</b><i>r</i></font>(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>v</i>,&nbsp;<i>inj</i>&nbsp;<i>j</i>)&nbsp;<i>list</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>r</i>(<b>w</b><i>r</i>(</font>(<b>if</b>&nbsp;<i>j</i>&nbsp;=&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>r</i>(<b>w</b><i>r</i>((</font><b>then</b>&nbsp;<i>v</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>r</i>(<b>w</b><i>r</i>((</font><b>else</b>&nbsp;<i>righting</i>(<i>cdr</i>(<i>v</i>),&nbsp;<i>j</i>&nbsp;&#8722;&nbsp;1)))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>r</i>(</font><b>do</b>&nbsp;(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>v</i>)&nbsp;<i>list</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>r</i>(<b>do</b>&nbsp;(<b>f</b></font><i>righting</i>(<i>v</i>,&nbsp;<i>length</i>(<i>v</i>)&nbsp;/&nbsp;2&nbsp;+&nbsp;1)))&nbsp;
+    <br />
+    )
+   </p>
+  </blockquote>
+  <p align="justify">
+   Suppose <i>m</i> is a string variable, and I want to test if it
+   contains an Orson reserved name. Such a test might be part of an Orson
+   compiler&rsquo;s lexical scanner. I can call <i>isIn</i> to make the
+   test, like so:
+  </p>
+  <blockquote>
+   <table cellpadding="0" cellspacing="0">
+    <tr valign="top">
+     <td>
+      <p>
+       <i>isIn</i>(<i>m</i>:&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''also'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''alt'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''alts'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''and'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''case'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''catch'',&nbsp;&nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''do'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''else'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''for'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''form'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''gen'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''if'',&nbsp;&nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''in'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''load'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''mod'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''none'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''not'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''of'',&nbsp;&nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''or'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''past'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''proc'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''prog'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''ref'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''row'',&nbsp;&nbsp;
+      </p>
+     </td>
+    </tr>
+    <tr valign="top">
+     <td>
+      <p>
+       &nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''then'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''tuple'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''type'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''var'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''while'',&nbsp;&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       ''with'')
+      </p>
+     </td>
+    </tr>
+   </table>
+  </blockquote>
+  <p align="justify">
+   To understand what happens next, you need to know how an Orson form is
+   called. Orson first transforms its arguments to make new expressions. Then,
+   in the form&rsquo;s body, Orson replaces the form&rsquo;s parameters by
+   these expressions. Finally, Orson transforms the resulting body to make
+   another new expression, which is result of calling the form. Forms therefore
+   work something like macros, but with expressions instead of strings.
+   However, unlike macros, they can also do computations with constants, and
+   can call themselves recursively.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Because <i>isIn</i> calls itself
+   recursively, the new expression will be made up of nested <i>if</i>
+   clauses and <i>with</i> clauses. In effect, it&rsquo;s a binary search
+   tree
+   <a href="#wir1976">
+    [<small>WIR</small> 1976]
+   </a>
+   that&rsquo;s made out of code instead of data. When it&rsquo;s executed, the
+   new expression will test if <i>m</i> is one of the strings in the list,
+   in no more than about
+   <i>O</i>(<i>log</i>&nbsp;<i>length</i>(<i>v</i>)) calls
+   to <i>comp.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The expressions from <i>isIn</i> that
+   involve lists will vanish as a result of the transformation process.
+   That&rsquo;s why it doesn&rsquo;t matter if I write <i>isIn</i> with
+   lists, even though they&rsquo;re less efficient than arrays. By the time the
+   new expression resulting from <i>isIn</i> gets executed, it&rsquo;s not
+   computing lists any more. It&rsquo;s not computing indexes any more either,
+   so it might be faster than binary search on an array.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It&rsquo;s also easier to write the form
+   <i>isIn</i> that it would be to build a binary search tree out of
+   <i>if</i> clauses by hand. If the set of Orson reserved names ever
+   changes, then all I have to do is change the call to <i>isIn.</i> I
+   don&rsquo;t have to figure out how to insert new reserved names into the
+   binary tree.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; With the advertising for Orson out of the
+   way, here&rsquo;s the new expression that the call to <i>isIn</i> gets
+   transformed into. It has some problems, but this is only the first version.
+  </p>
+  <blockquote>
+   <p>
+    (<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>string</i>&nbsp;<i>k</i>&nbsp;:&#8722;&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''none'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''else'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''and'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''alt'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''also'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''alts'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''catch'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''case'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''do'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''if'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''form'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''for'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''gen'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''load'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''in'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''mod'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''row'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''past'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''of'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''not'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''or'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''prog'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''proc'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''ref'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''var'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''tuple'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''then'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''type'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''with'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''while'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   I&rsquo;ve made a few changes to make this expression easier to read.
+   Instead of <i>k</i> and <i>t,</i> the actual expression produced
+   by Orson uses unique names that appear nowhere else. This is necessary so a
+   name that&rsquo;s passed in an argument to a form can&rsquo;t be the same as
+   a name used inside the form. The actual expression uses 0 and 1 instead of
+   <i>false</i> and <i>true</i> (Orson doesn&rsquo;t have Boolean
+   values). It also doesn&rsquo;t use <i>comp,</i> but rather an
+   unspecified expression that <i>comp</i> transforms into.
+  </p>
+  <p>
+   <b>2. Second version.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    There are some trees, Watson, which grow to a certain height and then
+    suddenly develop some unsightly eccentricity.
+   </p>
+   <p align="right">
+    <a href="#doy1982a">
+     [<small>DOY</small> 1982<small>A</small>]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The tree of <i>if</i> clauses has 153 lines, which is much too long.
+   How can I make it shorter? The first thing I notice is that fragments of
+   inefficient code appear over and over in the tree. Here&rsquo;s one of them,
+   which was apparently produced when <i>isIn</i> was called on the list
+   (:&nbsp;''type'').
+  </p>
+  <blockquote>
+   <p>
+    (<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''type'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   What does it do? First, it compares <i>k</i> with the string
+   ''type''. If <i>k</i> is less than ''type'', then it returns
+   <i>false.</i> If <i>k</i> is greater than ''type'', then it
+   also returns <i>false.</i> If <i>k</i> is neither less or greater
+   than ''type'', then it returns <i>true.</i> So this is really just
+   a complicated way of asking if <i>k</i> equals ''type''.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Here&rsquo;s another inefficient code
+   fragment, which was produced when <i>isIn</i> was called on the list
+   (:&nbsp;''while'',&nbsp;''with''). Similar reasoning reveals that this
+   is really just a complicated way of asking if <i>k</i> equals either
+   string.
+  </p>
+  <blockquote>
+   <p>
+    (<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''with'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''while'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   It looks like <i>isIn</i> generates inefficient code when <i>v</i>
+   has either one or two elements. I&rsquo;ll rewrite <i>isIn</i> so that
+   if <i>v</i> has one element, then it will use an equality test. If
+   <i>v</i> has two elements, then it will use two equality tests
+   connected by &#8744; (or).
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I don&rsquo;t need to add more special cases
+   like these, because it seems reasonable to use <i>if</i> clauses when
+   <i>v</i> has three or more elements. All I need to do is rewrite
+   <i>isIn</i> so it has special cases for lists of zero, one, and two
+   elements, and of course a general case for longer ones. Here it is.
+  </p>
+  <blockquote>
+   <p>
+    <i>isIn</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i></font>(<b>form</b>&nbsp;(<i>string</i>&nbsp;<i>k</i>,&nbsp;<i>list</i>&nbsp;<i>v</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b></font><i>k</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b></font><i>isInning</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i></font>(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>v</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>(</font>(<b>if</b>&nbsp;<i>isEmpty</i>(<i>v</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>isEmpty</i>(<i>cdr</i>(<i>v</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;<i>car</i>(<i>v</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>isEmpty</i>(<i>cdr</i>(<i>cdr</i>(<i>v</i>)))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;<i>car</i>(<i>v</i>)&nbsp;&#8744;&nbsp;<i>k</i>&nbsp;=&nbsp;<i>car</i>(<i>cdr</i>(<i>v</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;</font><b>else</b>&nbsp;(<b>with</b>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;<i>middle</i>(<i>v</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;<b>else</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;<b>else</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>isInning</i>(<i>left</i>(<i>v</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;<b>else</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;<b>else</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>isInning</i>(<i>right</i>(<i>v</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;<b>else</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((</font><b>do</b>&nbsp;<i>isInning</i>(<i>v</i>)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now when I call <i>isIn,</i> I get a tree of <i>if</i> clauses
+   that looks like this.
+  </p>
+  <blockquote>
+   <p>
+    (<b>with</b>&nbsp;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>string</i>&nbsp;<i>k</i>&nbsp;:&#8722;&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''none'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''else'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''and'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''alt'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''also''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''alts''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''catch'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''case''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''do''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''if'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''form'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''for''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''gen''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''load'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''in''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''mod''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''row'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''past'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''of'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''not''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''or''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''prog'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''proc''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''ref''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''var'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''tuple'')&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''then''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''type''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''while''&nbsp;&#8744;&nbsp;<i>k</i>&nbsp;=&nbsp;''with''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   As before, I&rsquo;ve made changes to this expression so it will be easier
+   to read. For example, the actual expression doesn&rsquo;t use
+   <i>"</i>=<i>",</i> but an unspecified expression that
+   <i>"</i>=<i>"</i> transforms into.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; With these modifications, I get only 73 lines
+   of code, which is about half what I had before. The special case for a list
+   of two strings was used only once, to test the strings ''while'' and
+   ''with''. Maybe it would be used more often with a different list of
+   strings.
+  </p>
+  <p>
+   <b>3. Third version.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    &lsquo;&lsquo;I fear, sir,&rsquo;&rsquo; said Holmes, &lsquo;&lsquo;that,
+    interesting and indeed essential as these details are, my inquiries must go
+    more to the root of things.&rsquo;&rsquo;
+   </p>
+   <p align="right">
+    <a href="#doy1982b">
+     [<small>DOY</small> 1982<small>B</small>]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Are other improvements possible? Well, the constant name <i>t</i> gets
+   declared over and over again. An optimizing compiler might be able to factor
+   out all those constant declarations, and replace them with a single variable
+   declaration. It turns out, however, that I can rewrite <i>isIn</i> so
+   that this happens without optimization.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Do I really want to do that? Right now, if
+   <i>k</i> (the string I&rsquo;m looking for) is a constant, then the
+   call to <i>isIn</i> will transform all the way down to a constant
+   Boolean value, so I could use it to search sets of strings at compile time.
+   If I change <i>isIn</i> to use a variable, then this won&rsquo;t work.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Suppose I don&rsquo;t care about searching at
+   compile time. Then I can rewrite <i>isIn</i> so it declares the
+   variable <i>t</i> once at the root of the tree. The result looks like
+   this.
+  </p>
+  <blockquote>
+   <p>
+    <i>isIn</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i></font>(<b>form</b>&nbsp;(<i>string</i>&nbsp;<i>k</i>,&nbsp;<i>list</i>&nbsp;<i>v</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b></font><i>k</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b></font><b>var</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b></font><i>isInning</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i></font>(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>v</i>)&nbsp;<i>bool</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>(</font>(<b>if</b>&nbsp;<i>isEmpty</i>(<i>v</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((</font><b>then</b>&nbsp;<i>false</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>isEmpty</i>(<i>cdr</i>(<i>v</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;<i>car</i>(<i>v</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>isEmpty</i>(<i>cdr</i>(<i>cdr</i>(<i>v</i>)))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;<i>car</i>(<i>v</i>)&nbsp;&#8744;&nbsp;<i>k</i>&nbsp;=&nbsp;<i>car</i>(<i>cdr</i>(<i>v</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;<i>middle</i>(<i>v</i>))&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>isInning</i>(<i>left</i>(<i>v</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;<b>else</b>&nbsp;</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;<b>else</b>&nbsp;<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>isInning</i>(<i>right</i>(<i>v</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((<b>w</b><i>i</i>((<b>else</b>&nbsp;<b>else</b>&nbsp;<b>else</b>&nbsp;<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>i</i>((</font><b>do</b>&nbsp;<i>isInning</i>(<i>v</i>)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Calling <i>isIn</i> now results in a smaller tree of <i>if</i>
+   clauses, with only 60 lines. It fits on one page!
+  </p>
+  <blockquote>
+   <p>
+    (<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>string</i>&nbsp;<i>k</i>&nbsp;:&#8722;&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><b>var</b>&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''none'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''else'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''and'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''alt'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''also''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''alts''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''catch'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''case''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''do''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''if'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''form'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''for''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''gen''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''load'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''in''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''mod''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''row'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''past'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''of'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''not''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''or''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''prog'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''proc''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''ref''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''var'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>t</i>&nbsp;:=&nbsp;<i>comp</i>(<i>k</i>,&nbsp;''tuple'')&nbsp;;&nbsp;<i>t</i>&nbsp;&lt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''then''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''type''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>t</i>&nbsp;&gt;&nbsp;0&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>k</i>&nbsp;=&nbsp;''while''&nbsp;&#8744;&nbsp;<i>k</i>&nbsp;=&nbsp;''with''&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;<b>then</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>true</i>))
+   </p>
+  </blockquote>
+  <p>
+   <b>4. Conclusions.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    It&rsquo;s a talent, like a musician&rsquo;s, or a poet&rsquo;s. I can play
+    a computer read-in literally for hours at a time and never make a mistake.
+   </p>
+   <p align="right">
+    <a href="#bru1975">
+     [<small>BRU</small> 1975]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Does a binary tree made from <i>if</i> clauses really execute faster
+   than a hash table? Probably not, but it doesn&rsquo;t require a carefully
+   tailored hash function or a carefully arranged table, either. Does it
+   execute faster than conventional binary search on an array? Probably, since
+   it doesn&rsquo;t have to calculate array indexes. Does it execute faster
+   enough to make a difference? Possibly, but I haven&rsquo;t tested it.
+   However, a compiler&rsquo;s lexical scanner must test if every name it reads
+   is reserved. That&rsquo;s a lot of tests. Making them run even a little
+   faster might be noticeable.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson makes it easy to write programs that
+   use forms instead of procedures, in which lots of things get done by inline
+   code. In general, inline code should execute faster than calling a
+   procedure. However, if all that inline code makes the program so large that
+   it no longer fits in cache, then it might end up executing
+   <i>slower.</i> The Orson programmer should use forms wisely to guard
+   against this possibility.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It&rsquo;s interesting to speculate if the
+   way we write algorithms is influenced by our inability to write long, boring
+   expressions without making mistakes. Would we have invented binary search on
+   arrays if it were easy to write expressions like the ones shown here? Are
+   there any important programs that are most clearly expressed as forms that
+   generate them?
+  </p>
+  <hr />
+  <p align="center">
+   <b>References</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="bru1975">
+      </a>
+      [<small>BRU</small>&nbsp;1975]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      John Brunner. <i>The Shockwave Rider.</i> Ballantine Books. New
+      York, New York. 1975. Page 253.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="doy1982a">
+      </a>
+      [<small>DOY</small>&nbsp;1982<small>A</small>]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Arthur Conan Doyle. &lsquo;&lsquo;The Adventure of the Empty
+      House.&rsquo;&rsquo; In <i>The Original Illustrated Sherlock
+      Holmes.</i> Castle. Secaucus, New Jersey. 1982. Page 461.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="doy1982b">
+      </a>
+      [<small>DOY</small>&nbsp;1982<small>B</small>]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Arthur Conan Doyle. &lsquo;&lsquo;The Adventure of the Second
+      Stain.&rsquo;&rsquo; In <i>The Original Illustrated Sherlock
+      Holmes.</i> Castle. Secaucus, New Jersey. 1982. Page 624.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="gra1974">
+      </a>
+      [<small>GRA</small>&nbsp;1974]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Harry Graham. &lsquo;&lsquo;Accident.&rsquo;&rsquo; In <i>Most Ruthless
+      Rhymes for Heartless Homes.</i> Edward Arnold (Publishers) Ltd.
+      London, United Kingdom. 1974. Page 84.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2013">
+      </a>
+      [<small>MOE</small>&nbsp;2013]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;The Revised&#8315;&#185; Report on the
+      Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
+      2013.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="ric1995">
+      </a>
+      [<small>RIC</small>&nbsp;1995]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Adrienne Rich. &lsquo;&lsquo;What Kind of Times are These.&rsquo;&rsquo;
+      In <i>Dark Fields of the Republic: Poems 1991&#8211;1995.</i> W. W.
+      Norton and Company. New York, New York. 1995. Page 3.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="wir1976">
+      </a>
+      [<small>WIR</small>&nbsp;1976]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Niklaus Wirth. <i>Algorithms + Data Structures = Programs.</i>
+      Prentice-Hall. Englewood Cliffs, New Jersey. 1976.
+     </p>
+    </td>
+   </tr>
+  </table>
+  <p align="justify">
+   Any good undergraduate data structures textbook will tell you about binary
+   search, binary search trees, and hash tables. Wirth&rsquo;s book is old and
+   out of print, but it&rsquo;s still my favorite.
+  </p>
+ </body>
+</html>

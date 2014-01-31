@@ -1,0 +1,79 @@
+!
+!  GRAMMAR. Generate EG grammars.
+!
+!  Copyright © 2014 James B. Moen.
+!
+!  This  program is free  software: you  can redistribute  it and/or  modify it
+!  under the terms  of the GNU General Public License as  published by the Free
+!  Software Foundation,  either version 3 of  the License, or  (at your option)
+!  any later version.
+!
+!  This program is distributed in the  hope that it will be useful, but WITHOUT
+!  ANY  WARRANTY;  without even  the  implied  warranty  of MERCHANTABILITY  or
+!  FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU General  Public License for
+!  more details.
+!
+!  You should have received a copy of the GNU General Public License along with
+!  this program.  If not, see <http://www.gnu.org/licenses/>.
+!
+
+!  Although this grammar describes EG grammars, it is very unlikely to generate
+!  a useful EG grammar. Most of the grammars it generates are nothing like what
+!  a Human would write: they look a lot like line noise.
+
+!  Start.
+
+      start → grammar.
+
+!  Grammars.
+
+       grammar → rule otherRule∗.
+          rule → name arrow disjunction ".".
+         arrow → " = " | " → ".
+     otherRule → "\N" rule.
+   disjunction → conjunction disjunct∗.
+      disjunct → " | " conjunction.
+   conjunction → term conjunct∗.
+      conjunct → " " term.
+          term → unit postfix?.
+          unit → name | string.
+       postfix → "*" | "+" | "∗" | range.
+         range → "(" lower upper? ")".
+         lower → number.
+         upper → ", " number.
+
+!  Tokens.
+
+       name → letter otherChar∗.
+  otherChar → letter | digit.
+     number → digit+ | "∞".
+     string → "\"" char* "\"".
+       char → nonquote | "\\" slashed.
+    slashed → special | "#" hexit(1, 8).
+
+!  Characters in tokens. We use only ASCII.
+
+        bak → "\\\\".
+      digit → "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9".
+      hexit → "A" | "B" | "C" | "D" | "E" | "F" | "a" | "b" | "c" | "d" |
+              "e" | "f" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" |
+              "8" | "9".
+     letter → "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" |
+              "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" |
+              "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" |
+              "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" |
+              "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" |
+              "y" | "z".
+   nonquote → " " | "!" | quo | "#" | "$" | "%" | "&" | "'" | "(" | ")" | 
+              "*" | "+" | "," | "-" | "." | "/" | "0" | "1" | "2" | "3" | 
+              "4" | "5" | "6" | "7" | "8" | "9" | ":" | ";" | "<" | "=" | 
+              ">" | "?" | "@" | "A" | "B" | "C" | "D" | "E" | "F" | "G" | 
+              "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | 
+              "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "[" | 
+              bak | "]" | "^" | "_" | "`" | "a" | "b" | "c" | "d" | "e" | 
+              "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | 
+              "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | 
+              "z" | "{" | "|" | "}" | "~".
+        quo → "\\\"".
+    special → "A" | "B" | "F" | "N" | "R" | "T" | "V" | "a" | "b" | "f" |
+              "n" | "r" | "t" | "v" | "\"" | "\\".

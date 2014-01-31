@@ -1,0 +1,77 @@
+                                     ORSON
+
+                                 James B. Moen
+                               January 21, 2014
+
+0. Introduction.
+
+Orson is a small, general purpose  programming language, designed to be used by
+individuals and  small groups.   It emphasizes efficiency,  expressiveness, and
+extensibility,  allowing access to  low level  representations of  objects like
+that of the programming  language C. Its name is not an  acronym, so it doesn’t
+appear  in capital  letters. Orson  is not  named after  any person,  place, or
+thing.
+
+Orson  programs are  made up  of expressions  that work  in two  phases, called
+transformation and  execution.  During  transformation, Orson applies  forms to
+produce new  expressions. Forms  are similar  to macros, but  are written  in a
+lexically scoped applicative language  that can perform arbitrary computations.
+During  execution, Orson evaluates  the expressions  that were  produced during
+transformation.
+
+Orson is currently  implemented so that transformation occurs  at compile time,
+and execution occurs at run time. This allows writing with forms in an abstract
+and general way, while still  producing efficient programs.  For example, forms
+can  be used as  inline substitutes  for some  procedures.  Most  operators are
+implemented as  forms, so  they can  be redefined. Abstract  data types  can be
+implemented as  forms that take  types as their  arguments and return  types as
+their results. Control structures can be implemented as higher-order forms that
+take forms as arguments and return forms as their results.
+
+Orson was developed on Intel x86 computers running Debian and Ubuntu GNU/Linux,
+so it should  work on similar systems. The Orson compiler  itself is written in
+GNU C.  It  translates Orson source programs to equivalent  GNU C programs, and
+then invokes the GNU C compiler GCC to compile them.  Orson is distributed with
+many  accompanying programs,  most of  which are  themselves written  in Orson.
+These were written to test the Orson language and its compiler.
+
+1. Licensing.
+
+Orson and  its accompanying  programs are free  software: you  can redistribute
+them and/or  modify them under the terms  of the GNU General  Public License as
+published by the Free Software Foundation,  either version 3 of the License, or
+(at your option) any later version.
+
+Orson and its accompanying programs are  distributed in the hope that they will
+be  useful, but  WITHOUT ANY  WARRANTY; without  even the  implied  warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+License for more details.
+
+You should  have received a copy of  the GNU General Public  License along with
+Orson and its accompanying programs. If not, see http://www.gnu.org/licenses/.
+
+2. Contents.
+
+These directories contain the Orson compiler and its example programs.
+
+    apps/        Various small applications.
+    bracy/       Simple document compiler that produces HTML files.
+    eg/          Generate example strings from context-free grammars.
+    library/     Orson library.
+    licenses/    GNU General Public Licenses.
+    orson/       Orson compiler.
+    ox/          Cross-reference generator for Orson source programs.
+    scam/        Interpreter for a toy Scheme-like language.
+    tlh/         Make two-level perfect hash functions for string keys.
+
+These files contain documentation and other supporting material.
+
+    README       What you're reading now.
+    Readme.by    Bracy source for Readme.html.
+    Readme.html  Long HTML version of README.
+    Test         Compile Orson source files for debugging.
+    tech/        Orson technical reports.
+
+Orson’s example programs and  documentation contain special characters. Without
+proper rendering support,  you may see question marks,  boxes, or other symbols
+in place of these characters.

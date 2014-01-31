@@ -1,0 +1,144 @@
+.TH TABU 1 "November 10, 2013"
+.DD November 10, 2013
+
+.SH NAME
+tabu - Write a series of names as a rectangular table.
+
+.SH SYNOPSIS
+.B tabu\c
+ [\c
+.BI -c \ count\c
+] [\c
+.BI -d \ string\c
+] [\c
+.B -r\c
+] [\c
+.B -t\c
+] [\c
+.BI -w \ count\c
+] [\c
+.I file\c
+\& ...]
+.RE
+
+.SH DESCRIPTION
+.B Tabu
+first reads names from UTF-8 text files whose pathnames appear on the command
+line.
+If no pathnames appear, then
+.B tabu
+reads from stdin instead.
+A
+.I name
+is a series of one or more Unicode characters that does not include blanks.
+Names are separated from each other by one or more blanks and newlines.
+
+.PP
+.B Tabu
+then writes a rectangular table of these names to stdout.
+By default, each name is left-justified in a column whose width is that of the
+longest name, and is padded with blanks on the right.
+Names appear in the order they were read from the files, starting at the upper
+left corner of the table, filled in from left to right, and from top to bottom.
+
+.PP
+Tables created by
+.B tabu
+may be useful in writing complex declarations in some programming languages,
+like the
+.B enum
+declarations of C and Java.
+It may also be used to format the outputs of other programs.
+
+.PP
+.B Tabu
+recognizes the following options.
+Options must precede pathnames on the command line.
+Arguments to any option may be separated from it by blanks.
+If an option doesn't appear on the command line, then its default takes effect.
+
+.TP
+.BI -c \ count
+Columns.
+Write a table with
+.I count
+columns of names.
+The default is to write a table with as many columns as will fit on a line,
+whose width is given by the
+.B -w
+option.
+
+.TP
+.BI -d \ string
+Delimiter.
+Write
+.I string
+between columns of the table, and at the end of each line except the last.
+If
+.I string
+has trailing blanks, then they will be omitted when it appears at the end of a
+line.
+The default is a string consisting of a single blank.
+
+.TP
+.B -r
+Right.
+In each column, write a right-justified name, padded with blanks on the left.
+The default is to write a left-justified name, padded with blanks on the right
+(this is how
+.B ls
+displays file names in a directory).
+
+
+.TP
+.B -t
+Transpose.
+Write a table in which names appear starting at the upper left corner, filled
+in from top to bottom, and from left to right
+(this is how
+.B ls
+displays file names in a directory).
+The default is to write a table in which names appear starting at the upper
+left corner, filled in from left to right, and from top to bottom
+(this is how
+.B ls -x
+displays file names in a directory).
+
+.TP
+.BI -w \ count
+Width.
+Specify that lines written by
+.B tabu
+will be
+.I count
+Unicode characters wide.
+The default is 79 characters.
+
+.SH COPYING
+Copyright (C) 2013 James B. Moen.
+Permission is granted to copy, distribute, and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.3 or any later
+version published by the Free Software Foundation; with no Invariant
+Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license may be obtained at <http://fsf.org/>.
+
+.SH VERSION
+Version 0.1.
+
+.SH REFERENCES
+The Unicode Consortium.
+.I The Unicode Standard, Version 5.0.
+Fifth Edition.
+Addison-Wesley Professional.
+Reading, Massachusetts.
+2006.
+
+.SH AUTHOR
+James B. Moen
+
+.SH SEE ALSO
+.B ls\c
+(1),
+.B utf-8\c
+(7).
+

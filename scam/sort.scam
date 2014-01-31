@@ -1,0 +1,52 @@
+;
+;  APPS/SORT. Sort a list according to an ordering predicate.
+;
+;  Copyright © 2011 James B. Moen.
+;
+;  This  program is free  software: you  can redistribute  it and/or  modify it
+;  under the terms  of the GNU General Public License as  published by the Free
+;  Software Foundation,  either version 3 of  the License, or  (at your option)
+;  any later version.
+;
+;  This program is distributed in the  hope that it will be useful, but WITHOUT
+;  ANY  WARRANTY;  without even  the  implied  warranty  of MERCHANTABILITY  or
+;  FITNESS FOR  A PARTICULAR PURPOSE.  See  the GNU General  Public License for
+;  more details.
+;
+;  You should have received a copy of the GNU General Public License along with
+;  this program.  If not, see <http://www.gnu.org/licenses/>.
+;
+
+(include "~/scam/apps/utility.scam")
+
+;  SORT. Return a copy of REST, with its elements sorted in nondecreasing order
+;  according to the 2-ary predicate ORDERING.
+
+(define sort
+ (λ (ordering rest)
+  (if
+   (or
+    (isNil rest)
+    (isNil (cdr rest)))
+   rest
+   (let
+    ((mid (element rest (intDiv (objLen rest) 2))))
+    (:partition ordering `() mid `() (removeFirst rest mid))))) )
+
+;  :PARTITION. Divide the list REST into two lists LEFT and RIGHT. The elements
+;  of LEFT are less than MID according to ORDERING, while the elements of RIGHT
+;  are greater. Sort LEFT and RIGHT, append the resulting sorted lists with MID
+;  between them, and return the result.
+
+(define :partition
+ (λ (ordering left mid right rest)
+  (if
+   (isNil rest)
+   (append
+    (sort ordering left)
+    (cons mid
+     (sort ordering right)))
+   (if
+    (ordering (car rest) mid)
+    (:partition ordering (cons (car rest) left) mid right (cdr rest))
+    (:partition ordering left mid (cons (car rest) right) (cdr rest))))) )

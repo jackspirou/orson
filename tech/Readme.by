@@ -1,0 +1,115 @@
+{title Orson Technical Reports}
+
+{center
+ {b Orson Technical Reports}
+
+ James B. Moen
+ January 14, 2014}
+
+{narrow
+ {justify
+   The chief problem for me, I knew, would be the actual writing of the
+   report.}
+ {right {goto asi1979 {c [asi 1979]}}}}
+
+{justify
+  This directory includes the ``Revised⁻¹ Report on the Algorithmic Language
+  Orson,'' which is a draft of the defining document for the Orson language.
+  It also includes other technical reports.
+  Some discuss implementation dependent features of Orson that are not
+  mentioned in the Revised⁻¹ Report.
+  Others discuss parts of the Orson library.
+  These files contain the technical reports.}
+
+{narrow
+ {layout
+  {row
+   {left {goto {t args/args.html args.html}}}
+   {left \ \ \ Methods with variable numbers of arguments in Orson.}}
+  {row
+   {left {goto {t binary/binary.html binary.html}}}
+   {left \ \ \ Automatically building search trees from {i if} clauses.}}
+  {row
+   {left {goto {t cees/cees.html cees.html}}}
+   {left \ \ \ Orson's interface to {c Gnu} C.}}
+  {row
+   {left {goto {t dynamic/dynamic.html dynamic.html}}}
+   {left \ \ \ Dynamic memory in Orson.}}
+  {row
+   {left {goto {t faqs/faqs.html faqs.html}}}
+   {left \ \ \ {c Faq}'s about Orson.}}
+  {row
+   {left {goto {t file/file.html file.html}}}
+   {left \ \ \ Input and output in Orson.}}
+  {row
+   {left {goto {t generic/generic.html generic.html}}}
+   {left \ \ \ An introduction to generic forms.}}
+  {row
+   {left {goto {t logo/logo.html logo.html}}}
+   {left \ \ \ An Orson logo.}}
+  {row
+   {left {goto {t loops/loops.html loops.html}}}
+   {left \ \ \ Writing loops in Orson.}}
+  {row
+   {left {goto {t prime/prime.html prime.html}}}
+   {left \ \ \ A Tutorial: Computing prime numbers in Orson.}}
+  {row
+   {left {goto {t report/unrevised.html unrevised.html}}}
+   {left \ \ \ Revised⁻¹ report on the algorithmic language Orson.}}}}
+
+{justify
+  These files contain supporting material.}
+
+{narrow
+ {layout
+  {row
+   {left {goto ./README {t README}}}
+   {left \ \ \ Short text version of {t Readme.html}.}}
+  {row
+   {left {goto Readme.html {t Readme.html\ \ \ }}}
+   {left \ \ \ What you're reading now.}}
+  {row
+   {left {goto {t Readme.by}}}
+   {left \ \ \ Bracy source for {t Readme.html}.}}}}
+
+{justify
+  All reports are in {c html,} and were created by Bracy
+  {goto moe2014 {c [moe 2014],}} a simple document compiler written in Orson.
+  Bracy source files for the reports are included, but are not linked from this
+  page.
+  Both the Bracy and {c html} versions of the reports are available for free
+  under the terms of the {c Gnu} Free Documentation License ({c gfdl}) version
+  1.3.
+  Bracy and Orson are available for free under the terms of the {c Gnu} General
+  Public License ({c gpl}) version 3.}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label asi1979}
+   {c [asi\ 1979]\ \ }}
+  {justify
+    Isaac Asimov.
+    {i In Memory Yet Green: The Autobiography of Isaac Asimov, 1920–1954.}
+    Avon Books.
+    New York, New York.
+    1979.
+    Page 397.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2014}
+   {c [moe\ 2014]\ \ }}
+  {justify
+    James B. Moen.
+    ``The Bracy Manual.''
+    Unpublished technical report.
+    2014.}}}

@@ -1,0 +1,138 @@
+{title Eg}
+
+{center
+ {bc Eg}
+
+ James B. Moen
+ January 17, 2014}
+
+{narrow
+ {justify
+   Once you have the grammatical model, you just put the metal around it and it
+   goes like gangbusters.}
+ {right
+  {goto poh1973 {c [poh 1973]}}}}
+
+{justify
+  This directory contains source code for {ci Eg} (pronounced {i ee-jee}), a
+  program that generates example strings described by a context-free grammar
+  {goto hop2007 {c [hop 2007].}}
+  {c Eg} is written in Orson {goto moe2014 {c [moe 2014],}} and is intended to
+  run under Unix-like systems, such as {c Gnu}/Linux.
+  These files contain Orson source code for {c Eg.}}
+
+{narrow
+ {layout
+  {row
+   {left {goto {t char.os}}}
+   {left \ \ \ Read characters and report errors.}}
+  {row
+   {left {goto {t codon.os}}}
+   {left \ \ \ Objects that represent grammar rules.}}
+  {row
+   {left {goto {t debug.os}}}
+   {left \ \ \ Write grammar fragments for debugging.}}
+  {row
+   {left {goto {t eg.os}}}
+   {left \ \ \ Write random strings from a context-free grammar.}}
+  {row
+   {left {goto {t generate.os}}}
+   {left \ \ \ Generate strings.}}
+  {row
+   {left {goto {t parse.os}}}
+   {left \ \ \ Translate grammar rules to internal form.}}
+  {row
+   {left {goto {t token.os}}}
+   {left \ \ \ Read tokens.}}}}
+
+{justify
+  These files contain documentation, sample grammars, and other supporting
+  material for {c Eg.}}
+
+{narrow
+ {layout
+  {row
+   {left {goto ./Makefile {t Makefile}}}
+   {left \ \ \ Compile, install, uninstall {c Eg.}}}
+  {row
+   {left {goto {t Manual.by}}}
+   {left \ \ \ Bracy source code for {t Manual.html}.}}
+  {row
+   {left {goto {t Manual.html}}}
+   {left \ \ \ The {c Eg} manual.}}
+  {row
+   {left {goto ./README {t README}}}
+   {left \ \ \ Short text version of {t Readme.html}.}}
+  {row
+   {left {goto {t Readme.by}}}
+   {left \ \ \ Bracy source for {t Readme.html}.}}
+  {row
+   {left {goto {t Readme.html}}}
+   {left \ \ \ What you're reading now.}}
+  {row
+   {left {goto {t case.eg}}}
+   {left \ \ \ Generate example Orson {i case} clauses.}}
+  {row
+   {left {goto {t economy.eg}}}
+   {left \ \ \ Generate sentences that might be spoken by economists.}}
+  {row
+   {left {goto {t grammar.eg}}}
+   {left \ \ \ Generate example {c Eg} grammars.}}
+  {row
+   {left {goto {t string.eg}}}
+   {left \ \ \ Generate example Orson string tokens.}}}}
+
+{justify
+  {c Eg} is available under the terms of the {c Gnu} General Public License
+  ({c gpl}) version 3.
+  An Orson compiler is also available from the author under the same terms.}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label hop2007}
+   {c [hop\ 2007]\ \ }}
+  {justify
+    John E. Hopcroft, Rajeev Motwani, Jeffrey D. Ullman.
+    {i Introduction to Automata Theory, Languages, and Computation.}
+    Third Edition.
+    Addison-Wesley.
+    Boston, Massachusetts.
+    2007.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2014}
+   {c [moe 2014]}}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2014.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label poh1973}
+   {c [poh\ 1973]\ \ }}
+  {justify
+    Frederik Pohl.
+    ``The Gold at the Starbow's End.''
+    In {i Analog 9.}
+    Ben Bova, editor.
+    Doubleday & Company, Inc.
+    Garden City, New York.
+    1973.
+    Page 61.}}}
+

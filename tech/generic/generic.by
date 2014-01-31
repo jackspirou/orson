@@ -1,0 +1,530 @@
+{title Generic Forms}
+
+{center
+ {b An Introduction to Generic Forms}
+
+ James B. Moen
+ June 10, 2013}
+
+{center {b Abstract}}
+
+{narrow
+ {justify
+   In the assignment {i v}\ :=\ {i e,} the variable {i v} and the expression
+   {i e} must have compatible types.
+   In most programming languages, the operator {i "}:={i "} cannot be
+   implemented as a procedure, because procedures do not allow the type of one
+   parameter to depend on the type of another.
+   However, in the programming language {i Orson,} {i "}:={i "} can be written
+   as a {i generic form,} whose parameter types can depend on each other in
+   arbitrary ways.
+   Generic forms are explained by showing how they can implement {i "}:={i "}
+   and other allegedly useful operations involving variables.}}
+
+{justify
+  Copyright © 2013 James B. Moen.
+  Permission is granted to copy, distribute, and/or modify this document under
+  the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
+  version published by the Free Software Foundation; with no Invariant
+  Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license may be obtained at
+  {goto http://fsf.org/ {t <http://fsf.org/>.}}
+
+  This document uses special characters.
+  Without proper rendering support, you may see question marks, boxes, or other
+  symbols in place of these characters.
+  This document must be rendered in a font where an italic quote `\ {i "}\ '
+  looks different from two apostrophes `\ {q ''}\ '.}
+
+{rule}
+
+{left {b 1. Introduction.}}
+
+{narrow
+ {justify
+   You may find a model of the lesser in the greater, I said; for they are
+   necessarily of the same type, and there is the same spirit in both of them.}
+ {right
+  {goto pla1943 {c [pla 1943]}}}}
+
+{justify
+  The programming language {i Orson} {goto moe2013 {c [moe 2013]}} provides
+  methods called {i forms} that are similar to macros
+  {goto ker1988 {c [ker 1988].}}
+  However, they are different from macros because their parameters and results
+  have types, because they work directly with expressions, and because they can
+  perform arbitrary computations during compilation.
+
+  A {i generic form} has parameters whose types can depend on each other in
+  arbitrary ways.
+  For example, in a generic form, a parameter may be declared to have a type
+  that must be compatible with that of another parameter, and it may be
+  declared without stating either type explicitly.
+  This essay shows a series of examples that explain how generic forms work.
+  Many examples discuss how to implement the assignment operator {i "}:={i "}
+  as a generic form.
+
+  To understand the examples, you must first know a few things about Orson.
+  First, most of Orson's operators are implemented as forms.
+  For example, an expression like {i v}\ :=\ {i e} is actually an abbreviation
+  for the form call {i "}:={i "}({i v,}\ {i e}), where {i "}:={i "} is the name
+  of the form.
+  The name {i "}:={i "} is not a string: Orson uses two adjacent apostrophes
+  `\ {q ''}\ ' to delimit strings.
+
+  Second, a type {i a} is a {i subtype} of another type {i b} if all objects of
+  the type {i a} also have the type {i b.}
+  If {i a} is a subtype of {i b,} then an object of type {i a} may be used
+  anywhere an object of type {i b} is expected.
+  An object of another type {i a}′ may also be used if Orson can automatically
+  {i coerce} it to an object of the type {i b.}
+  For example, an object of type {i int}0, which describes an integer that fits
+  in one (2⁰) byte, can be automatically coerced to an object of type {i int}1,
+  which describes an integer that fits in two (2¹) bytes.
+
+  Third, Orson has types called {i jokers} that describe infinite sets of
+  objects.
+  For example, the joker {i mut} describes the infinite set of {i mutable}
+  objects that can be the values of variables.
+  Just as the type {b var}\ {i int} describes an integer variable, so the type
+  {b var}\ {i mut} describes any variable whatsoever.
+
+  Fourth, all objects have types, and all types are objects, so all types have
+  types.
+  If {i t} is a type, then the expression {b type}\ {i t} is the type of the
+  type {i t.}
+  For example, {b type}\ {i int} is the type of the type {i int,} and
+  {b type} {i mut} is the type of any type that is a subtype of {i mut.}}
+
+{left {b 2. A form that doesn't work.}}
+
+{justify
+  Suppose I want to implement the assignment operator {i "}:={i "} as a form.
+  It must take two arguments.
+  The first argument must be a variable of type {b var}\ {i t,} where {i t} is
+  a subtype of {i mut.}
+  The second argument must be an object whose type is a subtype of {i t.}
+  My first attempt might be to write this.}
+
+{narrow{orson
+":=" :−
+ (form (var mut l, mut r) void:
+   ?varSet(l, r))}}
+
+{justify
+  Every form has a {i yield type,} which describes the object that the form
+  returns.
+  The yield type of this form is {i void,} which means that the form returns a
+  dummy object.
+  A form has the yield type {i void} when it is used only for its side effects,
+  like changing the value of a variable.
+
+  The form {i "}:={i "} uses ?{i varSet,} a primitive procedure or {i hook.}
+  If the variable {i l} resides in memory, then ?{i varSet}({i l,}\ {i r})
+  copies bytes from the object {i r} into {i l.}
+  If {i l} resides in a register instead, then ?{i varSet}({i l,}\ {i r}) moves
+  the object {i r} into {i l.}
+  As a result, if I write {i v}\ :=\ {i e,} then the variable {i v} will be
+  assigned the object returned by the expression {i e.}
+  For example, if {i k} has the type {b var}\ {i int,} then I can write
+  {i k}\ :=\ 1.
+
+  Unfortunately, I haven't implemented {i "}:={i "} correctly, because it
+  allows {i l} and {i r} to have incompatible types.
+  For example, I can write {i k}\ :=\ {q ''Hello'',} which incorrectly assigns
+  a string to the integer variable {i k.}
+  This should be an error, because strings aren't integers.
+  However, it's allowed by the form I just wrote, because the integer type
+  {i int} and the string type {i string} are both subtypes of {i mut.}}
+
+{left {b 3. Another form that doesn't work.}}
+
+{justify
+  Maybe I can write {i "}:={i "} as an {i alternate form.}
+  It has a separate {i member form} for each possible variable and its
+  corresponding expression, as shown below.
+  There's a member for an integer variable and an integer expression, another
+  member for a real variable and a real expression, and still another for a
+  string variable and a string expression, etc.}
+
+{narrow
+ {orson
+":=" :−
+ (alt
+  (form (var int l, int r) void:
+    ?varSet(l, r)),
+  (form (var real l, real r) void:
+    ?varSet(l, r)),
+  (form (var string l, string r) void:
+    ?varSet(l, r)),
+  ...)}}
+
+{justify
+  When I call an alternate form, a member is called whose parameter types match
+  the call's arguments.
+  Now I can write {i k}\ :=\ 1 because it calls the first member, which takes
+  an integer variable and an integer as its arguments.
+  However, I can't write {i k}\ :=\ {q ''Hello''} because there is no member
+  that takes an integer variable and a string as its arguments.
+
+  However, I still haven't implemented {i "}:={i "} correctly, because there
+  are infinitely many possible types.
+  I'd need an alternate form with infinitely many members to correctly
+  implement {i "}:={i ".}
+  I could have a different version of {i "}:={i "} in each program, one that
+  mentions only the types used in that program, but it would be a hassle.}
+
+{left {b 4. Still another form that doesn't work.}}
+
+{justify
+  Suppose that a form could have a funny kind of parameter {i t,} which can be
+  a type.
+  Then I could use {b var}\ {i t} as the type of the variable {i l,} and {i t}
+  as the type of the expression {i r.}
+  I'd end up with a form that looks like this.}
+
+{narrow{orson
+":=" :−
+ (form (var t l, t r) void:
+   ?varSet(l, r))}}
+
+{justify
+  Now I can write {i k}\ :=\ 1, because then {i t} is the type {i int.}
+  However, I can't write {i k}\ :=\ {q ''Hello'',} because {i t} can't be both
+  {i int} and {i string} at the same time.
+  I also don't need infinitely many member forms, as in my previous version of
+  {i "}:={i ".}
+  Since {i t} can be any type, this one form will work for any possible
+  variable and expression, even those with types I haven't thought of yet.
+
+  I can't use {i t} as a parameter in this way, but suppose that I could.
+  Then I must answer two questions.
+  First, every name must be declared somewhere.
+  Where should {i t} be declared?
+  Second, every name must be declared to have a type.
+  What should {i t}'s type be?
+  I'll answer these questions in the next section.}
+
+{left {b 5. A form that almost works.}}
+
+{justify
+  Parameters like {i t} are so useful that there is a way to use them in Orson:
+  they can appear in {i generic forms.}
+  If I write {i "}:={i "} as a generic form, it looks like this.}
+
+{narrow{orson
+":=" :−
+ (gen (type mut t)
+   form (var t l, t r) void:
+    ?varSet(l, r))}}
+
+{justify
+  The part at the beginning, {b gen}\ ({b type}\ {i mut}\ {i t}), is called a
+  {i generic prefix.}
+  It declares {i t} to be a {i generic name,} which has the type
+  {b type}\ {i mut.}
+  The joker {i mut} is the type of any object that can be the value of a
+  variable, and {b type}\ {i mut} is the type of {i mut.}
+  As a result, {b type}\ {i mut} must be the type of the type of any object
+  that can be the value of a variable.
+
+  A generic name like {i t} must be declared by a generic prefix to have a type
+  that describes another type.
+  After the generic name is declared in this way, it can appear in the rest of
+  the form.
+  It must also appear at least once as part of the form's parameter types.
+  In the form {i "}:={i ",} the generic name {i t} appears twice in this way.
+  It appears in {b var}\ {i t,} which is the type of the parameter {i l.}
+  It also appears alone, as the type of the parameter {i r.}
+
+  When a generic form is called, its parameter types are matched with their
+  corresponding argument types.
+  During this process, its generic names are also matched with corresponding
+  parts of the argument types.
+  When a generic name is matched with part of a type, the generic name is
+  {i bound} to that part, so the name takes on the part as its value.
+
+  For example, suppose that the generic form {i "}:={i "} is called with
+  arguments whose types are {b var}\ {i int} and {i int.}
+  Then when the parameter type {b var}\ {i t} is matched with the argument
+  type {b var}\ {i int,} the generic name {i t} is bound to {i int,} and the
+  match succeeds.
+  Later, when the parameter type {i t} is matched with the argument type
+  {i int,} the match also succeeds, because {i t} was bound to {i int.}
+
+  Now suppose that {i "}:={i "} is called with arguments whose types are
+  {b var}\ {i int} and {i string} instead.
+  Then when the parameter type {b var}\ {i t} is matched with the argument type
+  {b var}\ {i int,} the generic name {i t} is bound to {i int,} and the match
+  succeeds.
+  Later, when the parameter type {i t} is matched with the argument type
+  {i string,} the match fails, because {i t} was bound to {i int.}
+  As a result, the call is incorrect.
+
+  The generic form {i "}:={i "} works even when its arguments must be coerced.
+  Suppose that I call it with arguments whose types are {b var}\ {i int}1 and
+  {i int}0.
+  Then when the parameter type {b var}\ {i t} is matched with the argument type
+  {b var}\ {i int}1, the generic name {i t} is to {i int}1, and the match
+  succeeds.
+  Later, when the parameter type {i t} is matched with the argument type
+  {i int}0, the argument is coerced to have the type {i int}1, because {i t}
+  was bound to {i int}1, so the match also succeeds.}
+
+{left {b 6. A form that works.}}
+
+{justify
+  The version of {i "}:={i "} from the previous section solves most problems
+  with assignments, but not all of them.
+  Suppose I have these two types.}
+
+{narrow
+ {layout
+  {row
+   {left {i comp}}
+   {center \ \ :−\ \ }
+   {left ({b tuple} {i real} {i re,} {i real} {i im})}}
+  {row
+   {left {i pair}}
+   {center \ \ :−\ \ }
+   {left ({b tuple} {i real,} {i real})}}}}
+
+{justify
+  The type {i comp} is a {i tuple} type that represents a complex number.
+  It has two {i real} slots, called {i re} (for the real part) and {i im}
+  (for the imaginary part).
+  The type {i pair} also has two real slots, but they don't have names.
+  It describes any tuple that has two real slots, whatever their names may be.
+  As a result, {i comp} is a subtype of {i pair,} but {i pair} is not a subtype
+  of {i comp.}
+
+  Now suppose I have two expressions, {i c} and {i p.}
+  The type of {i c} is {b var}\ {i comp,} and the type of {i p} is {i pair.}
+  Then, based on arguments like those of the previous section, I can write
+  {i c}\ :=\ {i p.}
+  The parameter type {b var}\ {i t} is matched with the argument type
+  {b var}\ {i comp,} so {i t} is bound to {i comp,} and the match succeeds.
+  Later, the parameter type {i t} is matched with the argument type
+  {i pair,} so the match also succeeds, because {i t} was bound to {i comp,}
+  and {i pair} is a subtype of {i comp.}
+
+  What's the problem?
+  I assumed that Orson will match parameter types with argument types in the
+  order they appear in a form.
+  As a result, the leftmost appearance of a generic name determines how that
+  name is bound to a type.
+  However, what happens if Orson matches parameter and argument types in
+  reverse order of their appearance?
+
+  Here's what happens to {i c}\ :=\ {i p.}
+  The parameter type {i t} is matched with the argument type {i pair,} so
+  {i t} is bound to {i pair,} and the match succeeds.
+  Later, the parameter type {b var}\ {i t,} which is equivalent to
+  {b var}\ {i pair} because of {i t}'s binding, is matched with the argument
+  type {b var}\ {i comp.}
+  However, {i pair} is not a subtype of {i comp,} so now the match fails.
+
+  To avoid this problem, I'll rewrite {i "}:={i "} so it works regardless of
+  the order that parameter types are matched with argument types.
+  The rewritten version of {i "}:={i "} has two generic prefixes, and it looks
+  like this.}
+
+{narrow{orson
+":=" :−
+ (gen (type mut a)
+   gen (type a b)
+    form (var a l, b r) void:
+     ?varSet(l, r))}}
+
+{justify
+  The first generic prefix declares the generic name {i a} to have the type
+  {b type}\ {i mut.}
+  In other words, {i a} can be bound to any type that can describe the value
+  of a variable.
+  The second generic prefix declares the generic name {i b} to have the type
+  {b type} {i a.}
+  In other words, {i b} can be bound to any type that is a subtype of {i a.}
+  I used two generic prefixes because I must declare {i a} before I can
+  declare {i b.}
+
+  Suppose that I write {i c}\ :=\ {i p.}
+  Also suppose that Orson matches parameter types with argument types from left
+  to right.
+  Then, Orson first matches the parameter type {b var}\ {i a} with the argument
+  type {b var}\ {i comp,} so the generic name {i a} is bound to {i comp,} and
+  the match succeeds.
+  Second, it matches the parameter type {i b} with the argument type {i pair,}
+  so the generic name {i b} is bound to {i pair,} and the match also succeeds.
+
+  Both bindings are consistent with how {i a} and {i b} are declared by the
+  generic prefixes.
+  The first generic prefix says that {i a,} which is bound to {i comp,} must
+  have the type {b type}\ {i mut,} and it does.
+  The second generic prefix says that {i b,} which is bound to {i pair,} must
+  have the type {b type}\ {i a,} which is equivalent to {b type}\ {i comp}
+  because of {i a}'s bindings, and it also does.
+
+  Now suppose that Orson matches parameter types with argument types from right
+  to left.
+  First, it matches the parameter type {i b} with the argument type {i pair,}
+  so the generic name {i b} is bound to {i pair,} and the match succeeds.
+  Second, it matches the parameter type {b var}\ {i a} with the argument type
+  {b var}\ {i comp,} so the generic name {i a} is bound to {i comp,} and the
+  match also succeeds.
+  These are the same bindings that {i a} and {i b} had in the previous example.
+
+  By the way, the current version of Orson actually does match parameter types
+  with argument types from left to right.
+  As a result, the original generic form, with one generic prefix, would have
+  worked correctly.
+  However, future versions of Orson might do matches in a different order.
+  Whenever possible, generic forms should be written so that they will work
+  regardless of the matching order.}
+
+{left {b 7. Another generic form.}}
+
+{justify
+  Generic forms were designed specifically to implement the assignment operator
+  {i "}:={i ",} but they have other uses.
+  I'll demonstrate one such use in a form called {i swap} that exchanges the
+  values of two variables.
+
+  Suppose that {i l} and {i r} are variables of the same type.
+  Also suppose that I want to swap their values, so that {i l} receives {i r}'s
+  value, and {i r} receives {i l}'s value.
+  The simplest way to do this uses three assignments, along with a scratch
+  variable {i s,} like this.}
+
+{narrow
+ {layout
+  {row
+   {left {i s}}
+   {center \ :=\ }
+   {left {i l}}}
+  {row
+   {left {i l}}
+   {center \ :=\ }
+   {left {i r}}}
+  {row
+   {left {i r}}
+   {center \ :=\ }
+   {left {i s}}}}}
+
+{justify
+  I want to write a form {i swap} that constructs these assignments
+  automatically, so I can write {i swap}({i l,}\ {i r}).
+  It should work with any two variables of the same type, regardless of what
+  those types are.
+  That suggests {i swap} ought to be a generic form.}
+
+{narrow{orson
+swap :−
+ (gen (type mut t)
+   form (var t l, var t r) void:
+    (with var t s
+     do s := l
+        l := r
+        r := s))}}
+
+{justify
+  Here the generic name {i t} appears in the body of the form.
+  When {i swap} is called, {i t} is replaced by the type to which it was bound
+  during the matching process.
+  For example, if the variables {i l} and {i r} both have the type 
+  {b var}\ {i int,} then {i t} is bound to {i int,} and the form call {i swap}
+  turns into this:}
+
+{narrow{orson
+(with var int u
+ do u := a
+    a := b
+    b := u)}}
+
+{justify
+  Here {i u} is a new, unique name that appears nowhere else in the program.
+  Orson makes up a new name, instead of using {i s,} so the scratch variable
+  can't be confused with a variable that's passed to {i swap} as an argument.
+  Orson automatically makes up unique names in this way if there's any
+  possibility of confusion, so you never need to worry about it.
+
+  Unlike the final definition of {i "}:={i "} from the previous section, I
+  really do need to use the same generic name {i t} twice in {i swap.}
+  It's the only way to make sure that both variables {i l} and {i r} have the
+  same type.
+  Using arguments like those of previous sections, I could show that {i swap}
+  can't be called with variables of incompatible types, no matter how Orson
+  matches parameter and argument types.}
+
+{left {b 8. Still another generic form.}}
+
+{justify
+  In the previous section, I showed how generic names can appear in a generic
+  form's body, just like parameter names.
+  A generic name can also appear in a generic form's yield type.
+  For example, the form {i inc} increments an integer variable and returns its
+  value afterward.
+  It works for any integer variable, so the call {i inc}({i k}) increments the
+  integer variable {i k.}}
+
+{narrow{orson
+inc :−
+ (gen (type inj t)
+   form (var t r) t:
+    r += 1
+    r)}}
+
+{justify
+  The joker type {i inj} describes all possible integers, regardless of their
+  types, so the type {b type}\ {i inj} describes all possible integer types.
+  If {i t} has the generic type {b type}\ {i inj,} as it does in the generic
+  form {i inc,} then the parameter type {b var}\ {i t} must describe all
+  possible integer variables.}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label ker1988}
+   {c [ker\ 1988]\ \ }}
+  {justify
+    Brian W. Kernighan, Dennis M. Ritchie.
+    {i The C Programming Language.}
+    Second Edition.
+    Prentice-Hall.
+    Upper Saddle River, New Jersey.
+    1988.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2013}
+   {c [moe\ 2013]\ \ }}
+  {justify
+    James B. Moen.
+    "The Revised⁻¹ Report on the Algorithmic Language Orson."
+    Unpublished technical report.
+    2013.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label pla1943}
+   {c [pla\ 1943]\ \ }}
+  {justify
+    Plato.
+    {i The Republic.}
+    Benjamin Jowett, translator.
+    Books, Inc.
+    New York, New York.
+    1943.
+    Page 64.}}}
+

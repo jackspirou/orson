@@ -1,0 +1,137 @@
+.TH URUS 1 "October 25, 2013"
+.DD October 25, 2013
+
+.SH NAME
+urus - Orson cross reference generator
+
+.SH SYNOPSIS
+.B urus\c
+ [\c
+.BI -c \ count\c
+] [\c
+.BI -n \ count\c
+] [\c
+.B -p\c
+] [\c
+.B -v\c
+] [\c
+.I file\c
+\&...]
+.RE
+
+.SH DESCRIPTION
+.B Urus
+prints on stdout a table of the names in a series of Orson source files.
+Each name in the table is followed by a list of line numbers, indicating the
+lines on which the name appears.
+Hook names, plain names, quoted names, reserved names (keywords), and secret
+names are included.
+Each source file must have a suffix
+.B .op
+or
+.B .os,
+indicating respectively an Orson prelude file and an Orson source file.
+
+.B Urus
+assumes that all source files contain syntactically correct Orson source
+programs.
+The results of
+.B urus
+are undefined if the program is given a syntactically incorrect file.
+However,
+.B urus
+knows very little about Orson syntax, so most incorrect Orson programs will
+produce perfectly reasonable results.
+
+.PP
+.B Urus
+recognizes the following options.
+Arguments to any option may be separated from it by blanks.
+If an option doesn't appear on the command line, then the option's default
+takes effect.
+If no file names appear on the command line, then
+.B urus
+does nothing (with one exception, noted below).
+
+.TP
+.BI -c \ count
+Characters per name.
+Display the first
+.I count
+characters of each name in the cross reference table.
+The default is 32, which with the default
+.B -n
+option produces a table that fits on 79-character lines.
+
+.TP
+.BI -n \ count
+Numbers per line.
+Display
+.I count
+line numbers on each line of the cross reference table.
+The default is 8, which with the default
+.B -c
+option produces a table that fits on 79-character lines.
+
+.TP
+.B -p
+Print.
+Print the source files to stdout before printing the cross reference table.
+Files are separated from each other, and from the table, by form feed (U+000C)
+characters.
+The default is not to print source files.
+
+.TP
+.B -v
+Version.
+Print a short string on stdout that gives information about
+.B urus\c
+\&,
+including its version number.
+The string is printed before any source file is processed.
+This is the exception mentioned above: it works even if no file names appear
+on the command line.
+The default is not to print version information.
+
+.SH BUGS
+.B Urus
+sometimes outputs a blank page when printing files under the
+.B -p
+option.
+
+.PP
+Don't use
+.B urus\c
+\&.
+Use
+.B ox
+instead.
+
+.SH COPYING
+Copyright (C) 2013 James B. Moen.
+Permission is granted to copy, distribute, and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.3 or any later
+version published by the Free Software Foundation; with no Invariant
+Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license may be obtained at <http://fsf.org/>.
+
+.SH VERSION
+Version 0.9.
+
+.SH REFERENCES
+James B. Moen.
+"The Unrevised Report on the Algorithmic Language Orson."
+Unpublished technical report.
+2013.
+
+.SH AUTHOR
+James B. Moen
+
+.SH SEE ALSO
+.B ascii\c
+(7),
+.B orson\c
+(1),
+.B ox\c
+(1).
+

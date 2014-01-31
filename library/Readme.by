@@ -1,0 +1,423 @@
+{title An Orson Library}
+
+{center
+ {b An Orson Library}
+
+ James B. Moen
+ January 20, 2014}
+
+{narrow
+ {justify
+   The impious assert that absurdities are the norm in the Library and that
+   anything reasonable (even humble and pure coherence) is an almost
+   miraculous exception.}
+ {right
+  {goto bor1962 {c [bor 1962]}}}}
+
+{justify
+  The Orson source files in this directory implement an Orson library.
+  It is not intended to be a standard library, but rather a collection of
+  methods (mostly forms) that may be helpful or interesting.
+  Some library files were written to help find bugs in the Orson compiler.
+  Others were written as parts of programs, then moved to the library if it was
+  felt they might be of general use.
+
+  Most of the Orson library is written in Orson
+  {goto moe2013a {c [moe 2013a],}} although some files (like {t file.os}) are
+  simply false beards for functions from the {c Gnu} C library.
+  A few files (like {t width.os}) use code written in {c Gnu} C
+  {goto sta1988 {c [sta 1988].}}}
+
+{narrow
+ {layout
+  {row
+   {left {goto {t action.os}}}
+   {left \ \ \ }
+   {left Operations on actions associated with Unix signals.}}
+  {row
+   {left {goto {t array.os}}}
+   {left \ \ \ }
+   {left Make arrays with specified elements.}}
+  {row
+   {left {goto {t ascii.os}}}
+   {left \ \ \ }
+   {left Operations on {c ascii} characters.}}
+  {row
+   {left {goto {t assert.os}}}
+   {left \ \ \ }
+   {left Report an error if an expression is false.}} 
+  {row
+   {left {goto {t bht.os}}}
+   {left \ \ \ }
+   {left Bucketed hash tables.}}
+  {row
+   {left {goto {t bitset.os}}}
+   {left \ \ \ }
+   {left Finite sets of small integers.}}
+  {row
+   {left {goto {t break.os}}}
+   {left \ \ \ }
+   {left Terminate an iterator.}}
+  {row
+   {left {goto {t buffer.os}}}
+   {left \ \ \ }
+   {left Fixed length linear queues.}}
+  {row
+   {left {goto {t cdlc.os}}}
+   {left \ \ \ }
+   {left Circular doubly linked chains.}}
+  {row
+   {left {goto {t cell.op}}}
+   {left \ \ \ }
+   {left Operations on cells.}}
+  {row
+   {left {goto {t chain.os}}}
+   {left \ \ \ }
+   {left Visit nodes in a linear linked chain.}}
+  {row
+   {left {goto {t chainsort.os}}}
+   {left \ \ \ }
+   {left Sort a linear linked chain of execution objects.}}
+  {row
+   {left {goto {t char.os}}}
+   {left \ \ \ }
+   {left Operations on characters.}}
+  {row
+   {left {goto {t command.os}}}
+   {left \ \ \ }
+   {left Process Unix command line arguments.}}
+  {row
+   {left {goto {t complex.os}}}
+   {left \ \ \ }
+   {left Complex arithmetic.}}
+  {row
+   {left {goto {t convert.os}}}
+   {left \ \ \ }
+   {left Convert a string to an integer or a real.}}
+  {row
+   {left {goto {t count.os}}}
+   {left \ \ \ }
+   {left Counting loops with breakers.}}
+  {row
+   {left {goto {t cxr.op}}}
+   {left \ \ \ }
+   {left Compositions of {i car}s and {i cdr}s.}}
+  {row
+   {left {goto {t decode.os}}}
+   {left \ \ \ }
+   {left Decode a string to a series of characters.}}
+  {row
+   {left {goto {t default.os}}}
+   {left \ \ \ }
+   {left Default values of given types.}}
+  {row
+   {left {goto {t delimit.os}}}
+   {left \ \ \ }
+   {left Visit delimited substrings of a string.}}
+  {row
+   {left {goto {t directory.os}}}
+   {left \ \ \ }
+   {left Operations on Unix directories.}}
+  {row
+   {left {goto {t dotref.os}}}
+   {left \ \ \ }
+   {left Dereference pointers to tuples using dots.}}
+  {row
+   {left {goto {t dump.os}}}
+   {left \ \ \ }
+   {left Dynamic memory allocation with garbage collection.}}
+  {row
+   {left {goto {t dynamic.os}}}
+   {left \ \ \ }
+   {left Dynamic memory allocation with explicit release.}}
+  {row
+   {left {goto {t empty.os}}}
+   {left \ \ \ }
+   {left An empty program.}}
+  {row
+   {left {goto {t encode.os}}}
+   {left \ \ \ }
+   {left Encode a character as a string.}}
+  {row
+   {left {goto {t environ.op}}}
+   {left \ \ \ }
+   {left Communicate with the operating system.}}
+  {row
+   {left {goto {t exchange.os}}}
+   {left \ \ \ }
+   {left Suzuki generalized variable exchanges.}}
+  {row
+   {left {goto {t fail.os}}}
+   {left \ \ \ }
+   {left Terminate a program with an error message.}}
+  {row
+   {left {goto {t file.os}}}
+   {left \ \ \ }
+   {left Input and output on file streams.}}
+  {row
+   {left {goto {t flq.os}}}
+   {left \ \ \ }
+   {left Fixed length queues.}}
+  {row
+   {left {goto {t fls.os}}}
+   {left \ \ \ }
+   {left Fixed length stacks.}}
+  {row
+   {left {goto {t formif.os}}}
+   {left \ \ \ }
+   {left Simulate transformation-time {i if}s using forms.}}
+  {row
+   {left {goto {t headtail.os}}}
+   {left \ \ \ }
+   {left Traverse arrays using pointers.}}
+  {row
+   {left {goto {t krig.os}}}
+   {left \ \ \ }
+   {left Knuth's random {i int} generator.}}
+  {row
+   {left {goto {t library.os}}}
+   {left \ \ \ }
+   {left Get a string of library directory paths.}}
+  {row
+   {left {goto {t list.os}}}
+   {left \ \ \ }
+   {left Operations on lists.}}
+  {row
+   {left {goto {t lslc.os}}}
+   {left \ \ \ }
+   {left Linear singly linked chains.}}
+  {row
+   {left {goto {t making.os}}}
+   {left \ \ \ }
+   {left Allocate an object from the heap and initialize it.}}
+  {row
+   {left {goto {t match.os}}}
+   {left \ \ \ }
+   {left Test if a string is a member of a list of strings.}}
+  {row
+   {left {goto {t math.os}}}
+   {left \ \ \ }
+   {left Mathematical constants and functions.}}
+  {row
+   {left {goto {t methcast.os}}}
+   {left \ \ \ }
+   {left Cast forms to procedures and vice versa.}}
+  {row
+   {left {goto {t multi.os}}}
+   {left \ \ \ }
+   {left Multi-dimensional arrays.}}
+  {row
+   {left {goto {t path.os}}}
+   {left \ \ \ }
+   {left Operations on Unix pathnames.}}
+  {row
+   {left {goto {t plain.os}}}
+   {left \ \ \ }
+   {left Operations on Orson plain names.}}
+  {row
+   {left {goto {t pmrig.os}}}
+   {left \ \ \ }
+   {left Park-Miller Random {i int} Generator.}}
+  {row
+   {left {goto {t prelude.op}}}
+   {left \ \ \ }
+   {left A standard prelude for Orson (version {i Burbot}).}}
+  {row
+   {left {goto {t prime.os}}}
+   {left \ \ \ }
+   {left Test if an integer constant is prime.}}
+  {row
+   {left {goto {t primes.os}}}
+   {left \ \ \ }
+   {left Generate a series of prime {i int}s.}}
+  {row
+   {left {goto {t quicksort.os}}}
+   {left \ \ \ }
+   {left Quicksort the elements of an array.}}
+  {row
+   {left {goto {t roman.os}}}
+   {left \ \ \ }
+   {left Convert small positive {i int}s to Roman numerals.}}
+  {row
+   {left {goto {t seed.os}}}
+   {left \ \ \ }
+   {left Initialize a random number generator.}}
+  {row
+   {left {goto {t select.os}}}
+   {left \ \ \ }
+   {left Simulate a {i case} clause whose labels are strings.}}
+  {row
+   {left {goto {t sequence.op}}}
+   {left \ \ \ }
+   {left Iterators that transform to sequences.}}
+  {row
+   {left {goto {t shell.os}}}
+   {left \ \ \ }
+   {left Execute Unix shell commands.}}
+  {row
+   {left {goto {t signal.os}}}
+   {left \ \ \ }
+   {left Operations on Unix signals and sets of signals.}}
+  {row
+   {left {goto {t skolem.os}}}
+   {left \ \ \ }
+   {left Make Skolem types for debugging Orson.}}
+  {row
+   {left {goto {t string.op}}}
+   {left \ \ \ }
+   {left Operations on strings.}}
+  {row
+   {left {goto {t subsup.os}}}
+   {left \ \ \ }
+   {left Write integers using subscript and superscript digits.}}
+  {row
+   {left {goto {t text.os}}}
+   {left \ \ \ }
+   {left Read characters and lines from a text file.}}
+  {row
+   {left {goto {t throw.os}}}
+   {left \ \ \ }
+   {left Throw exceptions in response to Unix signals.}}
+  {row
+   {left {goto {t time.os}}}
+   {left \ \ \ }
+   {left Operations on dates and times.}}
+  {row
+   {left {goto {t twirl.os}}}
+   {left \ \ \ }
+   {left Write a twirling baton during a loop.}}
+  {row
+   {left {goto {t ubst.os}}}
+   {left \ \ \ }
+   {left Unbalanced binary search trees.}}
+  {row
+   {left {goto {t uncaught.os}}}
+   {left \ \ \ }
+   {left Catch otherwise uncaught exceptions.}}
+  {row
+   {left {goto {t vlq.os}}}
+   {left \ \ \ }
+   {left Variable length queues.}}
+  {row
+   {left {goto {t vls.os}}}
+   {left \ \ \ }
+   {left Variable length stacks.}}
+  {row
+   {left {goto {t width.os}}}
+   {left \ \ \ }
+   {left Determine columns to write simple objects.}}
+  {row
+   {left {goto {t withify.os}}}
+   {left \ \ \ }
+   {left Transform a list of terms into a {i with} clause.}}}}
+
+{justify
+  Some library files use {c Gnu} C types that are created by calling the form
+  {q {i c}'{i s}} {goto moe2013b {c [moe 2013b].}}
+  When {q {i c}'{i s}} creates a {c Gnu} C type, it must be given the alignment
+  and size of that type, since Orson cannot determine these for itself.
+  Unfortunately, type alignments and sizes can vary from one system to another,
+  and those used here may not be correct for your system.
+  Orson is distributed with a program {i gas} that can show the alignment and
+  size of any named {c Gnu} C type.
+  If there are problems, you should use it to check type alignments and sizes.
+
+  The Orson library also contains a few files that do not define methods for
+  use in other programs.
+  Some (like {t makecxr.os} and {t ranger.os}) automatically construct source
+  files for the library.}
+
+{narrow
+ {layout
+  {row
+   {left {goto ./C {t C/\ \ \ \ \ \ \ \ \ \ }}}
+   {left \ \ \ }
+   {left A directory that contains {c Gnu} C code. Boring.}}
+  {row
+   {left {goto ./README {t README}}}
+   {left \ \ \ }
+   {left Short text version of {t Readme.html}.}}
+  {row
+   {left {goto {t Readme.by}}}
+   {left \ \ \ }
+   {left Bracy source for {t Readme.html}.}}
+  {row
+   {left {goto {t Readme.html}}}
+   {left \ \ \ }
+   {left What you're reading now.}}
+  {row
+   {left {goto {t makecxr.os}}}
+   {left \ \ \ }
+   {left Generate the Orson library file {t cxr.op}.}}
+  {row
+   {left {goto {t ranger.os}}}
+   {left \ \ \ }
+   {left Make arrays that clone {c Gnu} C's {t wcwidth} function.}}}}
+
+{justify
+  The Orson library is available for free, under the terms of the {c Gnu}
+  General Public License version 3, so it may be used by free Orson programs.
+  People bothered by this are invited to make their Orson programs free, or to
+  write their own libraries.}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label bor1962}
+   {c [bor\ 1962]\ \ }}
+  {justify
+    Jorge Luis Borges.
+    ``The Library of Babel.''
+    In {i Ficciones.}
+    Anthony Kerrigan, editor and translator.
+    Grove Press.
+    New York, New York.
+    1962.
+    Page 86.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2013a}
+   {c [moe\ 2013a]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2013.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2013b}
+   {c [moe\ 2013b]\ \ }}
+  {justify
+    James B. Moen.
+    ``Orson's Interface to {c Gnu} C.''
+    Unpublished technical report.
+    2013.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label sta2008}
+   {c [sta\ 2008]\ \ }}
+  {justify
+    Richard M. Stallman, the {c Gcc} Developer Community.
+    ``Using and Porting the {c Gnu} Compiler Collection.''
+    Free Software Foundation.
+    Boston, Massachusetts.
+    2008.}}}

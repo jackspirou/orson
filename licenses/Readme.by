@@ -1,0 +1,95 @@
+{title Licenses}
+
+{center
+ {b Licenses}
+
+ James B. Moen
+ January 20, 2014}
+
+{narrow
+ {justify
+   {c Gnu,} {i n.}
+   An animal of South Africa, which in its domesticated state resembles a
+   horse, a buffalo and a stag.
+   In its wild condition it is something like a thunderbolt, an earthquake and
+   a cyclone.}
+ {right
+  {goto bie1957 {c [bie 1957]}}}}
+
+{justify
+  The Orson compiler {goto moe2014a {c [moe 2014a]}} and the programs
+  distributed with it are available for free under the {c Gnu} General Public
+  License, version 3.
+  The documentation distributed with the compiler is also available for free,
+  under the {c Gnu} Free Documentation License, version 1.3.
+  The following files contain Bracy {goto moe2014b {c [moe 2014b]}} and
+  {c html} versions of both licenses.}
+
+{narrow
+ {layout
+  {row
+   {left {goto ./README {t README}}}
+   {left \ \ \ \ Short text version of {t Readme.html}.}}
+  {row
+   {left {goto {t Readme.by}}}
+   {left \ \ \ \ Bracy source for {t Readme.html.}}}
+  {row
+   {left {goto {t Readme.html}}}
+   {left \ \ \ \ What you're reading now.}}
+  {row
+   {left {goto {t gfdl.by}}}
+   {left \ \ \ \ Bracy source for {t gfdl.html.}}}
+  {row
+   {left {goto {t gfdl.html}}}
+   {left \ \ \ \ {c Gnu} Free Documentation License.}}
+  {row
+   {left {goto {t gpl3.by}}}
+   {left \ \ \ \ Bracy source for {t gpl3.html.}}}
+  {row
+   {left {goto {t gpl3.html}}}
+   {left \ \ \ \ {c Gnu} General Public License, Version 3.}}}}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label bie1957}
+   {c [bie\ 1957]\ \ }}
+  {justify
+    Ambrose Bierce.
+    {i The Devil's Dictionary.}
+    Hill and Wang, Inc.
+    New York, New York.
+    1957.
+    Page 64.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2014a}
+   {c [moe\ 2014a]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2014.}}
+
+ {row
+  {left \ }
+  {left \ }}
+
+ {row
+  {left
+   {label moe2014b}
+   {c [moe\ 2014b]\ \ }}
+  {justify
+    James B. Moen.
+    ``The Bracy Manual.''
+    Unpublished technical report.
+    2014.}}}

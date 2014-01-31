@@ -1,0 +1,861 @@
+<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:35 PM CST -->
+<html>
+ <head>
+  <title>
+   Methods with Variable Numbers of Arguments in Orson
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black; 
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Methods with Variable Numbers of Arguments in Orson</b>
+   <br />
+   <br />
+   James B. Moen
+   <br />
+   June 12, 2013
+  </p>
+  <p align="justify">
+   Copyright &#169; 2013 James B. Moen. Permission is granted to copy,
+   distribute, and/or modify this document under the terms of the
+   G<small>NU</small> Free Documentation License, Version 1.3 or any later
+   version published by the Free Software Foundation; with no Invariant
+   Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the
+   license may be obtained at
+   <a href="http://fsf.org/">
+    <tt>&lt;http://fsf.org/&gt;.</tt>
+   </a>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This document uses special characters.
+   Without proper rendering support, you may see question marks, boxes, or
+   other symbols in place of these characters. This document must be rendered
+   in a font where an italic quote &lsquo;&nbsp;<i>"</i>&nbsp;&rsquo;
+   looks different from two apostrophes &lsquo;&nbsp;''&nbsp;&rsquo;.
+  </p>
+  <hr />
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <blockquote>
+   <p align="justify">
+    I&rsquo;d like to have an argument please.
+   </p>
+   <p align="right">
+    <a href="#cha1989">
+     [<small>CHA</small> 1989]
+    </a>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The programming language Orson
+   <a href="#moe2013">
+    [<small>MOE</small> 2013]
+   </a>
+   doesn&rsquo;t provide methods (forms and procedures) that have varying
+   numbers of arguments. This report shows how they can be simulated in a few
+   common cases. It assumes good knowledge of Orson; some familiarity with C
+   <a href="#ker1988">
+    [<small>KER</small> 1988]
+   </a>
+   is also helpful.
+  </p>
+  <p>
+   <b>1. Forms with default arguments.</b>
+  </p>
+  <p align="justify">
+   Suppose I want to perform some computations with complex numbers. I&rsquo;ll
+   represent a complex number using a tuple type called <i>comp.</i> It
+   has two slots: <i>re</i> holds the real part of the complex number, and
+   <i>im</i> holds the complex part.
+  </p>
+  <blockquote>
+   <p>
+    <i>comp</i>&nbsp;:&#8722;&nbsp;(<b>tuple</b>&nbsp;<i>real</i>&nbsp;<i>re</i>,&nbsp;<i>real</i>&nbsp;<i>im</i>)
+   </p>
+  </blockquote>
+  <p align="justify">
+   The form <i>makeComp</i> returns a new complex number represented this
+   way, given its real and complex parts. For example,
+   <i>makeComp</i>(1.0,&nbsp;&#8722;2.0) returns a <i>comp</i> that
+   represents the complex number 1.0&nbsp;&#8722;&nbsp;2.0<i>i.</i>
+  </p>
+  <blockquote>
+   <p>
+    <i>makeComp</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i></font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>re</i>,&nbsp;<i>real</i>&nbsp;<i>im</i>)&nbsp;<i>comp</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>comp</i>&nbsp;<i>z</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((</font><b>do</b>&nbsp;<i>z</i>.<i>re</i>&nbsp;:=&nbsp;<i>re</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>do</b>&nbsp;</font><i>z</i>.<i>im</i>&nbsp;:=&nbsp;<i>im</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>do</b>&nbsp;</font><i>z</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now suppose I want to make lots of complex numbers whose complex parts are
+   0.0. I&rsquo;d like to omit the second argument of <i>makeComp</i> in
+   such cases, and have it default to 0.0. For example,
+   <i>makeComp</i>(3.0) would return a <i>comp</i> that represents
+   the complex number 3.0&nbsp;+&nbsp;0.0<i>i.</i> Orson doesn&rsquo;t
+   provide forms with optional arguments, but I can simulate them by using an
+   alternate form, like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>makeComp</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i></font>(<b>alt</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>re</i>)&nbsp;<i>comp</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>f</b></font><i>makeComp</i>(<i>re</i>,&nbsp;0.0)),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>re</i>,&nbsp;<i>real</i>&nbsp;<i>im</i>)&nbsp;<i>comp</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((</font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>comp</i>&nbsp;<i>z</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(((</font><b>do</b>&nbsp;<i>z</i>.<i>re</i>&nbsp;:=&nbsp;<i>re</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(((<b>do</b>&nbsp;</font><i>z</i>.<i>im</i>&nbsp;:=&nbsp;<i>im</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(((<b>do</b>&nbsp;</font><i>z</i>)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now if I call <i>makeComp</i> with one real argument, its first member
+   fills in the default 0.0 for its second argument, then calls its second
+   member. If I call <i>makeComp</i> with two arguments, it acts just as
+   it did before. If I were writing a form with more arguments, or one that had
+   more defaults, I could handle them by adding more members to the alternate
+   form. By convention, the optional arguments should follow the required ones.
+  </p>
+  <p>
+   <b>2. Forms with zero or more arguments.</b>
+  </p>
+  <p align="justify">
+   If you want to write a form that takes varying numbers of arguments, you
+   must put those arguments into a list. For example, suppose you have a form
+   called <i>max</i> that takes one or more integers as its arguments, and
+   returns the largest of these integers. If you want to find the maximum of
+   the integer arguments <i>i, j,</i> and <i>k,</i> then you&rsquo;d
+   call <i>max</i> like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>max</i>((:&nbsp;<i>i</i>,&nbsp;<i>j</i>,&nbsp;<i>k</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Note that it&rsquo;s possible to call <i>max</i> with zero arguments by
+   using an empty list, like this. This might cause problems because the
+   maximum of zero integers isn&rsquo;t well defined.
+  </p>
+  <blockquote>
+   <p>
+    <i>max</i>((:))
+   </p>
+  </blockquote>
+  <p align="justify">
+   If a call has a colon among its arguments, then all the arguments on the
+   right of the colon are put into a list. So the calls shown above can be
+   abbreviated as
+   <i>max</i>(:&nbsp;<i>i,</i>&nbsp;<i>j,</i>&nbsp;<i>k</i>)
+   or as <i>max</i>(:), which helps hide the fact that a list is being
+   used.
+  </p>
+  <p>
+   <b>3. Executing arguments too many times.</b>
+  </p>
+  <p align="justify">
+   Let&rsquo;s return to the form <i>max</i> from the previous section. I
+   might write it like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>max</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i></font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b></font><i>maxing</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i></font>(<b>form</b>&nbsp;(<i>inj</i>&nbsp;<i>m</i>,&nbsp;<i>list</i>&nbsp;<i>k</i>)&nbsp;<i>inj</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>(</font>(<b>if</b>&nbsp;<i>isEmpty</i>(<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((</font><b>then</b>&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>car</i>(<i>k</i>)&nbsp;&gt;&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>maxing</i>(<i>car</i>(<i>k</i>),&nbsp;<i>cdr</i>(<i>k</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>maxing</i>(<i>m</i>,&nbsp;<i>cdr</i>(<i>k</i>))))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font><b>do</b>&nbsp;(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>k</i>)&nbsp;<i>inj</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>do</b>&nbsp;(<b>f</b></font><i>maxing</i>(<i>car</i>(<i>k</i>),&nbsp;<i>cdr</i>(<i>k</i>))))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The helper form <i>maxing</i> does all the work for <i>max.</i>
+   (By convention, if I write a form with a name like <i>foo,</i> its
+   helper forms will have names like <i>fooing.</i>) It keeps the current
+   maximum in <i>m,</i> while it visits each integer in the list
+   <i>k.</i> Whenever it visits an integer that&rsquo;s greater than the
+   current maximum, it updates <i>m.</i> After it&rsquo;s visited all the
+   integers in <i>k,</i> it simply returns <i>m.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The form <i>max</i> doesn&rsquo;t work
+   if <i>k</i> is the empty list, or if it has elements that aren&rsquo;t
+   integers. To simplify the discussion, <i>max</i> does no error
+   checking. Error checks would be included if <i>max</i> were part of a
+   real program.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; There are other things wrong with
+   <i>max</i> too. The following example will demonstrate them. Suppose
+   the integer variables <i>a, b,</i> and <i>c</i> are declared like
+   this.
+  </p>
+  <blockquote>
+   <p>
+    <b>var</b>&nbsp;<i>int</i>&nbsp;<i>a</i>&nbsp;:&#8722;&nbsp;1&nbsp;
+    <br />
+    <b>var</b>&nbsp;<i>int</i>&nbsp;<i>b</i>&nbsp;:&#8722;&nbsp;2&nbsp;
+    <br />
+    <b>var</b>&nbsp;<i>int</i>&nbsp;<i>c</i>&nbsp;:&#8722;&nbsp;3
+   </p>
+  </blockquote>
+  <p align="justify">
+   Also suppose that you call <i>max</i> with three expressions that use
+   <i>a, b,</i> and <i>c.</i>
+  </p>
+  <blockquote>
+   <p>
+    <i>max</i>(:&nbsp;<i>a</i>&nbsp;+&nbsp;<i>b</i>,&nbsp;<i>b</i>&nbsp;+&nbsp;<i>c</i>,&nbsp;<i>c</i>&nbsp;+&nbsp;<i>a</i>)
+   </p>
+  </blockquote>
+  <p align="justify">
+   The call to <i>max</i> will then transform to a nested <i>if</i>
+   clause that looks like this. When the <i>if</i> clause is executed, it
+   will return the value of <i>b</i>&nbsp;+&nbsp;<i>c,</i> which is
+   5.
+  </p>
+  <blockquote>
+   <p>
+    (<b>if</b>&nbsp;<i>b</i>&nbsp;+&nbsp;<i>c</i>&nbsp;&gt;&nbsp;<i>a</i>&nbsp;+&nbsp;<i>b</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>c</i>&nbsp;+&nbsp;<i>a</i>&nbsp;&gt;&nbsp;<i>b</i>&nbsp;+&nbsp;<i>c</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>then</b>&nbsp;(</font><b>then</b>&nbsp;<i>c</i>&nbsp;+&nbsp;<i>a</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<i>b</i>&nbsp;+&nbsp;<i>c</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>else</b>&nbsp;(<b>if</b>&nbsp;<i>c</i>&nbsp;+&nbsp;<i>a</i>&nbsp;&gt;&nbsp;<i>a</i>&nbsp;+&nbsp;<i>b</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>else</b>&nbsp;(</font><b>then</b>&nbsp;<i>c</i>&nbsp;+&nbsp;<i>a</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>else</b>&nbsp;(</font><b>else</b>&nbsp;<i>a</i>&nbsp;+&nbsp;<i>b</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The problem is that the arguments to <i>max</i> are executed more than
+   once. In the example, the argument <i>b</i>&nbsp;+&nbsp;<i>c</i>
+   might be executed three times. That&rsquo;s not important here, since
+   integer additions are cheap to execute. However, it might be important if
+   <i>max</i>&rsquo;s arguments were more expensive to execute, or if they
+   had side effects.
+  </p>
+  <p>
+   <b>4. Withification.</b>
+  </p>
+  <p align="justify">
+   I can make sure each argument is executed only once by wrapping the call to
+   <i>max</i> inside a <i>with</i> clause, as shown below. Using a
+   <i>with</i> clause in this way is called <i>withification.</i>
+  </p>
+  <blockquote>
+   <p>
+    (<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>int</i>&nbsp;<i>t</i>&#8320;&nbsp;:&#8722;&nbsp;<i>a</i>&nbsp;+&nbsp;<i>b</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>int</i>&nbsp;<i>t</i>&#8321;&nbsp;:&#8722;&nbsp;<i>b</i>&nbsp;+&nbsp;<i>c</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>int</i>&nbsp;<i>t</i>&#8322;&nbsp;:&#8722;&nbsp;<i>c</i>&nbsp;+&nbsp;<i>a</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;<i>max</i>(:&nbsp;<i>t</i>&#8320;,&nbsp;<i>t</i>&#8321;,&nbsp;<i>t</i>&#8322;))
+   </p>
+  </blockquote>
+  <p align="justify">
+   You probably don&rsquo;t want to write a <i>with</i> clause every time
+   you call <i>max.</i> Fortunately, it&rsquo;s possible to write a
+   wrapper form
+   <a href="#moe2013">
+    [<small>MOE</small> 2013]
+   </a>
+   called <i>withified</i> that makes the <i>with</i> clause
+   automatically.
+  </p>
+  <blockquote>
+   <p>
+    <i>withified</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>w</i></font>(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>a</i>)&nbsp;<i>foj</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>w</i>(</font>(<b>form</b>&nbsp;(<b>form</b>&nbsp;(<i>list</i>)&nbsp;<i>obj</i>&nbsp;<i>body</i>)&nbsp;<i>obj</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>w</i>((</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>w</i>(((<b>w</b></font><i>withifying</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>w</i>(((<b>w</b><i>w</i></font>(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>n</i>,&nbsp;<i>list</i>&nbsp;<i>a</i>)&nbsp;<i>obj</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>w</i>(((<b>w</b><i>w</i>(</font>(<b>if</b>&nbsp;<i>isEmpty</i>(<i>a</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>w</i>(((<b>w</b><i>w</i>((</font><b>then</b>&nbsp;<i>body</i>(<i>n</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>w</i>(((<b>w</b><i>w</i>((</font><b>else</b>&nbsp;(<b>with</b>&nbsp;<i>obj</i>&nbsp;<i>t</i>&nbsp;:&#8722;&nbsp;<i>car</i>(<i>a</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>w</i>(((<b>w</b><i>w</i>((<b>else</b>&nbsp;(</font><b>do</b>&nbsp;<i>withifying</i>(<i>conc</i>(<i>n</i>:&nbsp;<i>t</i>),&nbsp;<i>cdr</i>(<i>a</i>)))))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>w</i>(((</font><b>do</b>&nbsp;<i>withifying</i>((:),&nbsp;<i>a</i>))))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The form <i>withified</i> visits each element in the list
+   <i>a,</i> and makes nested <i>with</i> clauses that bind temporary
+   names to those elements. Orson automatically uses a different temporary name
+   in each <i>with</i> clause, to avoid conflicts with names already used
+   elsewhere in the program. For example, suppose I have an expression
+   <i>e</i>((: <i>i,</i>&nbsp;<i>j,</i>&nbsp;<i>k</i>))
+   that performs a computation using the expressions <i>i, j,</i> and
+   <i>k,</i> which are the elements of a list. Then this <i>for</i>
+   clause:
+  </p>
+  <blockquote>
+   <p>
+    (<b>for</b>&nbsp;<i>list</i>&nbsp;<i>l</i>&nbsp;<b>in</b>&nbsp;<i>withified</i>((:&nbsp;<i>i</i>,&nbsp;<i>j</i>,&nbsp;<i>k</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;<i>e</i>(<i>l</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   transforms to this nested <i>with</i> clause, in which the names
+   beginning with <i>u</i> are unique names that appear nowhere else.
+  </p>
+  <blockquote>
+   <p>
+    (<b>with</b>&nbsp;<i>obj</i>&nbsp;<i>u</i>&#8320;&nbsp;:&#8722;&nbsp;<i>i</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;(<b>with</b>&nbsp;<i>obj</i>&nbsp;<i>u</i>&#8321;&nbsp;:&#8722;&nbsp;<i>j</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>do</b>&nbsp;(<b>with</b>&nbsp;<i>obj</i>&nbsp;<i>u</i>&#8322;&nbsp;:&#8722;&nbsp;<i>k</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>do</b>&nbsp;(</font><b>do</b>&nbsp;<i>e</i>((:&nbsp;<i>u</i>&#8320;,&nbsp;<i>u</i>&#8321;,&nbsp;<i>u</i>&#8322;)))))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Orson collapses all the nested <i>with</i> clauses into one, so I end
+   up with this.
+  </p>
+  <blockquote>
+   <p>
+    (<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>obj</i>&nbsp;<i>u</i>&#8320;&nbsp;:&#8722;&nbsp;<i>i</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>obj</i>&nbsp;<i>u</i>&#8321;&nbsp;:&#8722;&nbsp;<i>j</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>obj</i>&nbsp;<i>u</i>&#8322;&nbsp;:&#8722;&nbsp;<i>k</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;<i>e</i>((:&nbsp;<i>u</i>&#8320;,&nbsp;<i>u</i>&#8321;,&nbsp;<i>u</i>&#8322;)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now, if <i>e</i> performs some computation using the expressions
+   <i>i, j,</i> and <i>k,</i> then each is executed only once. This
+   is just what I need to fix <i>max,</i> so I&rsquo;ll rewrite it using
+   <i>withified</i> like this.
+  </p>
+  <blockquote>
+   <p>
+    <i>max</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i></font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b></font><i>maxing</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i></font>(<b>form</b>&nbsp;(<i>inj</i>&nbsp;<i>m</i>,&nbsp;<i>list</i>&nbsp;<i>k</i>)&nbsp;<i>inj</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>(</font>(<b>if</b>&nbsp;<i>isEmpty</i>(<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((</font><b>then</b>&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>car</i>(<i>k</i>)&nbsp;&gt;&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>maxing</i>(<i>car</i>(<i>k</i>),&nbsp;<i>cdr</i>(<i>k</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>maxing</i>(<i>m</i>,&nbsp;<i>cdr</i>(<i>k</i>))))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font><b>do</b>&nbsp;(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>k</i>)&nbsp;<i>inj</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>do</b>&nbsp;(</font>(<b>for</b>&nbsp;<i>list</i>&nbsp;<i>k</i>'&nbsp;<b>in</b>&nbsp;<i>withified</i>(<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>do</b>&nbsp;((</font><b>do</b>&nbsp;<i>maxing</i>(<i>k</i>'))))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now if I call <i>max</i>(:
+   <i>a</i>&nbsp;+&nbsp;<i>b,</i>&nbsp;<i>b</i>&nbsp;+&nbsp;<i>c,</i>&nbsp;<i>c</i>&nbsp;+&nbsp;<i>a</i>),
+   I get this <i>with</i> clause as a result.
+  </p>
+  <blockquote>
+   <p>
+    (<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>int</i>&nbsp;<i>u</i>&#8320;&nbsp;:&#8722;&nbsp;<i>a</i>&nbsp;+&nbsp;<i>b</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>int</i>&nbsp;<i>u</i>&#8321;&nbsp;:&#8722;&nbsp;<i>b</i>&nbsp;+&nbsp;<i>c</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>w</b></font><i>int</i>&nbsp;<i>u</i>&#8322;&nbsp;:&#8722;&nbsp;<i>c</i>&nbsp;+&nbsp;<i>a</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>u</i>&#8321;&nbsp;&gt;&nbsp;<i>u</i>&#8320;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;(<b>if</b>&nbsp;<i>u</i>&#8322;&nbsp;&gt;&nbsp;<i>u</i>&#8321;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>then</b>&nbsp;<i>u</i>&#8322;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>then</b>&nbsp;(</font><b>else</b>&nbsp;<i>u</i>&#8321;)&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;(<b>if</b>&nbsp;<i>u</i>&#8322;&nbsp;&gt;&nbsp;<i>u</i>&#8320;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;(</font><b>then</b>&nbsp;<i>u</i>&#8322;&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;(<b>else</b>&nbsp;(</font><b>else</b>&nbsp;<i>u</i>&#8320;)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The form <i>withified</i> is available in the Orson library. You can
+   get it by loading the library file <i>lib.withify.</i>
+  </p>
+  <p>
+   <b>5. Forms with one or more arguments.</b>
+  </p>
+  <p align="justify">
+   Another problem with <i>max</i> is that it fails when I call it with an
+   empty list of arguments. I could fix the problem by rewriting
+   <i>max</i> so it checks for an empty list, like this. Note that in this
+   case, <i>max</i> returns the default value 0 so that transformation can
+   continue.
+  </p>
+  <blockquote>
+   <p>
+    <i>max</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i></font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b></font><i>maxing</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i></font>(<b>form</b>&nbsp;(<i>inj</i>&nbsp;<i>m</i>,&nbsp;<i>list</i>&nbsp;<i>k</i>)&nbsp;<i>inj</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>(</font>(<b>if</b>&nbsp;<i>isEmpty</i>(<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((</font><b>then</b>&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>car</i>(<i>k</i>)&nbsp;&gt;&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>maxing</i>(<i>car</i>(<i>k</i>),&nbsp;<i>cdr</i>(<i>k</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>maxing</i>(<i>m</i>,&nbsp;<i>cdr</i>(<i>k</i>))))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font><b>do</b>&nbsp;(<b>form</b>&nbsp;(<i>list</i>&nbsp;<i>k</i>)&nbsp;<i>inj</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>do</b>&nbsp;(</font>(<b>if</b>&nbsp;<i>isEmpty</i>(<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>do</b>&nbsp;((</font><b>then</b>&nbsp;<i>error</i>($<i>k</i>,&nbsp;<i>"</i>too&nbsp;few&nbsp;elements<i>"</i>,&nbsp;0)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>do</b>&nbsp;((</font><b>else</b>&nbsp;(<b>for</b>&nbsp;<i>list</i>&nbsp;<i>k</i>'&nbsp;<b>in</b>&nbsp;<i>withified</i>(<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>do</b>&nbsp;((<b>else</b>&nbsp;(</font><b>do</b>&nbsp;<i>maxing</i>(<i>k</i>')))))
+   </p>
+  </blockquote>
+  <p align="justify">
+   However, it&rsquo;s better to rewrite <i>max</i> so that calling it
+   with an empty list is <i>impossible.</i> I can do that by letting
+   <i>max</i> have two arguments: an integer <i>a</i> and a list of
+   integers <i>d.</i> It returns the maximum of a list whose first
+   argument is <i>a,</i> and whose remaining arguments are in
+   <i>d.</i>
+  </p>
+  <blockquote>
+   <p>
+    <i>max</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i></font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b></font><i>maxing</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i></font>(<b>form</b>&nbsp;(<i>inj</i>&nbsp;<i>m</i>,&nbsp;<i>list</i>&nbsp;<i>k</i>)&nbsp;<i>inj</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>(</font>(<b>if</b>&nbsp;<i>isEmpty</i>(<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((</font><b>then</b>&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((</font><b>else</b>&nbsp;<b>if</b>&nbsp;<i>car</i>(<i>k</i>)&nbsp;&gt;&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((<b>else</b>&nbsp;</font><b>then</b>&nbsp;<i>maxing</i>(<i>car</i>(<i>k</i>),&nbsp;<i>cdr</i>(<i>k</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>w</b><i>m</i>((<b>else</b>&nbsp;</font><b>else</b>&nbsp;<i>maxing</i>(<i>m</i>,&nbsp;<i>cdr</i>(<i>k</i>))))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font><b>do</b>&nbsp;(<b>form</b>&nbsp;(<i>inj</i>&nbsp;<i>a</i>,&nbsp;<i>list</i>&nbsp;<i>d</i>)&nbsp;<i>inj</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>do</b>&nbsp;(</font>(<b>with</b>&nbsp;<i>list</i>&nbsp;<i>k</i>&nbsp;<b>in</b>&nbsp;<i>withified</i>(<i>cons</i>(<i>a</i>,&nbsp;<i>d</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>do</b>&nbsp;((</font><b>do</b>&nbsp;<i>maxing</i>(<i>car</i>(<i>k</i>),&nbsp;<i>cdr</i>(<i>k</i>)))))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now the list of integers seen by <i>maxing</i> always has at least one
+   element, and the problem with the empty list goes away. The call to
+   <i>max</i> from the previous section looks like this:
+  </p>
+  <blockquote>
+   <p>
+    <i>max</i>(<i>a</i>&nbsp;+&nbsp;<i>b</i>,&nbsp;(:&nbsp;<i>b</i>&nbsp;+&nbsp;<i>c</i>,&nbsp;<i>c</i>&nbsp;+&nbsp;<i>a</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Or I can abbreviate it, like this:
+  </p>
+  <blockquote>
+   <p>
+    <i>max</i>(<i>a</i>&nbsp;+&nbsp;<i>b</i>:&nbsp;<i>b</i>&nbsp;+&nbsp;<i>c</i>,&nbsp;<i>c</i>&nbsp;+&nbsp;<i>a</i>)
+   </p>
+  </blockquote>
+  <p align="justify">
+   If for some reason I want to call <i>max</i> with only one argument
+   <i>j,</i> I can write <i>max</i>(<i>j</i>:). There&rsquo;s no
+   good reason to do that with <i>max,</i> but there might be if I was
+   calling a different form.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It&rsquo;s convenient to say that
+   <i>max</i> now has two kinds of arguments. The argument <i>a</i>
+   is a <i>required</i> argument, and the arguments in the list
+   <i>d</i> are <i>optional</i> arguments. To take full advantage of
+   the colon abbreviation, most forms should be written so their required
+   arguments come first, and their optional arguments (if any) follow.
+  </p>
+  <p>
+   <b>7. Procedures with optional arguments.</b>
+  </p>
+  <p align="justify">
+   It&rsquo;s easy to simulate a procedure with optional arguments. Just write
+   a form with optional arguments that calls the procedure. For example, the
+   procedure <i>MakeComp</i> (with an upper case <i>M</i>) returns a
+   new complex number with a real part <i>re</i> and an imaginary part
+   <i>im.</i> The form <i>makeComp</i> (with a lower case
+   <i>m</i>) calls it.
+  </p>
+  <blockquote>
+   <p>
+    <i>MakeComp</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i></font>(<b>proc</b>&nbsp;(<i>real</i>&nbsp;<i>re</i>,&nbsp;<i>real</i>&nbsp;<i>im</i>)&nbsp;<i>comp</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i>(</font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>comp</i>&nbsp;<i>z</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i>((</font><b>do</b>&nbsp;<i>z</i>.<i>re</i>&nbsp;:=&nbsp;<i>re</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i>((<b>do</b>&nbsp;</font><i>z</i>.<i>im</i>&nbsp;:=&nbsp;<i>im</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i>((<b>do</b>&nbsp;</font><i>z</i>))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i></font>
+    <br />
+    <i>makeComp</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i></font>(<b>alt</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>re</i>)&nbsp;<i>comp</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>f</b></font><i>makeComp</i>(<i>re</i>,&nbsp;0.0)),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>re</i>,&nbsp;<i>real</i>&nbsp;<i>im</i>)&nbsp;<i>comp</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>f</b></font><i>MakeComp</i>(<i>re</i>,&nbsp;<i>im</i>)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Since <i>MakeComp</i> is a secret name, it can&rsquo;t be called
+   outside the <i>prog</i> clause where it&rsquo;s defined. It can be
+   called only through the form <i>makeComp.</i> Orson programs often use
+   forms to set up arguments for secret procedures in this way.
+  </p>
+  <p>
+   <b>8. Procedures with zero or more arguments.</b>
+  </p>
+  <p align="justify">
+   I can simulate a form with zero or more arguments by passing it a list.
+   Unfortunately, I can&rsquo;t simulate a procedure with zero or more
+   arguments in the same way. This is because lists are transformation objects,
+   but procedures are execution objects, so they can&rsquo;t perform
+   computations with lists. As a result, it&rsquo;s harder to simulate a
+   procedure with zero or more arguments, although it&rsquo;s possible in a few
+   special cases.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sometimes you can simulate a procedure with
+   many arguments by making nested calls to a simpler version of that
+   procedure. This is one way to write <i>max</i> as a procedure. I first
+   define a secret procedure called <i>Max</i> that finds the larger of
+   two integers, <i>l</i> and <i>r.</i>
+  </p>
+  <blockquote>
+   <p>
+    <i>Max</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i></font>(<b>proc</b>&nbsp;(<i>int</i>&nbsp;<i>l</i>,&nbsp;<i>int</i>&nbsp;<i>r</i>)&nbsp;<i>int</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i>(</font>(<b>if</b>&nbsp;<i>l</i>&nbsp;&gt;&nbsp;<i>r</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i>((</font><b>then</b>&nbsp;<i>l</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i>((</font><b>else</b>&nbsp;<i>r</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Then I define a form called <i>max</i> that takes one or more
+   arguments, the way previous versions of <i>max</i> did. The form
+   <i>max</i> then calls itself recursively to make a series of nested
+   calls to the procedure <i>Max.</i> The series of nested calls finds the
+   maximum of all the arguments.
+  </p>
+  <blockquote>
+   <p>
+    <i>max</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>m</i>,&nbsp;<i>list</i>&nbsp;<i>k</i>)&nbsp;<i>int</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font>(<b>if</b>&nbsp;<i>isEmpty</i>(<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((</font><b>then</b>&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((</font><b>else</b>&nbsp;<i>Max</i>(<i>m</i>,&nbsp;<i>max</i>(<i>car</i>(<i>k</i>),&nbsp;<i>cdr</i>(<i>k</i>)))))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Now suppose that I call <i>max</i> with the same arguments I did
+   before. Then the call transforms to an expression that&rsquo;s equivalent to
+   this one, with two calls to <i>Max.</i>
+  </p>
+  <blockquote>
+   <p>
+    <i>Max</i>(<i>a</i>&nbsp;+&nbsp;<i>b</i>,&nbsp;<i>Max</i>(<i>b</i>&nbsp;+&nbsp;<i>c</i>,&nbsp;<i>c</i>&nbsp;+&nbsp;<i>a</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   Unfortunately, this doesn&rsquo;t work for some procedures. If it
+   doesn&rsquo;t, then one possibility is to copy a form&rsquo;s arguments into
+   some kind of execution object, and pass the object to the procedure.
+   I&rsquo;ll show how to do that with <i>max,</i> but only because
+   that&rsquo;s what I used in previous examples. Probably nobody would really
+   write <i>max</i> in the way I&rsquo;m going to.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The first step is to define a secret
+   procedure <i>Max</i> that takes an array of <i>n</i> integers as
+   its argument. It returns the maximum of the integers in the array. Orson
+   doesn&rsquo;t have variable length arrays, so I&rsquo;ll simulate one by
+   passing <i>n</i> as an argument, and using a <i>row</i> pointer to
+   reference <i>a.</i> This is what I&rsquo;d do in a language like C
+   <a href="#ker1988">
+    [<small>KER</small> 1988].
+   </a>
+  </p>
+  <blockquote>
+   <p>
+    <i>Max</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i></font>(<b>proc</b>&nbsp;(<i>int</i>&nbsp;<i>n</i>,&nbsp;<b>row</b>&nbsp;<b>var</b>&nbsp;<i>int</i>&nbsp;<i>a</i>)&nbsp;<i>int</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i>(</font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>int</i>&nbsp;<i>m</i>&nbsp;:&#8722;&nbsp;<i>a</i>[0]&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i>((</font><b>do</b>&nbsp;(<b>for</b>&nbsp;<i>int</i>&nbsp;<i>j</i>&nbsp;<b>in</b>&nbsp;1,&nbsp;<i>n</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i>((<b>do</b>&nbsp;(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;<i>a</i>[<i>j</i>]&nbsp;&gt;&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i>((<b>do</b>&nbsp;(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>m</i>&nbsp;:=&nbsp;<i>a</i>[<i>j</i>]))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>M</i>((<b>do</b>&nbsp;</font><i>m</i>))
+   </p>
+  </blockquote>
+  <p align="justify">
+   The next step is to write a form <i>max.</i> It transforms to a
+   <i>with</i> clause that creates a temporary array <i>t.</i> Then
+   it calls the form <i>assigning</i> to make a sequence of assignments
+   that fills <i>t</i> with the values of <i>max</i>&rsquo;s
+   arguments. Finally it calls <i>Max</i> with the length of the array,
+   and a pointer to the array itself.
+  </p>
+  <blockquote>
+   <p>
+    <i>max</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>m</i>,&nbsp;<i>list</i>&nbsp;<i>k</i>)&nbsp;<i>int</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(</font>(<b>with</b>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>w</b></font><i>int</i>&nbsp;<i>l</i>&nbsp;:&#8722;&nbsp;<i>length</i>(<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>w</b></font><b>var</b>&nbsp;[<i>l</i>&nbsp;+&nbsp;1]&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>w</b></font><i>assigning</i>&nbsp;:&#8722;&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>w</b><i>a</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>j</i>,&nbsp;<i>list</i>&nbsp;<i>k</i>)&nbsp;<i>void</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>w</b><i>a</i>(</font>(<b>if</b>&nbsp;&#172;&nbsp;<i>isEmpty</i>(<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>w</b><i>a</i>((</font><b>then</b>&nbsp;<i>t</i>[<i>j</i>]&nbsp;:=&nbsp;<i>car</i>(<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>w</b><i>a</i>((<b>then</b>&nbsp;</font><i>assigning</i>(<i>j</i>&nbsp;+&nbsp;1,&nbsp;<i>cdr</i>(<i>k</i>))))&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((</font><b>do</b>&nbsp;<i>t</i>[0]&nbsp;:=&nbsp;<i>m</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>do</b>&nbsp;</font><i>assigning</i>(1,&nbsp;<i>k</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>do</b>&nbsp;</font><i>Max</i>(<i>l</i>,&nbsp;<i>t</i>&#8595;)))
+   </p>
+  </blockquote>
+  <p align="justify">
+   For example, if I call <i>max</i> with the three arguments from
+   previous examples, then it would transform to a <i>with</i> clause
+   that&rsquo;s equivalent to this one.
+  </p>
+  <blockquote>
+   <p>
+    (<b>with</b>&nbsp;<b>var</b>&nbsp;[3]&nbsp;<i>int</i>&nbsp;<i>t</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(</font><b>do</b>&nbsp;<i>t</i>[0]&nbsp;:=&nbsp;<i>a</i>&nbsp;+&nbsp;<i>b</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;</font><i>t</i>[1]&nbsp;:=&nbsp;<i>b</i>&nbsp;+&nbsp;<i>c</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;</font><i>t</i>[2]&nbsp;:=&nbsp;<i>c</i>&nbsp;+&nbsp;<i>a</i>&nbsp;
+    <br />
+    <font color="#FFFFFF">(<b>do</b>&nbsp;</font><i>Max</i>(3,&nbsp;<i>t</i>&#8595;))
+   </p>
+  </blockquote>
+  <p align="justify">
+   By the way, this is more or less what a procedure that takes multiple
+   arguments would do in a real programming language. It would copy the
+   arguments to the stack and then call the procedure with the number of
+   arguments it will find there. The difference is that in Orson, I must set
+   this up explicitly using a form.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This works only because all of
+   <i>max</i>&rsquo;s arguments have the same type, so I can put them into
+   an array. It wouldn&rsquo;t work for simulating a procedure that takes
+   multiple arguments of different types. To do that, I&rsquo;d have to use a
+   more general kind of data structure to hold the arguments, then pass that
+   data structure to the procedure.
+  </p>
+  <hr />
+  <p align="center">
+   <b>References</b>
+  </p>
+  <table cellpadding="0" cellspacing="0">
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="cha1989">
+      </a>
+      [<small>CHA</small>&nbsp;1989]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Graham Chapman, John Cleese, Terry Gilliam, Eric Idle, Terry Jones,
+      Michael Palin. <i>Monty Python&rsquo;s Flying Circus: All The
+      Words.</i> Volume Two. Pantheon Books. New York, New York. 1989. Page
+      86.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="ker1988">
+      </a>
+      [<small>KER</small>&nbsp;1988]&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      Brian W. Kernighan, Dennis M. Ritchie. <i>The C Programming
+      Language.</i> Second Edition. Prentice-Hall. Upper Saddle River, New
+      Jersey. 1988.
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+    <td>
+     <p>
+      &nbsp;
+     </p>
+    </td>
+   </tr>
+   <tr valign="top">
+    <td>
+     <p>
+      <a name="moe2013">
+      </a>
+      [<small>MOE</small>&nbsp;2013]&nbsp;&nbsp;
+     </p>
+    </td>
+    <td>
+     <p align="justify">
+      James B. Moen. &lsquo;&lsquo;Revised&#8315;&#185; Report on the
+      Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
+      2013.
+     </p>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>
