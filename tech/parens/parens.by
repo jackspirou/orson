@@ -1,0 +1,246 @@
+{title Orson Needs No More Parentheses Than C}
+
+{center
+ {b Orson Needs No More Parentheses Than C}
+
+ James B. Moen
+ February 3, 2014}
+
+{justify
+  Copyright © 2014 James B. Moen.
+  Permission is granted to copy, distribute, and/or modify this document under
+  the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
+  version published by the Free Software Foundation; with no Invariant
+  Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license may be obtained at
+  {goto http://fsf.org/ {t <http://fsf.org/>.}}}
+
+{rule}
+
+{left {b 0. Introduction.}}
+
+{narrow
+ {justify
+   I would discard the Parenthesis.
+   Also the reparenthesis, the rereparenthesis, and the
+   re-re-re-re-re-re-parentheses, and likewise the final wide-reaching
+   all inclosing king-parenthesis.}
+ {right
+   {goto cle1971 {c [cle 1971]}}}}
+
+{justify
+  When people first encounter the programming language Orson
+  {goto moe2014 {c [moe 2014],}} they often complain that it requires too many
+  parentheses.
+  Some even compare Orson with Lisp {goto ste1990 {c [ste 1990],}} even though
+  Orson uses an infix notation, and Lisp uses a parenthesized prefix notation.
+  However, suppose that the word {i parentheses} means not only `{t (}' and
+  `{t )}', but also `{t \{}' and `{t \}}', which are usually called {i braces.}
+  Then Orson programs use about the same number of parentheses as equivalent C
+  {goto ker1988 {c [ker 1988]}} programs, and most Orson programs use fewer.}
+
+{left {b 1. Clauses and statements.}}
+
+{justify
+  Orson and C use about the same number of parentheses in expressions.
+  Any difference in the required number of parentheses must be shown by
+  comparing Orson clauses with C statements.
+  The following table compares the number of parentheses in Orson clauses on
+  the left, and their equivalent C statements on the right.
+  The symbol {i E} stands for an Orson assignment or its equivalent C
+  expression.
+  The symbol {i L} stands for an Orson assignment or its equivalent C case
+  label.
+  The symbol {i S} stands for an Orson sequence or its equivalent series of C
+  statements.}
+
+{table
+ {row
+  {center {b Orson}}
+  {center {b C}}}
+
+ {row
+  {orson
+ 2   (while S ; E)}
+  {display
+2   {t do} {i S} {t while} {t (}{i E}{t );}
+4   {t do} {t \{} {i S} {t \}} {t while} {t (}{i E}{t );}}}
+
+ {row
+  {orson
+ 2   (if E then S)\ 
+ 2   (if E then S else S)\ }
+  {display
+2   {t if} {t (}{i E}{t )} {i S}
+4   {t if} {t (}{i E}{t )} {t \{} {i S} {t \}}
+2   {t if} {t (}{i E}{t )} {i S} {t else} {i S}
+4   {t if} {t (}{i E}{t )} {i S} {t else} {t \{} {i S} {t \}}
+4   {t if} {t (}{i E}{t )} {t \{} {i S} {t \}} {t else} {i S}
+6   {t if} {t (}{i E}{t )} {t \{} {i S} {t \}} {t else} {t \{} {i S} {t \}}}}
+
+ {row
+  {orson
+ 2   (case E of L: E)
+ 4   (case E of L: (S))}
+  {display
+2   {t switch} {t (}{i E}{t )} {i S}
+4   {t switch} {t (}{i E}{t )} {t \{} {i S} {t \}}
+4   {t switch} {t (}{i E}{t )} {t \{} {i L}{t :} {i S} {t \}}
+6   {t switch} {t (}{i E}{t )} {t \{} {i L}{t :} {t \{} {i S} {t \}\}}\ }}
+
+ {row
+  {orson
+ 2   (while E do S)}
+  {display
+2   {t while} {t (}{i E}{t )} {i S}
+4   {t while} {t (}{i E}{t )} {t \{} {i S} {t \}}}}}
+
+{justify
+  In each row of the table, the Orson clause uses no more parentheses than its
+  equivalent C statement, and often uses less.
+  However, the table is misleading when it compares Orson {i case} clauses
+  with C {i switch} statements.
+  This is because a branch of a {i case} clause that is a sequence of
+  expressions must be surrounded by `{t (}' and `{t )}'.
+  A branch of a {i switch} statement that is a series of statements need not be
+  surrounded by `{t \{}' and `{t \}}'.
+  As a result, long {i case} clauses may need more parentheses than their
+  equivalent {i switch} statements.}
+
+{left {b 2. Example.}}
+
+{justify
+  The table's predictions can be verified by an example.
+  The following Orson equate defines a procedure that returns the index of an
+  integer element {i key} in an integer array {i keys,} using binary search
+  {goto knu1973 {c [knu 1973].}}
+  If {i key} is not an element of {i keys,} then it returns −1.
+  The procedure uses 6 open parentheses and 6 closing parentheses, for a total
+  of 12 in all.
+  (The brackets `{t [}' and `{t ]}' are not included in the count.)}
+
+{narrow{orson
+binarySearch :−
+ (proc ([k] int keys, int key) int:
+  (with
+    var int left :− 0
+    var int mid
+    var int right :− k − 1
+   do (while
+       (if left > right
+        then mid := −1
+             false
+        else if mid := (left + right) / 2
+                key < keys[mid]
+             then right := mid − 1
+                  true
+             else if key > keys[mid]
+                  then left := mid + 1
+                       true
+                  else false))
+      mid))}}
+
+{justify
+  This is a literal translation of the Orson procedure to a C function.
+  Care was taken to introduce only the minimum number of braces, even though
+  some C styles would use more.
+  The function uses 8 open parentheses and 8 closing parentheses, for a total
+  of 16 in all.}
+
+{narrow{t{display
+int binarySearch(int keys[], int key)
+\{ int left = 0;
+  int mid;
+  int right = k − 1;
+  while (true)
+    if (left > right)
+    \{ mid = −1;
+      break; \}
+    else if (mid = (left + right) / 2, key < keys[mid])
+           right = mid − 1;
+         else if (key > keys[mid])
+                left = mid + 1;
+              else
+                break;
+  return mid; \}}}}
+
+{justify
+  It might be possible to rewrite the function so that {t left\ >\ right} is
+  moved into the {t while} loop's test.
+  That would eliminate an {t if} statement and 4 parentheses, giving the
+  rewritten function a total of 12 in all.
+  However, this is still the same number of parentheses used by the Orson
+  procedure.}
+
+{rule}
+
+{center {b References}}
+
+{layout
+ {row
+  {left
+   {label cle1971}
+   {c [cle\ 1971]\ \ }}
+  {justify
+    Samuel Clemens.
+    ``The Awful German Language.''
+    In {i Satire from Aesop to Buchwald.}
+    Fredrick Kiley, J. M. Shuttleworth, editors.
+    The Bobbs-Merrill Company, Inc.
+    Indianapolis, Indiana.
+    1971.
+    Pages 218–234.}}
+
+ {row {left \ } {left \ }}
+    
+ {row
+  {left
+   {label ker1988}
+   {c [ker\ 1988]\ \ }}
+  {justify
+    Brian W. Kernighan, Dennis M. Ritchie.
+    {i The C Programming Language.}
+    Second Edition.
+    Prentice-Hall.
+    Upper Saddle River, New Jersey.
+    1988.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label knu1973}
+   {c [knu\ 1973]\ \ }}
+  {justify
+    Donald E. Knuth.
+    {i Sorting and Searching.}
+    Addison-Wesley Publishing Company, Inc.
+    Reading, Massachusetts.
+    1973.
+    Pages 406–408.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label moe2014}
+   {c [moe\ 2014]\ \ }}
+  {justify
+    James B. Moen.
+    ``Revised⁻¹ Report on the Algorithmic Language Orson.''
+    Unpublished technical report.
+    2014.}}
+
+ {row {left \ } {left \ }}
+
+ {row
+  {left
+   {label ste1990}
+   {c [ste\ 1990]\ \ }}
+  {justify
+    Guy L. Steele Jr.
+    {i Common Lisp: The Language.}
+    Second Edition.
+    Digital Press.
+    Bedford, Massachusetts.
+    1990.}}}

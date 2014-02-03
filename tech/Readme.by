@@ -4,7 +4,7 @@
  {b Orson Technical Reports}
 
  James B. Moen
- January 14, 2014}
+ February 3, 2014}
 
 {narrow
  {justify
@@ -50,6 +50,9 @@
   {row
    {left {goto {t loops/loops.html loops.html}}}
    {left \ \ \ Writing loops in Orson.}}
+  {row
+   {left {goto {t parens/parens.html parens.html}}}
+   {left \ \ \ Orson needs no more parentheses than C.}}
   {row
    {left {goto {t prime/prime.html prime.html}}}
    {left \ \ \ A Tutorial: Computing prime numbers in Orson.}}
