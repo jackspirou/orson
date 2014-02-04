@@ -1041,7 +1041,7 @@ numToString :−
   If {i z} is a complex number, then {i numToString}({i z}) would call the
   last member form, and return {q ''unknown''.}
 
-  Jokers are defined this way is so Orson might be extended without breaking
+  Jokers are defined this way so Orson can be extended without breaking
   existing programs.
   A program that works under the present Orson compiler, where the numeric
   jokers are {i inj} and {i rej,} should work the same way under a future
@@ -1855,17 +1855,21 @@ chain :−
 
 {justify
   {b A.}
-  It's because the string {q ''ten\ chars''} has the type {i string} (which
-  is bound to {b row}\ {i char}0), and the equate expects an array of type
-  [10]\ {i char,} a different type.
-  Also, your array type asks for an array of ten {i char}1's (each 32 bits) but
-  but there are ten {i char}0's in your string (each 8 bits).
-  You get two different kinds of characters because Orson uses the {c utf}-8
+  You're correct that the string {q ''ten\ chars''} has ten characters, because
+  there's an extra {i null} character '\\0' at the end, as in C.
+  The problem is that {q ''ten\ chars''} has the type {i string,} which is
+  bound to {b row}\ {i char}0.
+  The equate expects an array of type [10]\ {i char,} a different type.
+
+  Also, your array type describes an array of ten {i char}1's (each 32 bits)
+  but but there are ten {i char}0's in your string (each 8 bits).
+  There are two different kinds of characters because Orson uses the {c utf}-8
   encoding for strings {goto uni2006 {c [uni 2006].}}
 
   You might rewrite the equate as {q {i string}\ {i tc}\ :−\ ''ten\ chars''.}
-  It doesn't give you the array that you wanted, but a string, which might be
-  just as good, since you can index it to obtain individual characters.
+  It doesn't give you the array that you wanted, but a string.
+  That might be just as good, since you can index it to obtain individual
+  characters.
   For example, {i tc}[0] returns the character {q 't'.}}
 
 {justify
@@ -2033,7 +2037,7 @@ foo :−
   {b A.}
   I don't have one.
   One way to make one would be to write an Orson front end for {c gcc.}
-  This would be better than trying to make Orson produce {c ansi} C.
+  That would be better than trying to make Orson produce {c ansi} C.
   There are already similar front ends for other languages, such as Ada,
   Fortran, Objective C, and Pascal.
   I don't know enough about {c gcc}'s internals to do this myself.

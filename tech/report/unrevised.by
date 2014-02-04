@@ -61,7 +61,7 @@
   {b Revised{+ −1} Report on the Algorithmic Language Orson}
 
   James B. Moen
-  January 17, 2014}
+  February 4, 2014}
 
 {center {b Abstract}}
 
@@ -1180,12 +1180,12 @@
 {justify
   A phrase like {i there is a limit on the number of X's} means that it is an
   {goto errors error} for an Orson program to create a situation involving more
-  than an {goto unspecified} number of {i X}'s.
+  than an {goto unspecified} maximum number of {i X}'s.
   A phrase like {i there may be a limit on the number of X's} has the same
-  meaning, but also suggests that the limit is large enough to be effectively
+  meaning, but also suggests that this limit is large enough to be effectively
   infinite.
   Limits may vary from one implementation of Orson to another, but they should
-  be made as large as possible.}
+  be as large as possible.}
 
 {label must}
 {left {b 1.10. Must.}}

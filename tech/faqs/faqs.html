@@ -1,4 +1,4 @@
-<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:36 PM CST -->
+<!-- Created by Bracy 0.4 on Tuesday, February 4, 2014 at 3:54 AM CST -->
 <html>
  <head>
   <title>
@@ -1334,9 +1334,9 @@
    <i>numToString</i>(<i>z</i>) would call the last member form, and
    return ''unknown''.
    <br>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Jokers are defined this way is so Orson might
-   be extended without breaking existing programs. A program that works under
-   the present Orson compiler, where the numeric jokers are <i>inj</i> and
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Jokers are defined this way so Orson can be
+   extended without breaking existing programs. A program that works under the
+   present Orson compiler, where the numeric jokers are <i>inj</i> and
    <i>rej,</i> should work the same way under a future Orson compiler,
    where the numeric jokers are <i>inj, rej,</i> and <i>coj.</i>
   </p>
@@ -2363,13 +2363,17 @@
    gives me an error. What&rsquo;s wrong?
   </p>
   <p align="justify">
-   <b>A.</b> It&rsquo;s because the string ''ten&nbsp;chars'' has the
-   type <i>string</i> (which is bound to
-   <b>row</b>&nbsp;<i>char</i>0), and the equate expects an array of
-   type [10]&nbsp;<i>char,</i> a different type. Also, your array type
-   asks for an array of ten <i>char</i>1&rsquo;s (each 32 bits) but but
-   there are ten <i>char</i>0&rsquo;s in your string (each 8 bits). You
-   get two different kinds of characters because Orson uses the
+   <b>A.</b> You&rsquo;re correct that the string ''ten&nbsp;chars''
+   has ten characters, because there&rsquo;s an extra <i>null</i>
+   character &rsquo;\0&rsquo; at the end, as in C. The problem is that
+   ''ten&nbsp;chars'' has the type <i>string,</i> which is bound to
+   <b>row</b>&nbsp;<i>char</i>0. The equate expects an array of type
+   [10]&nbsp;<i>char,</i> a different type.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Also, your array type describes an array of
+   ten <i>char</i>1&rsquo;s (each 32 bits) but but there are ten
+   <i>char</i>0&rsquo;s in your string (each 8 bits). There are two
+   different kinds of characters because Orson uses the
    <small>UTF</small>-8 encoding for strings
    <a href="#uni2006">
     [<small>UNI</small> 2006].
@@ -2377,7 +2381,7 @@
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; You might rewrite the equate as
    <i>string</i>&nbsp;<i>tc</i>&nbsp;:&#8722;&nbsp;''ten&nbsp;chars''.
-   It doesn&rsquo;t give you the array that you wanted, but a string, which
+   It doesn&rsquo;t give you the array that you wanted, but a string. That
    might be just as good, since you can index it to obtain individual
    characters. For example, <i>tc</i>[0] returns the character 't'.
   </p>
@@ -2564,7 +2568,7 @@
   </p>
   <p align="justify">
    <b>A.</b> I don&rsquo;t have one. One way to make one would be to write
-   an Orson front end for <small>GCC</small>. This would be better than
+   an Orson front end for <small>GCC</small>. That would be better than
    trying to make Orson produce <small>ANSI</small> C. There are already
    similar front ends for other languages, such as Ada, Fortran, Objective C,
    and Pascal. I don&rsquo;t know enough about <small>GCC</small>&rsquo;s
