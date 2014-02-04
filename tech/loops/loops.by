@@ -549,7 +549,7 @@ tenTimes(
 
 {narrow{t{display
 int k;
-for (k = 1, k <= 10, k += 1)
+for (k = 1; k <= 10; k += 1)
 \{
   fprintf(stdout, "%i\\n", k);
 \}}}}

@@ -455,7 +455,7 @@
 
 {justify
   A {i lambda} is a procedure provided by a user program.
-  Scam writes a lambda as {t [lambda}\ {i a}{t ],} where {i a} is the
+  Scam writes a lambda as {t [closure}\ {i a}{t ],} where {i a} is the
   hexadecimal memory address where the lambda resides.
   This notation will cause an {goto errors error} if it is read back in again.}
 
