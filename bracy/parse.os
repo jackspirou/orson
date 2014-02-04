@@ -255,7 +255,7 @@
             nextClose(count)))
 
 !  NEXT ROWS. Like NEXT SCOPES, but every nested scope must be a ROW scope, and
-!  every ROW scope must have the same number of nested words and/or scopes.
+!  every ROW scope must have the same number of nested scopes.
 
       nextRows :−
        (form () void:
@@ -282,7 +282,7 @@
                 (past last) := next))
 
 !  NEXT EXPECTED FIRST ROW. Parse the first nested ROW scope. Remember how many
-!  things are nested inside it.
+!  scopes are nested inside it.
 
           nextExpectedFirstRow :−
            (form () void:
@@ -292,7 +292,7 @@
                   unmake(nextScope())))
 
 !  NEXT EXPECTED LATER ROW. Parse any nested ROW scope other than the first. It
-!  should have the same number of things nested inside it as the first ROW.
+!  should have the same number of scopes nested inside it as the first ROW.
 
           nextExpectedLaterRow :−
            (form () void:
