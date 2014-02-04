@@ -275,7 +275,6 @@
                      of endLineToken: nextIgnoredToken()
                         endParaToken: nextIgnoredToken()
                            openToken: nextExpectedScope(width, last)
-                           wordToken: nextExpectedToken(width, last)
                                 none: nextUnexpectedToken(unknownTokenErr)))
                 nextClose(width)
                 count += 1
