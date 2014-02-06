@@ -1,4 +1,4 @@
-<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:35 PM CST -->
+<!-- Created by Bracy 0.4 on Thursday, February 6, 2014 at 5:32 PM CST -->
 <html>
  <head>
   <title>
@@ -33,10 +33,10 @@
    <br />
    James B. Moen
    <br />
-   December 12, 2013
+   February 6, 2014
   </p>
   <p align="justify">
-   Copyright &#169; 2013 James B. Moen. Permission is granted to copy,
+   Copyright &#169; 2014 James B. Moen. Permission is granted to copy,
    distribute, and/or modify this document under the terms of the
    G<small>NU</small> Free Documentation License, Version 1.3 or any later
    version published by the Free Software Foundation; with no Invariant
@@ -68,8 +68,8 @@
   </blockquote>
   <p align="justify">
    The programming language Orson
-   <a href="#moe2013">
-    [<small>MOE</small> 2013]
+   <a href="#moe2014">
+    [<small>MOE</small> 2014]
    </a>
    is currently implemented as a translator that turns Orson programs into
    equivalent G<small>NU</small> C
@@ -77,12 +77,12 @@
     [<small>STA</small> 2008]
    </a>
    programs. As a result, G<small>NU</small> C code can be easily embedded
-   into an Orson program. This is done by loading G<small>NU</small> C
+   into Orson programs. This is done by loading G<small>NU</small> C
    source files, then calling the form <i>c</i>'<i>s</i>
-   (that&rsquo;s <i>cee apostrophe ess</i>) on G<small>NU</small> C
-   expressions to make them look like Orson expressions. The form
-   <i>c</i>'<i>s</i> is defined in the Standard Prelude,
-   but is not described in the Revised&#8315;&#185; Report.
+   (<i>cee apostrophe ess</i>) on G<small>NU</small> C expressions to
+   make them look like Orson expressions. The form
+   <i>c</i>'<i>s</i> is defined in the prelude, but is not
+   described in the Revised&#8315;&#185; Report.
   </p>
   <p>
    <b>2. Loading G<small>NU</small> C files.</b>
@@ -90,27 +90,26 @@
   <p align="justify">
    If <i>p</i> is a portable pathname that ends in the suffix
    <i>c</i> or <i>h,</i> then the <i>load</i> clause
-   (<b>load</b>&nbsp;<i>p</i>) will load a G<small>NU</small> C
-   source file. For example,
+   (<b>load</b>&nbsp;<i>p</i>) will load the file denoted by
+   <i>p</i> as a G<small>NU</small> C source file. For example,
    (<b>load</b>&nbsp;''<tt>own.clib.cstuff:c</tt>'') will load
    the file <i>cstuff.c</i> in the directory <i>clib,</i> which in
    turn is in the user&rsquo;s <i>own</i> (home) directory.
    <br>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson works by writing a scratch file that
-   contains G<small>NU</small> C code, then invoking the
-   G<small>NU</small> C compiler <small>GCC</small> to compile it. A
-   <i>load</i> clause like the one mentioned above simply copies a file
-   verbatim into the scratch file, without examining it in any way. If the
-   copied file contains erroneous G<small>NU</small> C code, then
-   <small>GCC</small> may issue error messages.
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson writes a scratch file that contains
+   G<small>NU</small> C code, then invokes the G<small>NU</small> C
+   compiler <small>GCC</small> to compile it. A <i>load</i> clause
+   like the one above simply copies a file verbatim into the scratch file,
+   without examining it in any way. If the copied file contains erroneous
+   G<small>NU</small> C code, then <small>GCC</small> may issue error
+   messages.
   </p>
   <p>
    <b>3. The form <i>c</i>'<i>s.</i></b>
   </p>
   <p align="justify">
-   Orson&rsquo;s Standard Prelude binds the name
-   <i>c</i>'<i>s</i> (<i>cee apostrophe ess</i>) in
-   the following way.
+   Orson&rsquo;s prelude binds the name <i>c</i>'<i>s</i>
+   in the following way.
   </p>
   <blockquote>
    <p>
@@ -125,6 +124,10 @@
     <font color="#FFFFFF"><i>c</i>(</font>(<b>form</b>&nbsp;(<i>string</i>&nbsp;<i>l</i>,&nbsp;<i>int</i>&nbsp;<i>m</i>,&nbsp;<i>int</i>&nbsp;<i>r</i>)&nbsp;<b>type</b>&nbsp;<i>mut</i>:&nbsp;
     <br />
     <font color="#FFFFFF"><i>c</i>((<b>f</b></font>?<i>strType</i>(<i>l</i>,&nbsp;<i>m</i>,&nbsp;<i>r</i>)),&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i>(</font>(<b>form</b>&nbsp;(<b>type</b>&nbsp;<i>exe</i>&nbsp;<i>l</i>,&nbsp;<i>exe</i>&nbsp;<i>m</i>,&nbsp;<i>string</i>&nbsp;<i>r</i>)&nbsp;<i>exe</i>:&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>c</i>((<b>f</b></font>?<i>strSlot</i>(<i>l</i>,&nbsp;<i>r</i>)),&nbsp;
     <br />
     <font color="#FFFFFF"><i>c</i>(</font>(<b>form</b>&nbsp;(<b>type</b>&nbsp;<i>void</i>,&nbsp;<i>string</i>&nbsp;<i>m</i>,&nbsp;<i>list</i>&nbsp;<i>r</i>)&nbsp;<i>void</i>:&nbsp;
     <br />
@@ -141,7 +144,7 @@
    The form <i>c</i>'<i>s</i> makes G<small>NU</small>
    C objects look like Orson objects. It works by copying a constant string
    that contains G<small>NU</small> C code into the scratch file, at the
-   point where the call to <i>c</i>'<i>s</i> appears. It is
+   point where a call to <i>c</i>'<i>s</i> appears. It is
    an error if the string is not a constant. The string is not examined in any
    way, so if it contains erroneous G<small>NU</small> C code, then
    <small>GCC</small> may issue error messages.
@@ -149,10 +152,10 @@
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson always evaluates the result of a call
    to <i>c</i>'<i>s</i> during execution. As a result,
    Orson cannot transform a G<small>NU</small> C expression to a constant,
-   even if <small>GCC</small> treats it as a constant expression. Orson
-   might not recognize Orson names that appear inside a G<small>NU</small>
-   C expression. This is because Orson changes some names to avoid inadvertent
-   name capture by forms.
+   even if <small>GCC</small> would treat it as a constant expression.
+   Also, Orson names that appear inside a G<small>NU</small> C expressions
+   might not be recognized. This is because Orson may changes names to avoid
+   inadvertent name capture by forms.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; As a matter of style, calls to
    <i>c</i>'<i>s</i> are almost always hidden inside Orson
@@ -169,9 +172,9 @@
    the expression itself is represented as the string constant <i>r.</i>
    For example,
    <i>c</i>'<i>s</i>(<b>proc</b>&nbsp;(<i>real</i>)&nbsp;<i>real</i>,&nbsp;''<tt>sin</tt>'')
-   will evaluate to the value of the G<small>NU</small> C name
-   <tt>sin,</tt> and Orson will treat it as if it has a procedure type.
-   Orson does not check if the G<small>NU</small> C expression denoted by
+   evaluates to the value of the G<small>NU</small> C name
+   <tt>sin,</tt> and Orson treats it as if it has a procedure type. Orson
+   does not check if the G<small>NU</small> C expression denoted by
    <i>r</i> really has the type <i>l.</i> G<small>CC</small> may
    issue error messages if the expression is used incorrectly.
   </p>
@@ -183,11 +186,10 @@
    G<small>NU</small> C type be used as an Orson type. The string constant
    <i>l</i> denotes the type itself. The integer constant <i>m</i> is
    the type&rsquo;s alignment, and the integer constant <i>r</i> is the
-   type&rsquo;s size. Both <i>m</i> and <i>r</i> must be constants,
-   <i>m</i> must be greater than 0, and <i>r</i> must be greater than
-   or equal to 0. For example,
+   type&rsquo;s size. The integer <i>m</i> must be greater than 0, and the
+   integer <i>r</i> must be greater than or equal to 0. For example,
    <i>c</i>'<i>s</i>(''<tt>jmp_buf</tt>'',&nbsp;4,&nbsp;156)
-   will transform to the G<small>NU</small> C type <tt>jmp_buf,</tt>
+   transforms to the G<small>NU</small> C type <tt>jmp_buf,</tt>
    whose alignment is 4, and whose size is 156.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; G<small>NU</small> C types created in
@@ -289,7 +291,7 @@
    These constants may depend on the version of <small>GCC</small> in use,
    the operating system on which <small>GCC</small> runs, and the computer
    on which the operating system runs. The alignment and size of a
-   G<small>NU</small> C type <i>t</i> may be determined by a
+   G<small>NU</small> C type <i>t</i> may be determined by a short
    G<small>NU</small> C program similar to this one.
   </p>
   <blockquote>
@@ -310,28 +312,51 @@
   <p align="justify">
    Orson is distributed with a program <i>gas</i> that can show the
    alignment and size of any named G<small>NU</small> C type. For example,
-   if you type the command
-   <tt>gas</tt>&nbsp;<tt>FILE</tt>&nbsp;<tt>stdio.h</tt> to the
-   shell, you will see the alignment and size of the type <tt>FILE</tt> as
-   defined by the header file <tt>stdio.h</tt>. It works by making a
+   the command
+   <tt>gas</tt>&nbsp;<tt>FILE</tt>&nbsp;<tt>stdio.h</tt> shows
+   the alignment and size of the type <tt>FILE</tt> as defined by the
+   header file <tt>stdio.h</tt>. It works by making a
    G<small>NU</small> C program similar to the one shown above, then
    compiling and executing it behind the scenes. Type
    <tt>man</tt>&nbsp;<tt>gas</tt> to the shell for more information.
   </p>
   <p>
-   <b>3.3. G<small>NU</small> C calls.</b>
+   <b>3.3. G<small>NU</small> C structures.</b>
   </p>
   <p align="justify">
-   The third and fourth members of <i>c</i>'<i>s</i> allow
+   The third member of the alternate form <i>c</i>'<i>s</i>
+   lets a slot in a G<small>NU</small> C structure be used in an Orson
+   expression. It returns the value of a slot whose name is the string constant
+   <i>r,</i> whose type is an execution type <i>l,</i> in the
+   structure <i>m.</i> For example, suppose that <i>t</i> is an Orson
+   expression whose structure type is returned by the call
+   <i>c</i>'<i>s</i>(&rsquo;&rsquo;<tt>struct</tt>&nbsp;<tt>tm</tt>&rsquo;&rsquo;,&nbsp;4,
+   44). Then the call
+   <i>c</i>'<i>s</i>(<i>int,</i>&nbsp;<i>t,</i>&nbsp;&rsquo;&rsquo;<tt>tm_sec</tt>&rsquo;&rsquo;)
+   returns the value of the slot <tt>tm_sec</tt> in <i>t.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This member is necessary because Orson cannot
+   determine anything about the slots of a structure type, so the Orson slot
+   operator &lsquo;.&rsquo; does not work on structures. Orson does not check
+   if <i>m</i> is really a structure, if <i>m</i> really has a slot
+   <i>r,</i> or if the slot <i>r</i> really has the type
+   <i>l.</i> G<small>CC</small> may issue error messages if the
+   structure or its slot is used incorrectly.
+  </p>
+  <p>
+   <b>3.4. G<small>NU</small> C calls.</b>
+  </p>
+  <p align="justify">
+   The fourth and fifth members of <i>c</i>'<i>s</i> allow
    calling a G<small>NU</small> C function or macro in an Orson program.
    The execution type <i>l</i> is the type of the object that will be
    returned by the call. The string constant <i>m</i> names the function
-   or macro. The elements of the list <i>r</i> are the arguments of the
-   function or macro. For example,
+   or macro, and the elements of the list <i>r</i> are its arguments. For
+   example,
    <i>c</i>'<i>s</i>(<i>real,</i>&nbsp;''<tt>sin</tt>'':&nbsp;&#960;&nbsp;/&nbsp;2.0)
    calls the G<small>NU</small> C function <tt>sin</tt> on the
-   argument that results from evaluating &#960;&nbsp;/&nbsp;2.0. It will return
-   an object of type <i>real.</i>
+   argument that results from evaluating &#960;&nbsp;/&nbsp;2.0. It returns an
+   object of type <i>real.</i>
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The argument list <i>r</i> is flattened
    before the function or macro is called. For example, suppose that <i>a, b,
@@ -342,24 +367,22 @@
    (:&nbsp;<i>a,</i>&nbsp;<i>b,</i>&nbsp;<i>c,</i>&nbsp;<i>d</i>).
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The expressions in the argument list are
-   evaluated by Orson in its usual way. Orson does not check if the
-   G<small>NU</small> C function or macro denoted by <i>m</i> is
-   called with the correct number of arguments, or if it really returns an
-   object of type <i>l.</i> G<small>CC</small> may issue error
-   messages if the function or macro is used incorrectly.
+   evaluated by Orson in its usual way. Orson does not check if the function or
+   macro denoted by <i>m</i> is called with the correct number of
+   arguments, or if it really returns an object of type <i>l.</i>
+   G<small>CC</small> may issue error messages if the function or macro is
+   used incorrectly.
    <br>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Most calls are handled by the fourth member
-   of <i>c</i>'<i>s.</i> The third member is a special case
-   to handle G<small>NU</small> C functions or macros that return
-   <i>void.</i> This is because the Orson type <i>void</i> describes
-   a dummy object <i>skip,</i> but the C type <tt>void</tt> describes
-   no object at all
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Most calls are handled by the fifth member of
+   <i>c</i>'<i>s.</i> The fourth member is a special case
+   to handle functions or macros that return <i>void.</i> This is because
+   the Orson type <i>void</i> describes a dummy object <i>skip,</i>
+   but the C type <tt>void</tt> describes no object at all
    <a href="#ker1988">
     [<small>KER</small> 1988].
    </a>
    The special case makes sure that a function or macro that returns no object
-   in G<small>NU</small> C will appear to return <i>skip</i> in
-   Orson.
+   in G<small>NU</small> C will return <i>skip</i> in Orson.
   </p>
   <hr />
   <p align="center">
@@ -426,16 +449,16 @@
    <tr valign="top">
     <td>
      <p>
-      <a name="moe2013">
+      <a name="moe2014">
       </a>
-      [<small>MOE</small>&nbsp;2013]&nbsp;&nbsp;
+      [<small>MOE</small>&nbsp;2014]&nbsp;&nbsp;
      </p>
     </td>
     <td>
      <p align="justify">
       James B. Moen. &lsquo;&lsquo;Revised&#8315;&#185; Report on the
       Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
-      2013.
+      2014.
      </p>
     </td>
    </tr>

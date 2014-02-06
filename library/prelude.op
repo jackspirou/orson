@@ -894,10 +894,10 @@
    (alt
     (form (type exe l, string r) exe:
       ?strValue(l, r)),
-    (form (type exe l, exe m, string r) exe:
-      ?strSlot(l, m, r)),
     (form (string l, int m, int r) type mut:
       ?strType(l, m, r)),
+    (form (type exe l, exe m, string r) exe:
+      ?strSlot(l, m, r)),
     (form (type void, string m, list r) void:
       ?strApply(void, m, r)
       skip),

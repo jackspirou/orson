@@ -1,4 +1,4 @@
-<!-- Created by Bracy 0.4 on Sunday, January 26, 2014 at 4:34 PM CST -->
+<!-- Created by Bracy 0.4 on Thursday, February 6, 2014 at 2:33 PM CST -->
 <html>
  <head>
   <title>
@@ -33,10 +33,10 @@
    <br />
    James B. Moen
    <br />
-   June 12, 2013
+   February 6, 2014
   </p>
   <p align="justify">
-   Copyright &#169; 2013 James B. Moen. Permission is granted to copy,
+   Copyright &#169; 2014 James B. Moen. Permission is granted to copy,
    distribute, and/or modify this document under the terms of the
    G<small>NU</small> Free Documentation License, Version 1.3 or any later
    version published by the Free Software Foundation; with no Invariant
@@ -76,8 +76,8 @@
    otherwise evade the truth. To find out what&rsquo;s really going on, you
    should read the &lsquo;&lsquo;Revised&#8315;&#185; Report on the Algorithmic
    Language Orson&rsquo;&rsquo;
-   <a href="#moe2013b">
-    [<small>MOE</small> 2013<small>B</small>].
+   <a href="#moe2014b">
+    [<small>MOE</small> 2014<small>B</small>].
    </a>
    I&rsquo;ll assume you already know a programming language, so I won&rsquo;t
    bother explaining things like constants, expressions, objects, procedures,
@@ -210,7 +210,7 @@
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In this equate, &#949; is the name of the
    constant 0.001. It is <small>NOT</small> the name of a variable, so it
-   can&rsquo;t be bound to another object. Orson is fussier about
+   can&rsquo;t be reset to another object. Orson is fussier about
    distinguishing between constants and variables than other languages.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson programs are written using Unicode
@@ -220,11 +220,11 @@
    a large character set that includes Greek letters and mathematical symbols.
    That&rsquo;s why I could use &#949;, a Greek lower case <i>epsilon,</i>
    as a name. You don&rsquo;t have to use Unicode to write Orson programs. You
-   could write them using only A<small>SCII</small> characters
+   could write them using only <small>ASCII</small> characters
    <a href="#ans1986">
     [<small>ANS</small> 1986],
    </a>
-   but Unicode is more fun and may be easier to read
+   but Unicode is more fun, and may be easier to read
    <a href="#kam2010">
     [<small>KAM</small> 2010].
    </a>
@@ -391,10 +391,10 @@
    <i>true</i> if both its arguments are true, and it returns
    <i>false</i> otherwise. It can also be written as <b>and.</b> If
    its left argument returns false, then its right argument isn&rsquo;t
-   evaluated. Although it isn&rsquo;t used here, the &lsquo;&#8744;&rsquo;
-   operator returns <i>true</i> if one or more of its arguments are true,
-   and it returns <i>false</i> otherwise. It can also be written as
-   <b>or.</b>
+   evaluated. Although it isn&rsquo;t used here, there&rsquo;s also a
+   &lsquo;&#8744;&rsquo; operator that returns <i>true</i> if one or more
+   of its arguments are true, and it returns <i>false</i> otherwise. It
+   can also be written as <b>or.</b>
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The <b>mod</b> operator returns the
    remainder after division. The &lsquo;&nbsp;&#8800;&nbsp;&rsquo; operator
@@ -755,14 +755,14 @@
    I had a more complicated argument than
    <i>g</i>&nbsp;&#8722;&nbsp;<i>h.</i> And it definitely would be a
    problem if the argument had side effects (like changing the value of a
-   variable) because then they would happen twice.
+   variable) because then they would happen twice, too.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To fix this problem, I&rsquo;ll rewrite
    <i>abs</i> so that <i>number</i> is executed only once. The
    <i>with</i> clause saves a copy of the object to which
    <i>number</i> is bound by using another name, <i>number</i>'.
-   Orson names can have apostrophes in them, and <i>number</i>' can
-   be read as &lsquo;&lsquo;number prime.&rsquo;&rsquo; Also, because I
+   Orson names can have apostrophes in them, so <i>number</i>' is
+   read as &lsquo;&lsquo;number prime.&rsquo;&rsquo; Also, because I
    didn&rsquo;t mention a type, <i>number</i>' has the same type as
    <i>number,</i> namely <i>real.</i>
   </p>
@@ -1014,8 +1014,8 @@
    redefine them if I want. For example, if I define a new kind of numbers,
    different from integers or reals, then I can redefine the plus operator to
    work with them. I can even redefine the <i>for</i> clause so it turns
-   into something other than a counting loop. I&rsquo;ll show how to do some of
-   these things later.
+   into something other than a counting loop. I&rsquo;ll show how to do things
+   like these later.
   </p>
   <p>
    <b>4. Computation during transformation.</b>
@@ -1921,7 +1921,7 @@
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Second, the equate doesn&rsquo;t have a
    &lsquo;&nbsp;:&#8722;&nbsp;&rsquo; symbol. That means it makes a variable
    with a known type, but an unknown value. I can use an equate like this only
-   when I make a variable, and only when I intend to give that variable a known
+   when I make a variable, and only when I intend to give that variable its
    value later. I initialize <i>s</i> to be the empty set, by calling a
    form <i>init.</i> I&rsquo;ll write <i>init</i> later, after
    I&rsquo;ve written <i>set.</i>
@@ -2837,8 +2837,8 @@
    Here are some important things I&rsquo;ve left out. They&rsquo;re fully
    described in the &lsquo;&lsquo;Revised&#8315;&#185; Report on the
    Algorithmic Language Orson&rsquo;&rsquo;
-   <a href="#moe2013b">
-    [<small>MOE</small> 2013<small>B</small>].
+   <a href="#moe2014b">
+    [<small>MOE</small> 2014<small>B</small>].
    </a>
   </p>
   <ul>
@@ -3146,16 +3146,16 @@
    <tr valign="top">
     <td>
      <p>
-      <a name="moe2013b">
+      <a name="moe2014b">
       </a>
-      [<small>MOE</small>&nbsp;2013<small>B</small>]&nbsp;&nbsp;
+      [<small>MOE</small>&nbsp;2014<small>B</small>]&nbsp;&nbsp;
      </p>
     </td>
     <td>
      <p align="justify">
       James B. Moen. &lsquo;&lsquo;Revised&#8315;&#185; Report on the
       Algorithmic Language Orson.&rsquo;&rsquo; Unpublished technical report.
-      2013.
+      2014.
      </p>
     </td>
    </tr>

@@ -4,10 +4,10 @@
  {b A Tutorial: Computing Prime Numbers in Orson}
 
  James B. Moen
- June 12, 2013}
+ February 6, 2014}
 
 {justify
-  Copyright © 2013 James B. Moen.
+  Copyright © 2014 James B. Moen.
   Permission is granted to copy, distribute, and/or modify this document under
   the terms of the {c Gnu} Free Documentation License, Version 1.3 or any later
   version published by the Free Software Foundation; with no Invariant
@@ -42,7 +42,7 @@
   To make the explanations easy to understand, I'll often tell lies, or
   otherwise evade the truth.
   To find out what's really going on, you should read the ``Revised⁻¹ Report
-  on the Algorithmic Language Orson'' {goto moe2013b {c [moe 2013b].}}
+  on the Algorithmic Language Orson'' {goto moe2014b {c [moe 2014b].}}
   I'll assume you already know a programming language, so I won't bother
   explaining things like constants, expressions, objects, procedures,
   recursions, types, and variables.}
@@ -102,7 +102,7 @@
   state it explicitly.
 
   In this equate, ε is the name of the constant 0.001.
-  It is {c not} the name of a variable, so it can't be bound to another object.
+  It is {c not} the name of a variable, so it can't be reset to another object.
   Orson is fussier about distinguishing between constants and variables than
   other languages.
 
@@ -110,8 +110,8 @@
   large character set that includes Greek letters and mathematical symbols.
   That's why I could use ε, a Greek lower case {i epsilon,} as a name.
   You don't have to use Unicode to write Orson programs.
-  You could write them using only {c Ascii} characters
-  {goto ans1986 {c [ans 1986],}} but Unicode is more fun and may be easier to
+  You could write them using only {c ascii} characters
+  {goto ans1986 {c [ans 1986],}} but Unicode is more fun, and may be easier to
   read {goto kam2010 {c [kam 2010].}}
 
   The next equate in the {i prog} clause binds the name {i abs} to a
@@ -249,8 +249,9 @@ isPrime :−
   returns {i false} otherwise.
   It can also be written as {b and.}
   If its left argument returns false, then its right argument isn't evaluated.
-  Although it isn't used here, the `∨' operator returns {i true} if one or
-  more of its arguments are true, and it returns {i false} otherwise.
+  Although it isn't used here, there's also a `∨' operator that returns
+  {i true} if one or more of its arguments are true, and it returns {i false}
+  otherwise.
   It can also be written as {b or.}
 
   The {b mod} operator returns the remainder after division.
@@ -513,13 +514,14 @@ abs :−
   However, it might be a problem if I had a more complicated argument than
   {i g}\ −\ {i h.}
   And it definitely would be a problem if the argument had side effects
-  (like changing the value of a variable) because then they would happen twice.
+  (like changing the value of a variable) because then they would happen twice,
+  too.
 
   To fix this problem, I'll rewrite {i abs} so that {i number} is executed only
   once.
   The {i with} clause saves a copy of the object to which {i number} is bound
   by using another name, {i number}{q '.}
-  Orson names can have apostrophes in them, and {i number}{q '} can be read as
+  Orson names can have apostrophes in them, so {i number}{q '} is read as
   ``number prime.''
   Also, because I didn't mention a type, {i number}{q '} has the same type as
   {i number,} namely {i real.}}
@@ -672,7 +674,7 @@ abs :−
   reals, then I can redefine the plus operator to work with them.
   I can even redefine the {i for} clause so it turns into something other than
   a counting loop.
-  I'll show how to do some of these things later.}
+  I'll show how to do things like these later.}
 
 {left {b 4. Computation during transformation.}}
 
@@ -942,7 +944,7 @@ Like water through a sieve.}
 {narrow
  {layout
   {row
-   {left {bu 2}\ \ }
+   {left {bu  2}\ \ }
    {left {b  3}\ \ }
    {left {bg 4}\ \ }
    {left {b  5}\ \ }
@@ -1072,7 +1074,7 @@ Like water through a sieve.}
   Second, the equate doesn't have a `\ :−\ ' symbol.
   That means it makes a variable with a known type, but an unknown value.
   I can use an equate like this only when I make a variable, and only when I
-  intend to give that variable a known value later.
+  intend to give that variable its value later.
   I initialize {i s} to be the empty set, by calling a form {i init.}
   I'll write {i init} later, after I've written {i set.}
 
@@ -1662,7 +1664,7 @@ isEmpty :−
   I haven't tried to explain the entire Orson language in this essay.
   Here are some important things I've left out.
   They're fully described in the ``Revised⁻¹ Report on the Algorithmic Language
-  Orson'' {goto moe2013b {c [moe 2013b].}}}
+  Orson'' {goto moe2014b {c [moe 2014b].}}}
 
 {bullet
  {justify
@@ -1827,13 +1829,13 @@ isEmpty :−
 
  {row
   {left
-   {label moe2013b}
-   {c [moe\ 2013b]\ \ }}
+   {label moe2014b}
+   {c [moe\ 2014b]\ \ }}
   {justify
     James B. Moen.
     ``Revised⁻¹ Report on the Algorithmic Language Orson.''
     Unpublished technical report.
-    2013.}}
+    2014.}}
 
  {row {left \ } {left \ }}
 
