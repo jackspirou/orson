@@ -261,9 +261,10 @@ case altsHook:
   f.first = f.last = makePair(hooks[altsHook], nil);
 
 //  Transform zero or more form types and add the resulting member types to the
-//  new ALTS type. Member types must be ALT, FORM, or GEN types. It cannot be a
-//  GEN name, because it would be bound to a Skolem type during transformation.
-//  If a member type is subsumed, then assert an error and don't add it.
+//  new ALTS type. A member type must be an ALTS, FORM, or GEN type. The member
+//  type can't be a GEN name, because it would be bound to a Skolem type during
+//  transformation. If a member type is subsumed then assert an error and don't
+//  add it.
 
   while (terms != nil)
   { transform(r(f.type), r(f.value), terms);
@@ -508,7 +509,7 @@ case applyHook:
 //
 //    P(A)  =>  (with T N :- A do P(N))
 //
-//  Nested WITHs made in steps (2) and (3) are collapsed to single WITHs.
+//  Nested WITHs made in steps (1) and (2) are collapsed to single WITHs.
 //
 //  (3) If we find an argument A of type VAR T, then we prefix it with the hook
 //  TO VAR so it will be recognized by the C translator as a variable. TO VAR's
@@ -1806,7 +1807,7 @@ case ifHook:
 //  At this point the IF's type is SUPER. If SUPER is VOID, then we cast the IF
 //  to VOID so it won't return a value. If SUPER is another execution time type
 //  then we revisit all nonexceptional clauses and coerce them to SUPER.  If it
-//  isn't an execution time time, then the IF turns into SKIP.
+//  isn't an execution type, then the IF turns into SKIP.
 
     if (isGroundSubtype(f.super, voidSimple))
     { info(toRefTriple(f.first)) = voidSimple;
@@ -3385,7 +3386,7 @@ case listNullHook:
   break; }
 
 //  LIST SORT. Sort a LIST according to an ordering relation FORM. We can write
-//  this in Orson, but it's more efficient in C.
+//  this in Orson, but it's more efficient in C. (See ORSON/UTILITY.)
 
 case listSortHook:
 { struct

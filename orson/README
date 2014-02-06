@@ -40,7 +40,7 @@ with ‘✗’.
     string.c      Operations on Orson strings.
     subtype.c     Test if one type is a subtype of another. ✗
     transform.c   Transform expressions. ✗
-    type.c        perations on types.
+    type.c        Operations on types.
     utility.c     Utility functions.
 
 These files contain documentation and other supporting material.
