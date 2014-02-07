@@ -533,8 +533,8 @@
   If a name has a binding, then it is said to be {i bound,} otherwise it is
   said to be {i unbound.}
 
-  The act of associating a name with a name with an object is called
-  {i binding} the name to the object.
+  The act of associating a name with an object is called {i binding} the name
+  to the object.
   Most (but not all) names are initially unbound when Scam begins running.
   A name may be bound to many different objects as a Scam program runs, and
   may alternate between being bound and unbound.}
