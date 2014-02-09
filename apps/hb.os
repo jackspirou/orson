@@ -1,7 +1,7 @@
 !
 !  APPS/HB. Write simple statistics about source files.
 !
-!  Copyright © 2013 James B. Moen.
+!  Copyright © 2014 James B. Moen.
 !
 !  This  program is free  software: you  can redistribute  it and/or  modify it
 !  under the terms  of the GNU General Public License as  published by the Free
@@ -225,8 +225,9 @@
    (with type inj i :− int
     do (form (string path, i blank, i code, i comment, i long, i short) void:
         (with
-          var ref file last :− first
-          ref file     self :− fromHeap(file)
+          var ref file left  :− first
+          var ref file right :− first↑.next
+          ref file     self  :− fromHeap(file)
          do self↑.path    := copy(path)
             self↑.blank   := blank
             self↑.code    := code
@@ -236,14 +237,16 @@
             self↑.page    := pages(self↑.line)
             self↑.short   := short
             (while
-             (if last↑.next = nil
-              then last↑.next := self
+             (if right = nil
+              then left↑.next := self
+                   self↑.next := nil
                    false
-              else if self↑.path > last↑.path
-                   then last := last↑.next
+              else if self↑.path > right↑.path
+                   then left := right
+                        right := right↑.next
                         true
-                   else self↑.next := last↑.next
-                        last↑.next := self
+                   else self↑.next := right
+                        left↑.next := self
                         false)))))
 
 !  PAGES. The number of pages needed for a file of LINE lines. Maybe there's a
