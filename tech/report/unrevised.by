@@ -15112,13 +15112,22 @@ will never wholly kiss you}
   {right \ }
   {center \ }
   {left
-    ⊕ | ⊖ | {b form} ( <opt parameters> ) | {b gen} ( <gen parameters> ) |}}
+    ⊕ | ⊖ | <opt gen prefixes> {b form} ( <opt parameters> ) | {b not} |}}
  {row
   {right \ }
   {center \ }
-  {left
-   {b not} | {b proc} ( <opt parameters> ) | {b ref} | {b row} | {b type} |
+  {left {b proc} ( <opt parameters> ) | {b ref} | {b row} | {b type} |
    {b var}}}
+
+ {row
+  {right <opt gen prefixes>}
+  {center \ ::=\ }
+  {left <empty> | <gen prefix> <opt gen prefixes>}}
+
+ {row
+  {right <gen prefix>}
+  {center \ ::=\ }
+  {left {b gen} ( <gen parameters> )}}
 
  {row
   {right <unit>}
