@@ -1,4 +1,4 @@
-<!-- Created by Bracy 0.4 on Thursday, February 6, 2014 at 5:32 PM CST -->
+<!-- Created by Bracy 0.4 on Saturday, March 1, 2014 at 11:53 AM CST -->
 <html>
  <head>
   <title>
@@ -33,7 +33,7 @@
    <br />
    James B. Moen
    <br />
-   February 6, 2014
+   March 1, 2014
   </p>
   <p align="justify">
    Copyright &#169; 2014 James B. Moen. Permission is granted to copy,
@@ -79,10 +79,10 @@
    programs. As a result, G<small>NU</small> C code can be easily embedded
    into Orson programs. This is done by loading G<small>NU</small> C
    source files, then calling the form <i>c</i>'<i>s</i>
-   (<i>cee apostrophe ess</i>) on G<small>NU</small> C expressions to
-   make them look like Orson expressions. The form
-   <i>c</i>'<i>s</i> is defined in the prelude, but is not
-   described in the Revised&#8315;&#185; Report.
+   (<i>cee apostrophe ess,</i> pronounced <i>seez</i>) on
+   G<small>NU</small> C expressions to make them look like Orson
+   expressions. The form <i>c</i>'<i>s</i> is defined in
+   the prelude, but is not described in the Revised&#8315;&#185; Report.
   </p>
   <p>
    <b>2. Loading G<small>NU</small> C files.</b>
@@ -91,18 +91,23 @@
    If <i>p</i> is a portable pathname that ends in the suffix
    <i>c</i> or <i>h,</i> then the <i>load</i> clause
    (<b>load</b>&nbsp;<i>p</i>) will load the file denoted by
-   <i>p</i> as a G<small>NU</small> C source file. For example,
-   (<b>load</b>&nbsp;''<tt>own.clib.cstuff:c</tt>'') will load
-   the file <i>cstuff.c</i> in the directory <i>clib,</i> which in
-   turn is in the user&rsquo;s <i>own</i> (home) directory.
-   <br>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson writes a scratch file that contains
-   G<small>NU</small> C code, then invokes the G<small>NU</small> C
-   compiler <small>GCC</small> to compile it. A <i>load</i> clause
-   like the one above simply copies a file verbatim into the scratch file,
-   without examining it in any way. If the copied file contains erroneous
-   G<small>NU</small> C code, then <small>GCC</small> may issue error
-   messages.
+   <i>p</i> as a G<small>NU</small> C source file. For example, the
+   following <i>load</i> clause loads the file <i>cstuff.c</i> in the
+   directory <i>clib,</i> which in turn is in the user&rsquo;s
+   <i>own</i> (home) directory.
+  </p>
+  <blockquote>
+   <p>
+    (<b>load</b>&nbsp;''<tt>own.clib.cstuff:c</tt>'')
+   </p>
+  </blockquote>
+  <p align="justify">
+   Orson writes a scratch file that contains G<small>NU</small> C code,
+   then invokes the G<small>NU</small> C compiler <small>GCC</small>
+   to compile it. A <i>load</i> clause like the one above simply copies a
+   file verbatim into the scratch file, without examining it in any way. If the
+   copied file contains erroneous G<small>NU</small> C code, then
+   <small>GCC</small> may issue error messages.
   </p>
   <p>
    <b>3. The form <i>c</i>'<i>s.</i></b>
@@ -154,13 +159,14 @@
    Orson cannot transform a G<small>NU</small> C expression to a constant,
    even if <small>GCC</small> would treat it as a constant expression.
    Also, Orson names that appear inside a G<small>NU</small> C expressions
-   might not be recognized. This is because Orson may changes names to avoid
+   might not be recognized. This is because Orson may change names to avoid
    inadvertent name capture by forms.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; As a matter of style, calls to
-   <i>c</i>'<i>s</i> are almost always hidden inside Orson
-   methods, so it is not apparent whether those methods are written wholly or
-   partly in C.
+   <i>c</i>'<i>s</i> should be hidden inside Orson methods,
+   so it is not apparent whether the methods are written wholly or partly in
+   G<small>NU</small> C. If possible, such methods should be defined only
+   in library files.
   </p>
   <p>
    <b>3.1. G<small>NU</small> C expressions.</b>
@@ -336,10 +342,10 @@
    returns the value of the slot <tt>tm_sec</tt> in <i>t.</i>
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This member is necessary because Orson cannot
-   determine anything about the slots of a structure type, so the Orson slot
-   operator &lsquo;.&rsquo; does not work on structures. Orson does not check
-   if <i>m</i> is really a structure, if <i>m</i> really has a slot
-   <i>r,</i> or if the slot <i>r</i> really has the type
+   determine anything about the slots of a structure type, so the Orson tuple
+   slot operator &lsquo;.&rsquo; does not work on structures. Orson does not
+   check if <i>m</i> is really a structure, if <i>m</i> really has a
+   slot <i>r,</i> or if the slot <i>r</i> really has the type
    <i>l.</i> G<small>CC</small> may issue error messages if the
    structure or its slot is used incorrectly.
   </p>

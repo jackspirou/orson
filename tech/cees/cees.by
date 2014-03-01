@@ -4,7 +4,7 @@
  {b Orson's Interface to {c Gnu} C}
 
  James B. Moen
- February 6, 2014}
+ March 1, 2014}
 
 {justify
   Copyright © 2014 James B. Moen.
@@ -37,8 +37,8 @@
   C {goto sta2008 {c [sta 2008]}} programs.
   As a result, {c Gnu} C code can be easily embedded into Orson programs.
   This is done by loading {c Gnu} C source files, then calling the form
-  {q {i c}'{i s}} ({i cee} {i apostrophe} {i ess}) on {c Gnu} C expressions to
-  make them look like Orson expressions.
+  {q {i c}'{i s}} ({i cee} {i apostrophe} {i ess,} pronounced {i seez}) on
+  {c Gnu} C expressions to make them look like Orson expressions.
   The form {q {i c}'{i s}} is defined in the prelude, but is not described in
   the Revised⁻¹ Report.}
 
@@ -48,10 +48,13 @@
   If {i p} is a portable pathname that ends in the suffix {i c} or {i h,} then
   the {i load} clause ({b load}\ {i p}) will load the file denoted by {i p} as
   a {c Gnu} C source file.
-  For example, ({b load}\ {q ''{t own.clib.cstuff:c}''}) will load the file
-  {i cstuff.c} in the directory {i clib,} which in turn is in the user's
-  {i own} (home) directory.
+  For example, the following {i load} clause loads the file {i cstuff.c} in the
+  directory {i clib,} which in turn is in the user's {i own} (home) directory.}
 
+{narrow{orson
+(load ''{t own.clib.cstuff:c}'')}}
+
+{justify
   Orson writes a scratch file that contains {c Gnu} C code, then invokes the
   {c Gnu} C compiler {c gcc} to compile it.
   A {i load} clause like the one above simply copies a file verbatim into the
@@ -93,12 +96,13 @@ c's :−
   even if {c gcc} would treat it as a constant expression.
   Also, Orson names that appear inside a {c Gnu} C expressions might not be
   recognized.
-  This is because Orson may changes names to avoid inadvertent name capture by
+  This is because Orson may change names to avoid inadvertent name capture by
   forms.
 
-  As a matter of style, calls to {q {i c}'{i s}} are almost always hidden
-  inside Orson methods, so it is not apparent whether those methods are written
-  wholly or partly in C.}
+  As a matter of style, calls to {q {i c}'{i s}} should be hidden inside Orson
+  methods, so it is not apparent whether the methods are written wholly or
+  partly in {c Gnu} C.
+  If possible, such methods should be defined only in library files.}
 
 {left {b 3.1. {c Gnu} C expressions.}}
 
@@ -188,8 +192,8 @@ int main()
   value of the slot {t tm_sec} in {i t.}
 
   This member is necessary because Orson cannot determine anything about the
-  slots of a structure type, so the Orson slot operator `.' does not work on
-  structures.
+  slots of a structure type, so the Orson tuple slot operator `.' does not work
+  on structures.
   Orson does not check if {i m} is really a structure, if {i m} really has a
   slot {i r,} or if the slot {i r} really has the type {i l.}
   {c Gcc} may issue error messages if the structure or its slot is used
