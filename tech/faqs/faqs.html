@@ -1,4 +1,4 @@
-<!-- Created by Bracy 0.4 on Tuesday, February 4, 2014 at 3:54 AM CST -->
+<!-- Created by Bracy 0.4 on Sunday, March 2, 2014 at 12:48 PM CST -->
 <html>
  <head>
   <title>
@@ -33,7 +33,7 @@
    <br />
    James B. Moen
    <br />
-   January 19, 2014
+   March 2, 2014
   </p>
   <p align="justify">
    Copyright &#169; 2014 James B. Moen. Permission is granted to copy,
@@ -373,12 +373,12 @@
   <p align="justify">
    <b>A.</b> C&rsquo;s syntax is poorly designed. For example, consider
    (1) the need for semicolons as terminators for some (but not all)
-   statements, (2) the error-prone infix operators, such as = and ==, (3) the
-   inside-out notation for function types, (4) the bizarre infix operator
-   priorities, (5) the need for <i>break</i> statements inside
-   <i>switch</i> statements, (6) the lack of delimiting names like
-   <b>then</b> and <b>of,</b> whose presence promotes readability and
-   good error recovery.
+   statements, (2) the error-prone infix operators, such as &lsquo;=&rsquo; and
+   &lsquo;==&rsquo;, (3) the inside-out notation for function types, (4) the
+   bizarre infix operator priorities, (5) the need for <i>break</i>
+   statements inside <i>switch</i> statements, (6) the lack of delimiting
+   names like <b>then</b> and <b>of,</b> whose presence promotes
+   readability and good error recovery.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; C is great because of its
    <i>semantics,</i> not its syntax. Unfortunately, designers of new
@@ -447,11 +447,11 @@
    <small>IDE</small> and adapt it to Orson, or vice-versa.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A lot of people want to make badly designed
-   programming languages easier to use by giving them a fancy
-   <small>IDE</small>. This makes sense if someone (like a boss) is
-   forcing you to use a badly designed language. I think it would be better to
-   try making well designed languages instead. I don&rsquo;t know if Orson is
-   well designed or not.
+   programming languages easier to use by giving them fancy
+   <small>IDE</small>&rsquo;s. This makes sense if you are forced to use a
+   badly designed language. I think it would be better to try making well
+   designed languages instead. I don&rsquo;t know if Orson is well designed or
+   not.
   </p>
   <p align="justify">
    <b>Q.</b> Why isn&rsquo;t Orson an interpreted language? All the other
@@ -487,15 +487,22 @@
   </p>
   <p align="justify">
    <b>A.</b> Not at present. Future versions may do so. It may be possible
-   to use P<small>OSIX</small> threads
+   to use <small>POSIX</small> threads
    <a href="#stv2005">
     [<small>STV</small> 2005]
    </a>
    with the current Orson compiler, but there&rsquo;s no explicit support for
    this, and I&rsquo;ve never tried it. Orson&rsquo;s catch-throw mechanism and
    the garbage collector in the Orson library are probably not safe for
-   threads. Also, Orson is currently translated to C, so in principle it should
-   be possible to do anything in Orson that can be done in C.
+   threads.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Orson is currently translated to
+   G<small>NU</small> C, so in principle it should be possible to do
+   anything in Orson that can be done in that language. For example, you can
+   create new processes by calling the C function <tt>fork</tt>
+   <a href="#stv2005">
+    [<small>STV</small> 2005].
+   </a>
   </p>
   <p align="justify">
    <b>Q.</b> Does Orson have a formally defined semantics? All the other
@@ -599,21 +606,22 @@
    <b>Q.</b> Can I write a constant whose type is an array or a tuple?
   </p>
   <p align="justify">
-   <b>A.</b> No. But you can simulate such a thing with a form or a
-   procedure. For example, the form <i>makeComp</i> returns a complex
-   number, given values for its slots <i>re</i> and <i>im.</i>
+   <b>A.</b> No. But you can simulate such a thing by calling a form or a
+   procedure. For example, a call to the form <i>makeCom</i> returns a
+   complex number, represented as an instance of the tuple type
+   <i>com.</i>
   </p>
   <blockquote>
    <p>
-    <i>comp</i>&nbsp;:&#8722;&nbsp;(<b>tuple</b>&nbsp;<i>real</i>&nbsp;<i>re</i>,&nbsp;<i>real</i>&nbsp;<i>im</i>)&nbsp;
+    <i>com</i>&nbsp;:&#8722;&nbsp;(<b>tuple</b>&nbsp;<i>real</i>&nbsp;<i>re</i>,&nbsp;<i>real</i>&nbsp;<i>im</i>)&nbsp;
     <br />
     <font color="#FFFFFF"><i>c</i></font>
     <br />
-    <i>makeComp</i>&nbsp;:&#8722;&nbsp;
+    <i>makeCom</i>&nbsp;:&#8722;&nbsp;
     <br />
-    <font color="#FFFFFF"><i>m</i></font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>re</i>,&nbsp;<i>real</i>&nbsp;<i>im</i>)&nbsp;<i>comp</i>:&nbsp;
+    <font color="#FFFFFF"><i>m</i></font>(<b>form</b>&nbsp;(<i>real</i>&nbsp;<i>re</i>,&nbsp;<i>real</i>&nbsp;<i>im</i>)&nbsp;<i>com</i>:&nbsp;
     <br />
-    <font color="#FFFFFF"><i>m</i>(</font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>comp</i>&nbsp;<i>z</i>&nbsp;
+    <font color="#FFFFFF"><i>m</i>(</font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>com</i>&nbsp;<i>z</i>&nbsp;
     <br />
     <font color="#FFFFFF"><i>m</i>((</font><b>do</b>&nbsp;<i>z</i>.<i>re</i>&nbsp;:=&nbsp;<i>re</i>&nbsp;
     <br />
@@ -624,9 +632,8 @@
   </blockquote>
   <p align="justify">
    Orson doesn&rsquo;t have a notation for array or tuple constants because
-   it&rsquo;s easy to write a form like this, which acts like such a constant.
-   The Orson library may someday provide more efficient versions of these
-   forms.
+   it&rsquo;s easy to write forms like this. The Orson library may someday
+   provide versions of such forms whose calls transform to actual constants.
   </p>
   <hr />
   <a name="chars">
@@ -655,10 +662,8 @@
    Orson programs in <small>ASCII</small>, even on old systems that
    don&rsquo;t support Unicode, and that Orson characters and strings are
    completely compatible with those of C and Unix. The bad news is that you
-   can&rsquo;t access string characters using simple pointer arithmetic any
-   more, unless those strings contain only <small>ASCII</small>
-   characters. However, the Orson library contains forms that make this
-   relatively painless.
+   can&rsquo;t traverse most strings by simple pointer arithmetic. However, the
+   Orson library contains forms that make this relatively painless.
   </p>
   <p align="justify">
    <b>Q.</b> If Orson supports Unicode, then why can&rsquo;t I use
@@ -673,11 +678,9 @@
    <li>
    <p align="justify">
     Most programming languages use English reserved names (like <b>if</b>
-    and <b>while</b>), and their syntaxes assume English word order. They
-    can&rsquo;t be made international just by allowing unreserved names to use
-    letters from multiple alphabets. This would work only in languages that
-    don&rsquo;t need reserved names, and that use a syntax which is not based
-    on word order.
+    and <b>while</b>), and their syntaxes are based on English grammar.
+    They can&rsquo;t be made international just by allowing unreserved names to
+    use letters from multiple alphabets.
    </p>
    <li>
    <p align="justify">
@@ -700,9 +703,9 @@
     <a href="#mcc1987">
      [<small>MCC</small> 1987],
     </a>
-    and all programmers know some mathematics, so programs should be written
-    with English or mathematical names. For example, Linus Torvalds, a native
-    of Finland whose first language is Swedish, chose to write his famous
+    and all programmers know some mathematics. As a result, programs should be
+    written with English or mathematical names. For example, Linus Torvalds, a
+    native of Finland whose first language is Swedish, wrote his famous
     operating system kernel in English
     <a href="#moo2001">
      [<small>MOO</small> 2001].
@@ -939,8 +942,8 @@
   <p align="justify">
    <b>A.</b> You can&rsquo;t declare a variable of type
    <b>var</b>&nbsp;<i>inj,</i> or indeed any variable whose base type
-   contains jokers. This is because variables are execution instances (they
-   exist only during execution) but jokers are transformation types (they exist
+   contains jokers. This is because variables are execution objects (they exist
+   only during execution) but jokers are transformation objects (they exist
    only during transformation). I admit the error messages are misleading, but
    they are correctly saying that you can&rsquo;t do what you&rsquo;re trying
    to do.
@@ -995,15 +998,18 @@
   </p>
   <p align="justify">
    <b>A.</b> No, it has the type of the constant or expression with which
-   <i>zeroer</i> was called. If <i>zeroer</i> was called with an
+   <i>zeroer</i> was called. If <i>zeroer</i> is called with an
    expression of type <b>var</b>&nbsp;<i>int</i>0, then <i>v</i>
-   has the type <b>var</b>&nbsp;<i>int</i>0, and if it was called
-   with an expression of type <b>var</b>&nbsp;<i>int</i>1, then it
-   has the type <b>var</b>&nbsp;<i>int</i>1 instead. Arguments to
-   forms can be coerced to <i>subtypes</i> of their corresponding
-   parameter types, not necessarily to <i>exactly</i> those parameter
-   types. The &lsquo;&lsquo;Revised&#8315;&#185; Report&rsquo;&rsquo; calls
-   this <i>permissive coercion.</i>
+   has the type <b>var</b>&nbsp;<i>int</i>0, and if it is called with
+   an expression of type <b>var</b>&nbsp;<i>int</i>1, then it has the
+   type <b>var</b>&nbsp;<i>int</i>1 instead. Arguments to forms are
+   coerced to <i>subtypes</i> of their corresponding parameter types, not
+   necessarily to <i>exactly</i> those parameter types. The
+   Revised&#8315;&#185; Report
+   <a href="#moe2014">
+    [<small>MOE</small> 2014]
+   </a>
+   calls this <i>permissive coercion.</i>
   </p>
   <hr />
   <a name="equates">
@@ -1019,7 +1025,7 @@
    <b>var</b>&nbsp;<i>p</i>&nbsp;<i>n</i>&nbsp;:&#8722;&nbsp;<i>e,</i>
    where <i>p</i> is the type of the procedure you want, <i>n</i> is
    the name of the variable, and <i>e</i> is an expression that returns a
-   procedure of type <i>p.</i> You can write just
+   procedure of type <i>p.</i> You can write
    <b>var</b>&nbsp;<i>p</i>&nbsp;<i>n</i> if you want. For
    example, if you want a variable whose values are procedures that take
    integer arguments and return integers, then you&rsquo;d write
@@ -1036,17 +1042,16 @@
   </p>
   <p align="justify">
    <b>A.</b> Write the equate
-   [<i>n</i>]&nbsp;<b>proc</b>&nbsp;()&nbsp;<b>proc</b>&nbsp;()&nbsp;<b>row</b>&nbsp;<i>char</i>&nbsp;<i>p</i>&nbsp;:&#8722;&nbsp;<i>e,</i>
+   [<i>n</i>]&nbsp;<b>proc</b>&nbsp;()&nbsp;<b>proc</b>&nbsp;()&nbsp;<b>ref</b>&nbsp;<i>char</i>&nbsp;<i>p</i>&nbsp;:&#8722;&nbsp;<i>e,</i>
    where <i>e</i> returns such an array. You can leave out the
    <i>e</i> if you declare <i>p</i> as a variable. Note that unlike
    the corresponding type in C, this is easily read from left to right.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I assume you want to represent characters as
-   <i>char</i>&rsquo;s, but it will also work with
-   <i>char</i>0&rsquo;s. I also assume that you want procedures without
-   arguments, and that you want a <i>row</i> pointer to a character. If
+   <i>char</i>&rsquo;s. I also assume that you want procedures without
+   arguments, and that you want a <i>ref</i> pointer to a character. If
    you want the procedure to return a string, then you should use the type
-   <i>string</i> instead of <b>row</b>&nbsp;<i>char.</i>
+   <i>string</i> instead of <b>ref</b>&nbsp;<i>char.</i>
   </p>
   <p align="justify">
    <b>Q.</b> How can I declare a procedure that returns a procedure of the
@@ -1080,8 +1085,8 @@
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If <i>p</i> is a pointer to a procedure
    that doesn&rsquo;t accept arguments, then you call it by writing
    <i>p</i>&#8593;() or <i>p</i>^(). You must include the explicit
-   dereference operator &lsquo;&#8593;&rsquo; or &lsquo;^&rsquo;, because Orson
-   thinks a pointer to a procedure is different from a procedure itself.
+   dereferencing operator &lsquo;&#8593;&rsquo; or &lsquo;^&rsquo;, because
+   Orson thinks a pointer to a procedure is different from a procedure itself.
   </p>
   <p align="justify">
    <b>Q.</b> What is the initial value of a variable that is not
@@ -1122,7 +1127,7 @@
    are hard to understand. Also, they&rsquo;re used a lot, and building them
    into Orson makes them more efficient than if they were defined as methods.
    The operators <b>and, or, ref, row, type,</b> &lsquo;&#8743;&rsquo;,
-   and &lsquo;&#8744;&rsquo; are built in because they don&rsquo;t evaluate all
+   and &lsquo;&#8744;&rsquo; are built in because they might not evaluate all
    their arguments, or because they evaluate them in special ways.
   </p>
   <p align="justify">
@@ -1178,17 +1183,16 @@
    </p>
    <li>
    <p align="justify">
-    The arguments of a form are evaluated (they&rsquo;re
-    <i>transformed</i>) before the form is applied. This is not true of
-    Common Lisp macros, whose arguments are not evaluated.
+    The arguments of a form are transformed before the form is applied. This is
+    not true of Common Lisp macros, whose arguments are not evaluated.
    </p>
    <li>
    <p align="justify">
-    Forms are properly lexically scoped. This is not true of Common Lisp
-    macros, whose arguments can violate lexical scoping. For example, if an
-    argument <tt>x</tt> is passed to a macro that uses <tt>x</tt> as
-    a local variable, then the two <tt>x</tt>&rsquo;s will be confused.
-    Such <i>name capture</i> cannot occur in Orson.
+    Forms are lexically scoped. This is not true of Common Lisp macros, whose
+    arguments can violate lexical scoping. For example, if an argument
+    <tt>x</tt> is passed to a macro that uses <tt>x</tt> as a local
+    variable, then the two <tt>x</tt>&rsquo;s will be confused. Such
+    <i>name capture</i> cannot occur in Orson.
    </p>
    <li>
    <p align="justify">
@@ -1246,9 +1250,9 @@
    expressions as the rest of Orson, the subject of a previous question.
   </p>
   <p align="justify">
-   <b>Q.</b> Form subsumption doesn&rsquo;t always detect a member form
-   that can never be called. Here&rsquo;s an alternate form which returns a
-   string that is the name of an integer type.
+   <b>Q.</b> Form subsumption can&rsquo;t always detect member forms that
+   can never be called. Here&rsquo;s an alternate form which returns a string
+   that is the name of an integer type.
   </p>
   <blockquote>
    <p>
@@ -1291,13 +1295,13 @@
    only finitely many are provided by any given implementation. Someday, when
    we&rsquo;re all using computers with 1024-bit words, Orson will be ready
    with the integer type <i>int</i>7 (2&#8311;&nbsp;byte
-   &#215;&nbsp;8&nbsp;bit&nbsp;byte&#8315;&#185;&nbsp;= 1024 bits). It could
-   happen.
+   &#215;&nbsp;2&#179;&nbsp;bit&nbsp;byte&#8315;&#185;&nbsp;= 2&#185;&#8304;
+   bit&nbsp;= 1024 bit). It could happen.
   </p>
   <p align="justify">
-   <b>Q.</b> But form subsumption <i>still</i> doesn&rsquo;t always
-   detect a member form that can never be called. Here&rsquo;s an alternate
-   form which returns a string that is the name of a numeric type.
+   <b>Q.</b> But form subsumption <i>still</i> can&rsquo;t always
+   detect member forms that can never be called. Here&rsquo;s an alternate form
+   which returns a string that is the name of a numeric type.
   </p>
   <blockquote>
    <p>
@@ -1398,17 +1402,23 @@
   </p>
   <blockquote>
    <p>
-    <i>compl</i>&nbsp;:&#8722;&nbsp;(<b>tuple</b>&nbsp;<i>real</i>&nbsp;<i>re</i>,&nbsp;<i>real</i>&nbsp;<i>im</i>)&nbsp;
+    <i>com</i>&nbsp;:&#8722;&nbsp;(<b>tuple</b>&nbsp;<i>real</i>&nbsp;<i>re</i>,&nbsp;<i>real</i>&nbsp;<i>im</i>)&nbsp;
     <br />
     <font color="#FFFFFF"><i>c</i></font>
     <br />
     <i>"</i>+<i>"</i>&nbsp;:&#8722;&nbsp;
     <br />
-    <font color="#FFFFFF"><i>"</i></font>(<b>form</b>&nbsp;(<i>compl</i>&nbsp;<i>l</i>,&nbsp;<i>compl</i>&nbsp;<i>r</i>)&nbsp;<i>compl</i>:&nbsp;
+    <font color="#FFFFFF"><i>"</i></font>(<b>form</b>&nbsp;(<i>com</i>&nbsp;<i>l</i>,&nbsp;<i>com</i>&nbsp;<i>r</i>)&nbsp;<i>com</i>:&nbsp;
     <br />
-    <font color="#FFFFFF"><i>"</i>(</font>(<b>with</b>&nbsp;<b>var</b>&nbsp;<i>compl</i>&nbsp;<i>z</i>&nbsp;
+    <font color="#FFFFFF"><i>"</i>(</font>(<b>with</b>&nbsp;
     <br />
-    <font color="#FFFFFF"><i>"</i>((</font><b>do</b>&nbsp;<i>z</i>.<i>re</i>&nbsp;:=&nbsp;<i>l</i>.<i>re</i>&nbsp;+&nbsp;<i>l</i>.<i>re</i>&nbsp;
+    <font color="#FFFFFF"><i>"</i>((<b>w</b></font><i>com</i>&nbsp;<i>l</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>l</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((<b>w</b></font><i>com</i>&nbsp;<i>r</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>r</i>)&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((<b>w</b></font><b>var</b>&nbsp;<i>com</i>&nbsp;<i>z</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>"</i>((</font><b>do</b>&nbsp;<i>z</i>.<i>re</i>&nbsp;:=&nbsp;<i>l</i>.<i>re</i>&nbsp;+&nbsp;<i>r</i>.<i>re</i>&nbsp;
     <br />
     <font color="#FFFFFF"><i>"</i>((<b>do</b>&nbsp;</font><i>z</i>.<i>im</i>&nbsp;:=&nbsp;<i>l</i>.<i>im</i>&nbsp;+&nbsp;<i>r</i>.<i>im</i>&nbsp;
     <br />
@@ -1417,8 +1427,8 @@
   </blockquote>
   <p align="justify">
    That works fine, but if <i>z</i>&#8321; has the type
-   <b>var</b>&nbsp;<i>compl,</i> and <i>z</i>&#8322; has the
-   type <i>compl,</i> I get an error message when I write
+   <b>var</b>&nbsp;<i>com,</i> and <i>z</i>&#8322; has the type
+   <i>com,</i> I get an error message when I write
    <i>z</i>&#8321;&nbsp;+=&nbsp;<i>z</i>&#8322;. What&rsquo;s wrong?
   </p>
   <p align="justify">
@@ -1432,7 +1442,7 @@
    <p>
     <i>"</i>+=<i>"</i>&nbsp;:&#8722;&nbsp;
     <br />
-    <font color="#FFFFFF"><i>"</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>compl</i>&nbsp;<i>l</i>,&nbsp;<i>compl</i>&nbsp;<i>r</i>)&nbsp;<i>comp</i>:&nbsp;
+    <font color="#FFFFFF"><i>"</i></font>(<b>form</b>&nbsp;(<b>var</b>&nbsp;<i>com</i>&nbsp;<i>l</i>,&nbsp;<i>com</i>&nbsp;<i>r</i>)&nbsp;<i>com</i>:&nbsp;
     <br />
     <font color="#FFFFFF"><i>"</i>(<b>f</b></font><i>l</i>&nbsp;:=&nbsp;<i>l</i>&nbsp;+&nbsp;<i>r</i>)
    </p>
@@ -1449,7 +1459,7 @@
    <b>Q.</b> Then why does
    <i>z</i>&#8321;&nbsp;:=&nbsp;<i>z</i>&#8322; still work? Why
    didn&rsquo;t I have to redefine <i>"</i>:=<i>"</i> so it works
-   with the type <i>comp</i>?
+   with the type <i>com</i>?
   </p>
   <p align="justify">
    <b>A.</b> The prelude defines <i>"</i>:=<i>"</i> like this,
@@ -1492,49 +1502,26 @@
     <br />
     <font color="#FFFFFF"><i>m</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>k</i>)&nbsp;<b>var</b>&nbsp;<i>int</i>:&nbsp;
     <br />
-    <font color="#FFFFFF"><i>m</i>(</font>(<b>if</b>&nbsp;0&nbsp;&#8804;&nbsp;<i>k</i>&nbsp;&lt;&nbsp;<i>length</i>(<i>map</i>)&nbsp;
+    <font color="#FFFFFF"><i>m</i>(</font>(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>k</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>k</i>)&nbsp;
     <br />
-    <font color="#FFFFFF"><i>m</i>((</font><b>then</b>&nbsp;<i>map</i>[<i>k</i>]&nbsp;
+    <font color="#FFFFFF"><i>m</i>((</font><b>do</b>&nbsp;(<b>if</b>&nbsp;0&nbsp;&#8804;&nbsp;<i>k</i>&nbsp;&lt;&nbsp;<i>length</i>(<i>map</i>)&nbsp;
     <br />
-    <font color="#FFFFFF"><i>m</i>((</font><b>else</b>&nbsp;<i>throw</i>(<i>"</i>index&nbsp;out&nbsp;of&nbsp;range<i>"</i>)))
+    <font color="#FFFFFF"><i>m</i>((<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>map</i>[<i>k</i>]&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>((<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<i>throw</i>(<i>"</i>index&nbsp;out&nbsp;of&nbsp;range<i>"</i>))))
    </p>
   </blockquote>
   <p align="justify">
    The idea is that if <i>k</i> is a legal index for the array
-   <i>map,</i> then <i>mapped</i>(<i>k</i>) should evaluate to
-   the variable at that index. If <i>k</i> isn&rsquo;t a legal index, then
-   it should throw an exception. Unfortunately, Orson always coerces the
-   variable to its value.
+   <i>map,</i> then the call <i>mapped</i>(<i>k</i>) should
+   evaluate to the variable at that index. If <i>k</i> isn&rsquo;t a legal
+   index, then the call should throw an exception. Unfortunately, Orson always
+   coerces the variable to its value.
   </p>
   <p align="justify">
    <b>A.</b> The problem is that if an expression inside an <i>if</i>
-   clause evaluates to a variable, then the variable gets coerced to its value.
-   So your form doesn&rsquo;t evaluate to the integer variable at index
-   <i>k,</i> but rather to the integer at index <i>k.</i> You might
-   think that you could fix the form like this:
-  </p>
-  <blockquote>
-   <p>
-    !&nbsp;&nbsp;W<small>RONG</small>.&nbsp;
-    <br />
-    <i>mapped</i>&nbsp;:&#8722;&nbsp;
-    <br />
-    <font color="#FFFFFF"><i>m</i></font>(<b>form</b>&nbsp;(<i>int</i>&nbsp;<i>k</i>)&nbsp;<b>var</b>&nbsp;<i>int</i>:&nbsp;
-    <br />
-    <font color="#FFFFFF"><i>m</i>(</font>(<b>if</b>&nbsp;&#172;&nbsp;(0&nbsp;&#8804;&nbsp;<i>k</i>&nbsp;&lt;&nbsp;<i>length</i>(<i>map</i>))&nbsp;
-    <br />
-    <font color="#FFFFFF"><i>m</i>((</font><b>then</b>&nbsp;<i>throw</i>(<i>"</i>index&nbsp;out&nbsp;of&nbsp;range<i>"</i>))&nbsp;
-    <br />
-    <font color="#FFFFFF"><i>m</i>(</font><i>map</i>[<i>k</i>])
-   </p>
-  </blockquote>
-  <p align="justify">
-   But this doesn&rsquo;t work either: it still transforms to the integer at
-   index <i>k.</i> The reason is that <i>map</i>[<i>k</i>] is
-   the last expression in a subsequence (Orson has silently inserted a
-   semicolon after the <i>if</i> clause). An expression in a subsequence
-   that returns a variable gets coerced to the variable&rsquo;s value. The
-   solution maybe isn&rsquo;t obvious:
+   clause (or a <i>while</i> clause) evaluates to a variable, then the
+   variable gets coerced to its value. The solution maybe isn&rsquo;t obvious.
   </p>
   <blockquote>
    <p>
@@ -1544,19 +1531,20 @@
     <br />
     <font color="#FFFFFF"><i>m</i>(<b>f</b></font><i>map</i>[&nbsp;
     <br />
-    <font color="#FFFFFF"><i>m</i>(<b>f</b><i>m</i></font>(<b>if</b>&nbsp;0&nbsp;&#8804;&nbsp;<i>k</i>&nbsp;&lt;&nbsp;<i>length</i>(<i>map</i>)&nbsp;
+    <font color="#FFFFFF"><i>m</i>(<b>f</b><i>m</i></font>(<b>with</b>&nbsp;<i>int</i>&nbsp;<i>k</i>&nbsp;:&#8722;&nbsp;(<b>past</b>&nbsp;<i>k</i>)&nbsp;
     <br />
-    <font color="#FFFFFF"><i>m</i>(<b>f</b><i>m</i>(</font><b>then</b>&nbsp;<i>k</i>&nbsp;
+    <font color="#FFFFFF"><i>m</i>(<b>f</b><i>m</i>(</font><b>do</b>&nbsp;(<b>if</b>&nbsp;0&nbsp;&#8804;&nbsp;<i>k</i>&nbsp;&lt;&nbsp;<i>length</i>(<i>map</i>)&nbsp;
     <br />
-    <font color="#FFFFFF"><i>m</i>(<b>f</b><i>m</i>(</font><b>else</b>&nbsp;<i>throw</i>(<i>"</i>index&nbsp;out&nbsp;of&nbsp;range<i>"</i>))])
+    <font color="#FFFFFF"><i>m</i>(<b>f</b><i>m</i>(<b>do</b>&nbsp;(</font><b>then</b>&nbsp;<i>k</i>&nbsp;
+    <br />
+    <font color="#FFFFFF"><i>m</i>(<b>f</b><i>m</i>(<b>do</b>&nbsp;(</font><b>else</b>&nbsp;<i>throw</i>(<i>"</i>index&nbsp;out&nbsp;of&nbsp;range<i>"</i>)))])
    </p>
   </blockquote>
   <p align="justify">
-   Now <i>map</i>[...] appears directly as the form&rsquo;s body, so
-   it&rsquo;s not part of a subsequence, and the variable to which it evaluates
-   won&rsquo;t be coerced. Form bodies, lists, some arguments to methods, and
-   <b>type</b> prefixes are the only places in Orson where variables
-   aren&rsquo;t coerced to their values.
+   Now <i>map</i>[...] appears directly as the form&rsquo;s body, so the
+   variable to which it evaluates isn&rsquo;t coerced. Form bodies, lists, some
+   method arguments, and <b>type</b> prefixes are the only places in Orson
+   where variables aren&rsquo;t coerced to their values.
   </p>
   <hr />
   <a name="parens">
@@ -1657,9 +1645,9 @@
    is my favorite programming language. If we all wrote in Lisp, then many of
    our programming problems would go away. But that&rsquo;s not what you meant.
    For the sake of argument, let&rsquo;s assume parentheses are evil, so
-   languages should need as few as possible. I claim that for some programs,
-   Orson uses <i>fewer</i> parentheses than other languages. Consider the
-   following C fragment:
+   programs should use as few of them as possible. I claim that for some
+   programs, Orson uses <i>fewer</i> parentheses than other languages.
+   Consider the following C fragment:
   </p>
   <blockquote>
    <p>
@@ -1751,7 +1739,7 @@
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The current Orson-to-<small>GCC</small>
    translator resembles a Lisp interpreter internally, and Orson forms are
-   really just a typed &#955;-calculus. However, you can write Orson programs
+   really just typed &#955;-expressions. However, you can write Orson programs
    without knowing that.
   </p>
   <hr />
@@ -1804,8 +1792,8 @@
    <b>A.</b> Strings are the favorite data structure of bad programmers.
    They want to represent most objects as strings. They would be better off
    with data structures that are specifically designed for the objects they
-   want to represent. You should use strings only when you want to print things
-   (although there are exceptions to this general rule).
+   want to represent. In general, you should use strings only for things that
+   are connected somehow with input and output.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This means the representation used for
    strings is largely irrelevant, and the designer of a programming language is
@@ -1817,12 +1805,11 @@
    It&rsquo;s convenient because it lets Orson use library procedures that have
    already been written for C, without change.
    <br>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If you&rsquo;re using strings only for
-   printing, then you must traverse them anyway, to visit their characters. You
-   might need to find the length of a string before you print it. However,
-   traversing a string twice, first to find its length, and then to print it,
-   shouldn&rsquo;t affect run time much, because traversal should be much
-   faster than printing.
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If you print a string, then you must traverse
+   it anyway, to visit its characters. You might need to find the
+   string&rsquo;s length before you print it. However, traversing the string
+   twice, first to find its length, and then to print it, shouldn&rsquo;t
+   affect run time much, because traversal should be much faster than printing.
   </p>
   <hr />
   <a name="tokens">
@@ -1853,7 +1840,12 @@
      </td>
      <td>
       <p>
-       is a <small>HYPHEN</small>-<small>MINUS</small> (U+002D),
+       (U+002D)&nbsp;
+      </p>
+     </td>
+     <td>
+      <p>
+       is a <small>HYPHEN</small>-<small>MINUS</small>,
       </p>
      </td>
     </tr>
@@ -1865,7 +1857,12 @@
      </td>
      <td>
       <p>
-       is a <small>HYPHEN</small> (U+2010),
+       (U+2010)
+      </p>
+     </td>
+     <td>
+      <p>
+       is a <small>HYPHEN</small>,
       </p>
      </td>
     </tr>
@@ -1877,8 +1874,12 @@
      </td>
      <td>
       <p>
-       is a <small>NON</small>-<small>BREAKING HYPHEN</small>
-       (U+2011),
+       (U+2011)
+      </p>
+     </td>
+     <td>
+      <p>
+       is a <small>NON</small>-<small>BREAKING HYPHEN</small>,
       </p>
      </td>
     </tr>
@@ -1890,7 +1891,12 @@
      </td>
      <td>
       <p>
-       is a <small>FIGURE DASH</small> (U+2012),
+       (U+2012)
+      </p>
+     </td>
+     <td>
+      <p>
+       is a <small>FIGURE DASH</small>,
       </p>
      </td>
     </tr>
@@ -1902,7 +1908,12 @@
      </td>
      <td>
       <p>
-       is an <small>EN DASH</small> (U+2013),
+       (U+2013)
+      </p>
+     </td>
+     <td>
+      <p>
+       is an <small>EN DASH</small>,
       </p>
      </td>
     </tr>
@@ -1914,7 +1925,12 @@
      </td>
      <td>
       <p>
-       is an <small>EM DASH</small> (U+2014),
+       (U+2014)
+      </p>
+     </td>
+     <td>
+      <p>
+       is an <small>EM DASH</small>,
       </p>
      </td>
     </tr>
@@ -1926,7 +1942,12 @@
      </td>
      <td>
       <p>
-       is a <small>HORIZONTAL BAR</small> (U+2015), and
+       (U+2015)
+      </p>
+     </td>
+     <td>
+      <p>
+       is a <small>HORIZONTAL BAR</small>, and
       </p>
      </td>
     </tr>
@@ -1938,7 +1959,12 @@
      </td>
      <td>
       <p>
-       is a <small>MINUS SIGN</small> (U+2212).
+       (U+2212)
+      </p>
+     </td>
+     <td>
+      <p>
+       is a <small>MINUS SIGN</small>.
       </p>
      </td>
     </tr>
@@ -2091,8 +2117,8 @@
    the <small>ASCII</small> character set, the best choice is the
    quotation mark &lsquo;&nbsp;<i>"</i>&nbsp;&rsquo;. Orson must be
    compatible with <small>ASCII</small>, so its programs can be typed on
-   ordinary <small>US</small> keyboards, and so they can be run on
-   computers that don&rsquo;t support Unicode.
+   ordinary <small>US</small> keyboards, and so they can run on computers
+   that don&rsquo;t support Unicode.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Once I&rsquo;d used the quotation mark, I had
    to use other characters to notate character and string literals. I also had
@@ -2145,15 +2171,13 @@
     In Orson, a name&rsquo;s type tells you if it&rsquo;s a constant or a
     variable, not the way it&rsquo;s spelled. You shouldn&rsquo;t encode an
     object&rsquo;s type into its name, as in the &lsquo;&lsquo;Hungarian
-    Style,&rsquo;&rsquo; because then you must change the name if you ever
+    Style,&rsquo;&rsquo; because then you must change its name if you ever
     change its type.
    </p>
    <li>
    <p align="justify">
-    Orson constant names are different from C constant names. For example, in
-    Orson you can bind a constant name to the value of a variable during
-    execution. You can&rsquo;t do that in C, so you shouldn&rsquo;t write
-    constant names as you do in C.
+    Orson constant names are different from C constant names, so you
+    shouldn&rsquo;t write them as you do in C.
    </p>
    <li>
    <p align="justify">
@@ -2175,7 +2199,7 @@
   <p align="justify">
    <b>Q.</b> But then why are secret names spelled differently from other
    names? If you want to change a secret name into a plain name, then you must
-   change it whenever it appears.
+   also change it whenever it appears.
   </p>
   <p align="justify">
    <b>A.</b> Yes, secret names are inconsistent with what I just said.
@@ -2368,12 +2392,10 @@
    character &rsquo;\0&rsquo; at the end, as in C. The problem is that
    ''ten&nbsp;chars'' has the type <i>string,</i> which is bound to
    <b>row</b>&nbsp;<i>char</i>0. The equate expects an array of type
-   [10]&nbsp;<i>char,</i> a different type.
-   <br>
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Also, your array type describes an array of
-   ten <i>char</i>1&rsquo;s (each 32 bits) but but there are ten
-   <i>char</i>0&rsquo;s in your string (each 8 bits). There are two
-   different kinds of characters because Orson uses the
+   [10]&nbsp;<i>char,</i> a different type. Also, your array type
+   describes an array of ten <i>char</i>1&rsquo;s (each 32 bits) but but
+   there are ten <i>char</i>0&rsquo;s in your string (each 8 bits). There
+   are two different kinds of characters because Orson uses the
    <small>UTF</small>-8 encoding for strings
    <a href="#uni2006">
     [<small>UNI</small> 2006].
@@ -2384,6 +2406,8 @@
    It doesn&rsquo;t give you the array that you wanted, but a string. That
    might be just as good, since you can index it to obtain individual
    characters. For example, <i>tc</i>[0] returns the character 't'.
+   This works because each character in the string is represented as a single
+   byte.
   </p>
   <p align="justify">
    <b>Q.</b> Why can&rsquo;t I pass <i>nil</i> to a generic form? I
@@ -2493,13 +2517,13 @@
   </p>
   <p align="justify">
    <b>A.</b> The type <i>null</i> can&rsquo;t have a base type,
-   because <i>nil</i> references no object, and the lack of an object
-   shouldn&rsquo;t have a type. (What type is a unicorn?) The base type of
-   <i>null</i> can&rsquo;t be <i>void</i> because <i>void</i> is
-   the type of an object, namely <i>skip.</i> If <i>null</i> had the
-   base type <i>void,</i> then maybe <i>nil</i> would reference
-   <i>skip,</i> and you could dereference it. That shouldn&rsquo;t be
-   possible.
+   because <i>nil</i> references no object. It&rsquo;s not obvious what
+   type the lack of an object should have: what type is a unicorn? The base
+   type of <i>null</i> can&rsquo;t be <i>void</i> because
+   <i>void</i> is the type of an object, namely <i>skip.</i> If
+   <i>null</i> had the base type <i>void,</i> then maybe
+   <i>nil</i> would reference <i>skip,</i> and you could dereference
+   it. That shouldn&rsquo;t be possible.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; When designing a programming language,
    it&rsquo;s tempting to pick some object with hardly a meaning, like
@@ -2563,7 +2587,7 @@
   </p>
   <p align="justify">
    <b>Q.</b> Is there an Orson compiler that produces machine code
-   directly, instead of producing <small>GCC</small> code and then
+   directly, instead of producing G<small>NU</small> C code and then
    compiling it?
   </p>
   <p align="justify">
@@ -2625,20 +2649,20 @@
    <b>A.</b> Because the present compiler was developed on 32-bit
    computers, mostly with Intel <i>x</i>86 processors. There&rsquo;s no
    reason it couldn&rsquo;t provide <i>int</i>3, since the compiler
-   translates Orson programs to <small>GCC</small>, which supports 64-bit
-   integers. The problem is that information about simple types appears in many
-   different places throughout the present compiler. To provide
+   translates Orson programs to G<small>NU</small> C, which supports
+   64-bit integers. The problem is that information about simple types appears
+   in many different places throughout the present compiler. To provide
    <i>int</i>3, I&rsquo;d have to find all those places and make small
    changes to them. It wouldn&rsquo;t be hard, just tedious.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I shouldn&rsquo;t have designed the compiler
-   that way. I should have kept all information about simple types in some kind
-   of central repository. If I ever rewrite the Orson compiler (maybe in Orson
-   itself) I may implement such a thing.
+   that way. I should have kept information about simple types in one place, or
+   in only a few places. If I ever rewrite the Orson compiler (maybe in Orson
+   itself) I may do that.
   </p>
   <p align="justify">
    <b>Q.</b> I can&rsquo;t compile the Orson compiler on my Apple
-   Macintosh computer. I can&rsquo;t compile <small>GCC</small> code
+   Macintosh computer. I can&rsquo;t compile G<small>NU</small> C code
    produced by the Orson compiler, either. What&rsquo;s wrong?
   </p>
   <p align="justify">
@@ -2646,9 +2670,9 @@
    functions in G<small>NU</small> C programs. Unfortunately, significant
    parts of the Orson compiler are written in continuation passing style
    (<small>CPS</small>), which is most easily simulated in
-   <small>GCC</small> with nested functions. G<small>CC</small> code
-   produced by the Orson compiler might also use nested functions, even if
-   it&rsquo;s not written in <small>CPS</small>.
+   G<small>NU</small> C with nested functions. G<small>NU</small> C
+   code produced by the Orson compiler might also use nested functions, even if
+   it doesn&rsquo;t use <small>CPS</small>.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nested functions were eliminated because the
    <small>GCC</small> compiler implements them using
@@ -2659,7 +2683,7 @@
    it impossible to execute code on the stack.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; As far as I know, the Orson compiler now
-   works on current Apple systems, and so do the <small>GCC</small>
+   works on current Apple systems, and so do the G<small>NU</small> C
    programs that it produces. It may be necessary to add extra options to the
    <small>GCC</small> command to make those things happen. I don&rsquo;t
    follow Apple much any more, so I don&rsquo;t necessarily know what those
@@ -2684,17 +2708,17 @@
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Java compilers try to enumerate all such
    paths, complaining if they find one that doesn&rsquo;t end with a
-   <tt>return</tt> statement
+   <i>return</i> statement
    <a href="#gos1996">
     [<small>GOS</small> 1996].
    </a>
    Unfortunately, Turing says it&rsquo;s impossible to do this. As a result,
    Java sometimes complains needlessly, and you must add dummy
-   <tt>return</tt> statements to shut it up.
+   <i>return</i> statements to shut it up.
    <br>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Some C compilers, however, apparently
    don&rsquo;t care. They say that a procedure returns an unspecified object if
-   it stops without executing a <tt>return</tt> statement. I&rsquo;m not
+   it stops without executing a <i>return</i> statement. I&rsquo;m not
    sure if this is better than Java, or worse, but it has the virtue of being
    simpler.
    <br>

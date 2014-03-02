@@ -4,7 +4,7 @@
  {b {c Faq}'s About Orson}
 
  James B. Moen
- January 19, 2014}
+ March 2, 2014}
 
 {justify
   Copyright © 2014 James B. Moen.
@@ -157,11 +157,11 @@
   {b A.}
   C's syntax is poorly designed.
   For example, consider (1) the need for semicolons as terminators for some
-  (but not all) statements, (2) the error-prone infix operators, such as = and
-  ==, (3) the inside-out notation for function types, (4) the bizarre infix
-  operator priorities, (5) the need for {i break} statements inside {i switch}
-  statements, (6) the lack of delimiting names like {b then} and {b of,} 
-  whose presence promotes readability and good error recovery.
+  (but not all) statements, (2) the error-prone infix operators, such as `='
+  and `==', (3) the inside-out notation for function types, (4) the bizarre
+  infix operator priorities, (5) the need for {i break} statements inside
+  {i switch} statements, (6) the lack of delimiting names like {b then} and
+  {b of,} whose presence promotes readability and good error recovery.
 
   C is great because of its {i semantics,} not its syntax.
   Unfortunately, designers of new programming languages haven't understood
@@ -228,9 +228,8 @@
   to Orson, or vice-versa.
 
   A lot of people want to make badly designed programming languages easier to
-  use by giving them a fancy {c ide.}
-  This makes sense if someone (like a boss) is forcing you to use a badly
-  designed language.
+  use by giving them fancy {c ide}'s.
+  This makes sense if you are forced to use a badly designed language.
   I think it would be better to try making well designed languages instead.
   I don't know if Orson is well designed or not.}
 
@@ -275,13 +274,16 @@
   {b A.}
   Not at present.
   Future versions may do so.
-  It may be possible to use {c Posix} threads {goto stv2005 {c [stv 2005]}}
+  It may be possible to use {c posix} threads {goto stv2005 {c [stv 2005]}}
   with the current Orson compiler, but there's no explicit support for this,
   and I've never tried it.
   Orson's catch-throw mechanism and the garbage collector in the Orson
   library are probably not safe for threads.
-  Also, Orson is currently translated to C, so in principle it should be
-  possible to do anything in Orson that can be done in C.}
+
+  Orson is currently translated to {c Gnu} C, so in principle it should be
+  possible to do anything in Orson that can be done in that language.
+  For example, you can create new processes by calling the C function {t fork}
+  {goto stv2005 {c [stv 2005].}}}
 
 {justify
   {b Q.}
@@ -380,25 +382,25 @@ comp :− (tuple real re, real im)
 {justify
   {b A.}
    No.
-   But you can simulate such a thing with a form or a procedure.
-   For example, the form {i makeComp} returns a complex number, given values
-   for its slots {i re} and {i im.}}
+   But you can simulate such a thing by calling a form or a procedure.
+   For example, a call to the form {i makeCom} returns a complex number,
+   represented as an instance of the tuple type {i com.}}
 
 {narrow{orson
-comp :− (tuple real re, real im)
+com :− (tuple real re, real im)
 
-makeComp :−
- (form (real re, real im) comp:
-  (with var comp z
+makeCom :−
+ (form (real re, real im) com:
+  (with var com z
    do z.re := re
       z.im := im
       z))}}
 
 {justify
-  Orson doesn't have a notation for array or tuple constants because it's
-  easy to write a form like this, which acts like such a constant.
-  The Orson library may someday provide more efficient versions of these
-  forms.}
+  Orson doesn't have a notation for array or tuple constants because it's easy
+  to write forms like this.
+  The Orson library may someday provide versions of such forms whose calls
+  transform to actual constants.}
 
 {rule}
 
@@ -422,9 +424,8 @@ makeComp :−
   The good news is that you can still write Orson programs in {c ascii,} even
   on old systems that don't support Unicode, and that Orson characters and
   strings are completely compatible with those of C and Unix.
-  The bad news is that you can't access string characters using simple
-  pointer arithmetic any more, unless those strings contain only {c ascii}
-  characters.
+  The bad news is that you can't traverse most strings by simple pointer
+  arithmetic.
   However, the Orson library contains forms that make this relatively
   painless.}
 
@@ -443,11 +444,9 @@ makeComp :−
 {bullet
  {justify
    Most programming languages use English reserved names (like {b if} and
-   {b while}), and their syntaxes assume English word order.
+   {b while}), and their syntaxes are based on English grammar.
    They can't be made international just by allowing unreserved names to use
-   letters from multiple alphabets.
-   This would work only in languages that don't need reserved names, and
-   that use a syntax which is not based on word order.}
+   letters from multiple alphabets.}
  {justify
    Many alphabets have letters that look like other letters.
    For example, the Roman capital letter `A' (U+0041) looks like the Greek
@@ -460,10 +459,10 @@ makeComp :−
    Programs should be written to be as understood by as many people as
    possible.
    It is claimed that more people read English than any other language
-   {goto mcc1987 {c [mcc 1987],}} and all programmers know some mathematics,
-   so programs should be written with English or mathematical names.
+   {goto mcc1987 {c [mcc 1987],}} and all programmers know some mathematics.
+   As a result, programs should be written with English or mathematical names.
    For example, Linus Torvalds, a native of Finland whose first language is
-   Swedish, chose to write his famous operating system kernel in English
+   Swedish, wrote his famous operating system kernel in English
    {goto moo2001 {c [moo 2001].}}
    No English chauvinism is intended: the status of English is due to
    historical accidents, not to any inherent superiority.}}
@@ -675,8 +674,8 @@ abs :−
  {b A.}
  You can't declare a variable of type {b var}\ {i inj,} or indeed any variable
  whose base type contains jokers.
- This is because variables are execution instances (they exist only during
- execution) but jokers are transformation types (they exist only during
+ This is because variables are execution objects (they exist only during
+ execution) but jokers are transformation objects (they exist only during
  transformation).
  I admit the error messages are misleading, but they are correctly saying that
  you can't do what you're trying to do.
@@ -726,12 +725,13 @@ zeroer :−
  {b A.}
  No, it has the type of the constant or expression with which {i zeroer} was
  called.
- If {i zeroer} was called with an expression of type {b var}\ {i int}0, then
- {i v} has the type {b var}\ {i int}0, and if it was called with an expression
+ If {i zeroer} is called with an expression of type {b var}\ {i int}0, then
+ {i v} has the type {b var}\ {i int}0, and if it is called with an expression
  of type {b var}\ {i int}1, then it has the type {b var}\ {i int}1 instead.
- Arguments to forms can be coerced to {i subtypes} of their corresponding
+ Arguments to forms are coerced to {i subtypes} of their corresponding
  parameter types, not necessarily to {i exactly} those parameter types.
- The ``Revised⁻¹ Report'' calls this {i permissive coercion.}}
+ The Revised⁻¹ Report {goto moe2014 {c [moe 2014]}} calls this
+ {i permissive coercion.}}
  
 {rule}
 
@@ -747,7 +747,7 @@ zeroer :−
   Write the equate {b var}\ {i p}\ {i n}\ :−\ {i e,} where {i p} is the
   type of the procedure you want, {i n} is the name of the variable, and
   {i e} is an expression that returns a procedure of type {i p.}
-  You can write just {b var}\ {i p}\ {i n} if you want.
+  You can write {b var}\ {i p}\ {i n} if you want.
   For example, if you want a variable whose values are procedures that
   take integer arguments and return integers, then you'd write
   {b var}\ {b proc}\ ({i int})\ {i int}\ {i n.}
@@ -764,18 +764,17 @@ zeroer :−
 {justify
   {b A.}
   Write the equate
-  [{i n}]\ {b proc}\ ()\ {b proc}\ ()\ {b row}\ {i char}\ {i p}\ :−\ {i e,}
+  [{i n}]\ {b proc}\ ()\ {b proc}\ ()\ {b ref}\ {i char}\ {i p}\ :−\ {i e,}
   where {i e} returns such an array.
   You can leave out the {i e} if you declare {i p} as a variable.
   Note that unlike the corresponding type in C, this is easily read from
   left to right.
 
-  I assume you want to represent characters as {i char}'s, but it will also
-  work with {i char}0's.
+  I assume you want to represent characters as {i char}'s.
   I also assume that you want procedures without arguments, and that you
-  want a {i row} pointer to a character.
+  want a {i ref} pointer to a character.
   If you want the procedure to return a string, then you should use the type
-  {i string} instead of {b row}\ {i char.}}
+  {i string} instead of {b ref}\ {i char.}}
 
 {justify
   {b Q.}
@@ -806,8 +805,8 @@ nextState :−
 
   If {i p} is a pointer to a procedure that doesn't accept arguments, then
   you call it by writing {i p}↑() or {i p}^().
-  You must include the explicit dereference operator `↑' or `^', because Orson
-  thinks a pointer to a procedure is different from a procedure itself.}
+  You must include the explicit dereferencing operator `↑' or `^', because
+  Orson thinks a pointer to a procedure is different from a procedure itself.}
 
 {justify
   {b Q.}
@@ -846,7 +845,7 @@ nextState :−
   Also, they're used a lot, and building them into Orson makes them more
   efficient than if they were defined as methods.
   The operators {b and,} {b or,} {b ref,} {b row,} {b type,} `∧', and `∨' are
-  built in because they don't evaluate all their arguments, or because they
+  built in because they might not evaluate all their arguments, or because they
   evaluate them in special ways.}
 
 {justify
@@ -899,11 +898,10 @@ nextState :−
    Common Lisp's {i backquote} mechanism helps abbreviate this.
    Orson doesn't use (and doesn't need) anything like backquotes.}
  {justify
-   The arguments of a form are evaluated (they're {i transformed}) before the
-   form is applied.
+   The arguments of a form are transformed before the form is applied.
    This is not true of Common Lisp macros, whose arguments are not evaluated.}
  {justify
-   Forms are properly lexically scoped.
+   Forms are lexically scoped.
    This is not true of Common Lisp macros, whose arguments can violate lexical
    scoping.
    For example, if an argument {t x} is passed to a macro that uses {t x} as
@@ -969,8 +967,7 @@ nextState :−
 
 {justify
   {b Q.}
-  Form subsumption doesn't always detect a member form that can never be
-  called.
+  Form subsumption can't always detect member forms that can never be called.
   Here's an alternate form which returns a string that is the name of an
   integer type.}
 
@@ -1005,13 +1002,13 @@ intkToString :−
   by any given implementation.
   Someday, when we're all using computers with 1024-bit words, Orson will
   be ready with the integer type {i int}7
-  (2⁷\ byte ×\ 8\ bit\ byte⁻¹\ = 1024 bits).
+  (2⁷\ byte ×\ 2³\ bit\ byte⁻¹\ = 2¹⁰ bit\ = 1024 bit).
   It could happen.}
 
 {justify
  {b Q.}
- But form subsumption {i still} doesn't always detect a member form that can
- never be called.
+ But form subsumption {i still} can't always detect member forms that can never
+ be called.
  Here's an alternate form which returns a string that is the name of a numeric
  type.}
 
@@ -1092,19 +1089,21 @@ Sum :−
   this:}
 
 {narrow{orson
-compl :− (tuple real re, real im)
+com :− (tuple real re, real im)
 
 "+" :−
- (form (compl l, compl r) compl:
-  (with var compl z
-   do z.re := l.re + l.re
+ (form (com l, com r) com:
+  (with
+    com l :− (past l)
+    com r :− (past r)
+    var com z
+   do z.re := l.re + r.re
       z.im := l.im + r.im
       z))}}
 
 {justify
-  That works fine, but if {i z}₁ has the type {b var}\ {i compl,} and {i z}₂
-  has the type {i compl,} I get an error message when I write
-  {i z}₁\ +=\ {i z}₂.
+  That works fine, but if {i z}₁ has the type {b var}\ {i com,} and {i z}₂
+  has the type {i com,} I get an error message when I write {i z}₁\ +=\ {i z}₂.
   What's wrong?}
 
 {justify
@@ -1117,7 +1116,7 @@ compl :− (tuple real re, real im)
 
 {narrow{orson
 "+=" :−
- (form (var compl l, compl r) comp:
+ (form (var com l, com r) com:
    l := l + r)}}
 
 {justify
@@ -1131,7 +1130,7 @@ compl :− (tuple real re, real im)
   {b Q.}
   Then why does {i z}₁\ :=\ {i z}₂ still work?
   Why didn't I have to redefine {i "}:={i "} so it works with the type
-  {i comp}?}
+  {i com}?}
 
 {justify
   {b A.}
@@ -1163,54 +1162,37 @@ compl :− (tuple real re, real im)
 !  {c Wrong.}
 mapped :−
  (form (int k) var int:
-  (if 0 ≤ k < length(map)
-   then map[k]
-   else throw("index out of range")))}}
+  (with int k :− (past k)
+   do (if 0 ≤ k < length(map)
+       then map[k]
+       else throw("index out of range"))))}}
 
 {justify
-  The idea is that if {i k} is a legal index for the array {i map,} then
-  {i mapped}({i k}) should evaluate to the variable at that index.
-  If {i k} isn't a legal index, then it should throw an exception.
+  The idea is that if {i k} is a legal index for the array {i map,} then the
+  call {i mapped}({i k}) should evaluate to the variable at that index.
+  If {i k} isn't a legal index, then the call should throw an exception.
   Unfortunately, Orson always coerces the variable to its value.}
 
 {justify
   {b A.}
-  The problem is that if an expression inside an {i if} clause evaluates to
-  a variable, then the variable gets coerced to its value.
-  So your form doesn't evaluate to the integer variable at index {i k,} but
-  rather to the integer at index {i k.}
-  You might think that you could fix the form like this:}
-
-{narrow{orson
-!  {c Wrong.}
-mapped :−
- (form (int k) var int:
-  (if ¬ (0 ≤ k < length(map))
-   then throw("index out of range"))
-  map[k])}}
-
-{justify
-  But this doesn't work either: it still transforms to the integer at index
-  {i k.}
-  The reason is that {i map}[{i k}] is the last expression in a subsequence
-  (Orson has silently inserted a semicolon after the {i if} clause).
-  An expression in a subsequence that returns a variable gets coerced to the
-  variable's value.
-  The solution maybe isn't obvious:}
+  The problem is that if an expression inside an {i if} clause (or a {i while}
+  clause) evaluates to a variable, then the variable gets coerced to its value.
+  The solution maybe isn't obvious.}
 
 {narrow{orson
 mapped :−
  (form (int k) var int:
    map[
-    (if 0 ≤ k < length(map)
-     then k
-     else throw("index out of range"))])}}
+    (with int k :− (past k)
+     do (if 0 ≤ k < length(map)
+         then k
+         else throw("index out of range")))])}}
 
 {justify
-  Now {i map}[...] appears directly as the form's body, so it's not part of a
-  subsequence, and the variable to which it evaluates won't be coerced.
-  Form bodies, lists, some arguments to methods, and {b type} prefixes are the
-  only places in Orson where variables aren't coerced to their values.}
+  Now {i map}[...] appears directly as the form's body, so the variable to
+  which it evaluates isn't coerced.
+  Form bodies, lists, some method arguments, and {b type} prefixes are the only
+  places in Orson where variables aren't coerced to their values.}
 
 {rule}
 
@@ -1293,8 +1275,8 @@ abs :−
   If we all wrote in Lisp, then many of our programming problems would go
   away.
   But that's not what you meant.
-  For the sake of argument, let's assume parentheses are evil, so languages
-  should need as few as possible.
+  For the sake of argument, let's assume parentheses are evil, so programs
+  should use as few of them as possible.
   I claim that for some programs, Orson uses {i fewer} parentheses than
   other languages.
   Consider the following C fragment:}
@@ -1363,7 +1345,7 @@ else
   classical 1960 {c bnf.}
 
   The current Orson-to-{c gcc} translator resembles a Lisp interpreter
-  internally, and Orson forms are really just a typed λ-calculus.
+  internally, and Orson forms are really just typed λ-expressions.
   However, you can write Orson programs without knowing that.}
 
 {rule}
@@ -1415,8 +1397,8 @@ bang :− (form () void: p↑)}}
   They want to represent most objects as strings.
   They would be better off with data structures that are specifically designed
   for the objects they want to represent.
-  You should use strings only when you want to print things (although there
-  are exceptions to this general rule).
+  In general, you should use strings only for things that are connected somehow
+  with input and output.
 
   This means the representation used for strings is largely irrelevant, and the
   designer of a programming language is free to pick any representation that is
@@ -1426,10 +1408,10 @@ bang :− (form () void: p↑)}}
   It's convenient because it lets Orson use library procedures that have
   already been written for C, without change.
 
-  If you're using strings only for printing, then you must traverse them
-  anyway, to visit their characters.
-  You might need to find the length of a string before you print it.
-  However, traversing a string twice, first to find its length, and then to
+  If you print a string, then you must traverse it anyway, to visit its
+  characters.
+  You might need to find the string's length before you print it.
+  However, traversing the string twice, first to find its length, and then to
   print it, shouldn't affect run time much, because traversal should be much
   faster than printing.}
 
@@ -1456,28 +1438,36 @@ bang :− (form () void: p↑)}}
  {layout
   {row
    {left `\ -\ '\ }
-   {left is a {c hyphen-minus} (U+002D),}}
+   {left (U+002D)\ }
+   {left is a {c hyphen-minus},}}
   {row
    {left `\ ‐\ '\ }
-   {left is a {c hyphen} (U+2010),}}
+   {left (U+2010)}
+   {left is a {c hyphen},}}
   {row
    {left `\ ‑\ '\ }
-   {left is a {c non-breaking hyphen} (U+2011),}}
+   {left (U+2011)}
+   {left is a {c non-breaking hyphen},}}
   {row
    {left `\ ‒\ '\ }
-   {left is a {c figure dash} (U+2012),}}
+   {left (U+2012)}
+   {left is a {c figure dash},}}
   {row
    {left `\ –\ '\ }
-   {left is an {c en dash} (U+2013),}}
+   {left (U+2013)}
+   {left is an {c en dash},}}
   {row
    {left `\ —\ '\ }
-   {left is an {c em dash} (U+2014),}}
+   {left (U+2014)}
+   {left is an {c em dash},}}
   {row
    {left `\ ―\ '\ }
-   {left is a {c horizontal bar} (U+2015), and}}
+   {left (U+2015)}
+   {left is a {c horizontal bar}, and}}
   {row
    {left `\ −\ '\ }
-   {left is a {c minus sign} (U+2212).}}}}
+   {left (U+2212)}
+   {left is a {c minus sign}.}}}}
 
 {justify
   This may not be a complete list.
@@ -1614,7 +1604,7 @@ unequal :−
   the limitations of the {c ascii} character set, the best choice is the
   quotation mark `\ {i "}\ '.
   Orson must be compatible with {c ascii,} so its programs can be typed on
-  ordinary {c us} keyboards, and so they can be run on computers that don't
+  ordinary {c us} keyboards, and so they can run on computers that don't
   support Unicode.
 
   Once I'd used the quotation mark, I had to use other characters to notate
@@ -1663,14 +1653,11 @@ unequal :−
    In Orson, a name's type tells you if it's a constant or a variable, not the
    way it's spelled.
    You shouldn't encode an object's type into its name, as in the
-   ``Hungarian Style,'' because then you must change the name if you ever
+   ``Hungarian Style,'' because then you must change its name if you ever
    change its type.}
  {justify
-   Orson constant names are different from C constant names.
-   For example, in Orson you can bind a constant name to the value of a
-   variable during execution.
-   You can't do that in C, so you shouldn't write constant names as you do in
-   C.}
+   Orson constant names are different from C constant names, so you shouldn't
+   write them as you do in C.}
  {justify
    Orson uses constant names more often than C.
    It's a hassle to spell them in a special way.}
@@ -1687,8 +1674,8 @@ unequal :−
 {justify
   {b Q.}
   But then why are secret names spelled differently from other names?
-  If you want to change a secret name into a plain name, then you must change
-  it whenever it appears.}
+  If you want to change a secret name into a plain name, then you must also
+  change it whenever it appears.}
 
 {justify
   {b A.}
@@ -1860,7 +1847,6 @@ chain :−
   The problem is that {q ''ten\ chars''} has the type {i string,} which is
   bound to {b row}\ {i char}0.
   The equate expects an array of type [10]\ {i char,} a different type.
-
   Also, your array type describes an array of ten {i char}1's (each 32 bits)
   but but there are ten {i char}0's in your string (each 8 bits).
   There are two different kinds of characters because Orson uses the {c utf}-8
@@ -1870,7 +1856,9 @@ chain :−
   It doesn't give you the array that you wanted, but a string.
   That might be just as good, since you can index it to obtain individual
   characters.
-  For example, {i tc}[0] returns the character {q 't'.}}
+  For example, {i tc}[0] returns the character {q 't'.}
+  This works because each character in the string is represented as a single
+  byte.}
 
 {justify
   {b Q.}
@@ -1952,8 +1940,9 @@ foo :−
 {justify
   {b A.}
   The type {i null} can't have a base type, because {i nil} references no
-  object, and the lack of an object shouldn't have a type.
-  (What type is a unicorn?)
+  object.
+  It's not obvious what type the lack of an object should have: what type is a
+  unicorn?
   The base type of {i null} can't be {i void} because {i void} is the type
   of an object, namely {i skip.}
   If {i null} had the base type {i void,} then maybe {i nil} would reference
@@ -2031,7 +2020,7 @@ foo :−
 {justify
   {b Q.}
   Is there an Orson compiler that produces machine code directly, instead of
-  producing {c gcc} code and then compiling it?}
+  producing {c Gnu} C code and then compiling it?}
 
 {justify
   {b A.}
@@ -2105,7 +2094,7 @@ foo :−
   Because the present compiler was developed on 32-bit computers, mostly with
   Intel {i x}86 processors.
   There's no reason it couldn't provide {i int}3, since the compiler translates
-  Orson programs to {c gcc,} which supports 64-bit integers.
+  Orson programs to {c Gnu} C, which supports 64-bit integers.
   The problem is that information about simple types appears in many different
   places throughout the present compiler.
   To provide {i int}3, I'd have to find all those places and make small changes
@@ -2113,15 +2102,14 @@ foo :−
   It wouldn't be hard, just tedious.
 
   I shouldn't have designed the compiler that way.
-  I should have kept all information about simple types in some kind of central
-  repository.
-  If I ever rewrite the Orson compiler (maybe in Orson itself) I may implement
-  such a thing.}
+  I should have kept information about simple types in one place, or in only a
+  few places.
+  If I ever rewrite the Orson compiler (maybe in Orson itself) I may do that.}
 
 {justify
   {b Q.}
   I can't compile the Orson compiler on my Apple Macintosh computer.
-  I can't compile {c gcc} code produced by the Orson compiler, either.
+  I can't compile {c Gnu} C code produced by the Orson compiler, either.
   What's wrong?}
 
 {justify
@@ -2130,9 +2118,9 @@ foo :−
   programs.
   Unfortunately, significant parts of the Orson compiler are written in
   continuation passing style {c (cps)}, which is most easily simulated in
-  {c gcc} with nested functions.
-  {c Gcc} code produced by the Orson compiler might also use nested functions,
-  even if it's not written in {c cps.}
+  {c Gnu} C with nested functions.
+  {c Gnu} C code produced by the Orson compiler might also use nested
+  functions, even if it doesn't use {c cps.}
 
   Nested functions were eliminated because the {c gcc} compiler implements
   them using {i trampolines:} code fragments that are written to the stack
@@ -2143,7 +2131,7 @@ foo :−
   execute code on the stack.
 
   As far as I know, the Orson compiler now works on current Apple systems,
-  and so do the {c gcc} programs that it produces.
+  and so do the {c Gnu} C programs that it produces.
   It may be necessary to add extra options to the {c gcc} command to make those
   things happen.
   I don't follow Apple much any more, so I don't necessarily know what those
@@ -2170,15 +2158,15 @@ foo :−
   At least it does if the procedure returns an object.
 
   Java compilers try to enumerate all such paths, complaining if they find
-  one that doesn't end with a {t return} statement
+  one that doesn't end with a {i return} statement
   {goto gos1996 {c [gos 1996].}}
   Unfortunately, Turing says it's impossible to do this.
   As a result, Java sometimes complains needlessly, and you must add dummy
-  {t return} statements to shut it up.
+  {i return} statements to shut it up.
 
   Some C compilers, however, apparently don't care.
   They say that a procedure returns an unspecified object if it stops without
-  executing a {t return} statement.
+  executing a {i return} statement.
   I'm not sure if this is better than Java, or worse, but it has the virtue
   of being simpler.
 
