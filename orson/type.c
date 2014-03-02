@@ -255,14 +255,16 @@ refObject skolemize(refObject layer, refObject type)
           setKey(f0.labeler, type, nil, nil);
           switch (toHook(car(type)))
 
-//  Visit a trivially Skolemizable type. An ALTS, GEN, or FORM type is, because
-//  it can have an ALTS type as a nontrivial subtype.
+//  Visit a trivially Skolemizable type. An ALTS, FORM, or GEN type can have an
+//  ALTS type as a subtype. A REF or ROW type can have NULL as a subtype.
 
           { case altsHook:
             case arraysHook:
             case formHook:
             case genHook:
             case jokerHook:
+            case referHook:
+            case rowHook:
             case skoHook:
             case tuplesHook:
             { return true; }
@@ -311,17 +313,6 @@ refObject skolemize(refObject layer, refObject type)
                 { pars = cddr(pars); }}
               type = cadr(type);
               break; }
-
-//  Visit a REF or ROW type. It's Skolemizable if its base type is. It must not
-//  be forwarded.
-
-            case referHook:
-            case rowHook:
-            { if (isForwarded(type))
-              { return false; }
-              else
-              { type = cadr(type);
-                break; }}
 
 //  Visit a TUPLE type. It's Skolemizable if it has a Skolemizable slot type or
 //  if it has the missing name NO NAME as a slot name.
