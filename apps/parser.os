@@ -64,8 +64,8 @@
   var int    tokenRadix     !  Radix of numeric TOKEN.
 
 !  ERROR. Write an error message about the current line showing elements of the
-!  list OBJECTS according to FORMAT. Show the current LINE NUMBER and PATH too.
-!  Then EXIT.
+!  list OBJECTS according to FORMAT. Show the current LINE NUMBER and PATH too,
+!  then EXIT.
 
   error :−
    (alt
@@ -191,7 +191,7 @@
   boldAlsoToken     :− makeToken()  !  The name "also".
   boldAltToken      :− makeToken()  !  The name "alt".
   boldAltsToken     :− makeToken()  !  The name "alts".
-  boldAndToken      :− makeToken()  !  The name "and".
+  boldAndToken      :− makeToken()  !  The name "and" or the symbol "∧".
   boldCaseToken     :− makeToken()  !  The name "case".
   boldCatchToken    :− makeToken()  !  The name "catch".
   boldDoToken       :− makeToken()  !  The name "do".
@@ -204,7 +204,7 @@
   boldLoadToken     :− makeToken()  !  The name "load".
   boldNoneToken     :− makeToken()  !  The name "none".
   boldOfToken       :− makeToken()  !  The name "of".
-  boldOrToken       :− makeToken()  !  The name "or".
+  boldOrToken       :− makeToken()  !  The name "or" or the symbol "∨".
   boldPastToken     :− makeToken()  !  The name "past".
   boldProcToken     :− makeToken()  !  The name "proc".
   boldProgToken     :− makeToken()  !  The name "prog".
@@ -223,7 +223,7 @@
   colonToken        :− makeToken()  !  The symbol ":".
   colonDashToken    :− makeToken()  !  The symbol ":-" or ":−".
   commaToken        :− makeToken()  !  The symbol ",".
-  comparisonToken   :− makeToken()  !  A comparison operator like "<" or "≥".
+  comparisonToken   :− makeToken()  !  A comparison operator, like "<" or "≥".
   dollarToken       :− makeToken()  !  The symbol "$".
   dotToken          :− makeToken()  !  The symbol ".".
   endFileToken      :− makeToken()  !  End of source file.
@@ -234,16 +234,16 @@
   openBracketToken  :− makeToken()  !  The symbol "[".
   openParenToken    :− makeToken()  !  The symbol "(".
   plainNameToken    :− makeToken()  !  A plain name.
-  postfixToken      :− makeToken()  !  A postfix operator like "^" or "↓".
-  prefixToken       :− makeToken()  !  A prefix operator like "+" or "~".
-  productToken      :− makeToken()  !  A product operator like "*" or "×".
+  postfixToken      :− makeToken()  !  A postfix operator, like "^" or "↓".
+  prefixToken       :− makeToken()  !  A prefix operator, like "+" or "~".
+  productToken      :− makeToken()  !  A product operator, like "*" or "×".
   quotedNameToken   :− makeToken()  !  A quoted name.
   realToken         :− makeToken()  !  A nonnegative real literal.
   secretNameToken   :− makeToken()  !  A secret name.
   semicolonToken    :− makeToken()  !  The symbol ";".
   stringToken       :− makeToken()  !  A string literal.
-  sumToken          :− makeToken()  !  A sum operator not a prefix like "|".
-  sumPrefixToken    :− makeToken()  !  A sum operator or a prefix like "−".
+  sumToken          :− makeToken()  !  A sum operator not a prefix, like "|".
+  sumPrefixToken    :− makeToken()  !  A sum operator or a prefix, like "−".
 
 !  NEXT TOKEN. Advance TOKEN to the next token. TOKEN ENDS TERM is true iff the
 !  next token can end a term. A NEWLINE TOKEN immediately following such a term
@@ -450,7 +450,7 @@
 
 !  NEXT END LINE. Scan the end of a line. If the previous token can be the last
 !  token of a term, then we treat the end of the line as a NEWLINE TOKEN. If it
-!  cannot be, then we treat it as a blank.
+!  can't be the last token of a term, then we treat it as a blank.
 
       nextEndLine :−
        (form () void:
@@ -568,7 +568,7 @@
        (proc () void:
         (with
 
-!  NEXT DIGITS. Scan one or more digits of RADIX.
+!  NEXT DIGITS. Scan one or more digits, whose radix is RADIX.
 
           nextDigits :−
            (alt
@@ -695,7 +695,7 @@
           else token := plainNameToken) 
          tokenEndsTerm := (token = plainNameToken))
 
-!  NEXT QUESTION. Scan a hook, which begins with a question mark.
+!  NEXT QUESTION. Scan a hook, beginning with a question mark.
 
       nextQuestion :−
        (form () void:
@@ -801,7 +801,7 @@
             lb('ϵ'): nextPlainName()
                none: nextIllegal()))
 
-!  NEXT LATIN TOKEN. Scan a token that begins with an ASCII character.
+!  NEXT LATIN TOKEN. Scan a token that begins with a Latin character.
 
       nextLatinToken :−
        (form () void:
@@ -985,7 +985,7 @@
 
 !  PARSING. Wrapper. Write a message like that of PARSED that says a parser has
 !  been entered. Call BODY. Then write a similar message that says a parser has
-!  been executed. If TRACING PARSER is false, then simply call BODY.
+!  been exited. If TRACING PARSER is false, then simply call BODY.
 
   parsing :−
    (alt
@@ -1202,7 +1202,8 @@
                 else false)
           else false))))
 
-!  NEXT EXPRESSION. Parse one or more disjunctions separated by assigners.
+!  NEXT EXPRESSION. Parse a disjunction, or exactly two disjunctions, separated
+!  by an assigner.
 
   nextExpression :−
    (proc () void:
@@ -1327,7 +1328,7 @@
             nextTerm()))
 
 !  NEXT OPEN BRACKET TERM. Parse [ A ] T, where A is a series of arguments, and
-!  T is aterm.
+!  T is a term.
 
       nextOpenBracketTerm :−
        (form () void:
@@ -1865,6 +1866,6 @@
                    exit(1))
              nextProgram()
              (if ¬ close(source)
-              then writeln(''%s: Can't open "%s".'': self, path)
+              then writeln(''%s: Can't close "%s".'': self, path)
                    exit(1))))
 )

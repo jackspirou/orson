@@ -206,7 +206,8 @@
                 else false)
           else false))))
 
-!  NEXT EXPRESSION. Parse one or more disjunctions separated by assigners.
+!  NEXT EXPRESSION. Parse a disjunction, or exactly two disjunctions, separated
+!  by an assigner.
 
   nextExpression :−
    (proc () void:
