@@ -17,264 +17,264 @@
 //  with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <errno.h>                          // Error numbers.
-#include <float.h>                          // Constants about real types.
-#include <limits.h>                         // Constants about integer types.
-#include <math.h>                           // Mathematical functions.
-#include <setjmp.h>                         // Nonlocal GOTOs.
-#include <stdarg.h>                         // Variable argument lists.
-#include <stdio.h>                          // Standard I/O functions.
-#include <stdlib.h>                         // Utility functions.
-#include <string.h>                         // String functions.
-#include <time.h>                           // Date and time functions.
-#include <sys/stat.h>                       // File status functions.
-#include <sys/types.h>                      // System data types.
-#include <unistd.h>                         // POSIX standard constants.
+#include <errno.h>      //  Error numbers.
+#include <float.h>      //  Constants with real types.
+#include <limits.h>     //  Constants with integer types.
+#include <math.h>       //  Mathematical functions.
+#include <setjmp.h>     //  Nonlocal GOTOs.
+#include <stdarg.h>     //  Variable argument lists.
+#include <stdio.h>      //  Standard I/O functions.
+#include <stdlib.h>     //  Utility functions.
+#include <string.h>     //  String functions.
+#include <time.h>       //  Date and time functions.
+#include <sys/stat.h>   //  File status functions.
+#include <sys/types.h>  //  System data types.
+#include <unistd.h>     //  POSIX standard constants.
 
 //  Bytes in binary, used when processing UTF-8 chars. The GCC compiler now has
 //  binary integer literals, but some earlier versions did not.
 
-#define b00000000        0x00               // Min 1-byte char.
-#define b00000001        0x01               // Mask for low   bit  of a byte.
-#define b00000011        0x03               // Mask for low 2 bits of a byte.
-#define b00000111        0x07               // Mask for low 3 bits of a byte.
-#define b00001111        0x0F               // Mask for low 4 bits of a byte.
-#define b00011111        0x1F               // Mask for low 5 bits of a byte.
-#define b00111111        0x3F               // Mask for low 6 bits of a byte.
-#define b01111111        0x7F               // Max 1-byte char.
-#define b10000000        0x80               // Min continuation byte.
-#define b10111111        0xBF               // Max continuation byte.
-#define b11000000        0xC0               // Min header for a 2 byte char.
-#define b11011111        0xDF               // Max header for a 2 byte char.
-#define b11100000        0xE0               // Min header for a 3 byte char.
-#define b11101111        0xEF               // Max header for a 3 byte char.
-#define b11110000        0xF0               // Min header for a 4 byte char.
-#define b11110111        0xF7               // Max header for a 4 byte char.
-#define b11111000        0xF8               // Min header for a 5 byte char.
-#define b11111011        0xFB               // Max header for a 5 byte char.
-#define b11111100        0xFC               // Min header for a 6 byte char.
-#define b11111101        0xFD               // Max header for a 6 byte char.
-#define b11111110        0xFE               // Min illegal char.
-#define b11111111        0xFF               // Max illegal char.
+#define b00000000  0x00  //  Min 1-byte char.
+#define b00000001  0x01  //  Mask for low   bit  of a byte.
+#define b00000011  0x03  //  Mask for low 2 bits of a byte.
+#define b00000111  0x07  //  Mask for low 3 bits of a byte.
+#define b00001111  0x0F  //  Mask for low 4 bits of a byte.
+#define b00011111  0x1F  //  Mask for low 5 bits of a byte.
+#define b00111111  0x3F  //  Mask for low 6 bits of a byte.
+#define b01111111  0x7F  //  Max 1-byte char.
+#define b10000000  0x80  //  Min continuation byte.
+#define b10111111  0xBF  //  Max continuation byte.
+#define b11000000  0xC0  //  Min header for a 2 byte char.
+#define b11011111  0xDF  //  Max header for a 2 byte char.
+#define b11100000  0xE0  //  Min header for a 3 byte char.
+#define b11101111  0xEF  //  Max header for a 3 byte char.
+#define b11110000  0xF0  //  Min header for a 4 byte char.
+#define b11110111  0xF7  //  Max header for a 4 byte char.
+#define b11111000  0xF8  //  Min header for a 5 byte char.
+#define b11111011  0xFB  //  Max header for a 5 byte char.
+#define b11111100  0xFC  //  Min header for a 6 byte char.
+#define b11111101  0xFD  //  Max header for a 6 byte char.
+#define b11111110  0xFE  //  Min illegal char.
+#define b11111111  0xFF  //  Max illegal char.
 
 //  Char constants in ASCII, UTF-8 Unicode, and UTF-32 Unicode. Some have names
 //  because their printed representations are so ugly.
 
-#define accentChar       '`'                // ASCII grave accent char.
-#define alertChar        0x07               // ASCII bell char.
-#define apostropheChar   '\''               // ASCII apostrophe char.
-#define backslashChar    '\\'               // ASCII backslash char.
-#define backspaceChar    0x08               // ASCII backspace char.
-#define caretChar        "^"                // ASCII error pointer.
-#define doubleChar       '"'                // ASCII double quote char.
-#define eofChar          EOF                // End of file.
-#define eolChar          '\n'               // End of line.
-#define eopChar          0x01               // End of program.
-#define eosChar          0x00               // End of string.
-#define escapeChar       0x1B               // ASCII escape char.
-#define formfeedChar     0x0C               // ASCII formfeed char.
-#define horizontalChar   0x09               // ASCII horizontal tab char.
-#define illegalChar      0xFFFD             // UTF-32 illegal char.
-#define linefeedChar     0x0A               // ASCII linefeed char.
-#define maxChar          0x7FFFFFFF         // Maximum possible char.
-#define minusChar        0x2212             // UTF-32 minus sign.
-#define noBreakBlank     0xA0               // UTF-32 nonbreaking blank.
-#define returnChar       0x0D               // ASCII carriage return char.
-#define unknownWidthChar 0x25A1             // UTF-32 white square.
-#define uparrowChar      "\xE2\x86\x91"     // UTF-8 uparrow.
-#define verticalChar     0x0B               // ASCII vertical tab char.
+#define accentChar       '`'             //  ASCII grave accent char.
+#define alertChar        0x07            //  ASCII bell char.
+#define apostropheChar   '\''            //  ASCII apostrophe char.
+#define backslashChar    '\\'            //  ASCII backslash char.
+#define backspaceChar    0x08            //  ASCII backspace char.
+#define caretChar        "^"             //  ASCII error pointer.
+#define doubleChar       '"'             //  ASCII double quote char.
+#define eofChar          EOF             //  End of file.
+#define eolChar          '\n'            //  End of line.
+#define eopChar          0x01            //  End of program.
+#define eosChar          0x00            //  End of string.
+#define escapeChar       0x1B            //  ASCII escape char.
+#define formfeedChar     0x0C            //  ASCII formfeed char.
+#define horizontalChar   0x09            //  ASCII horizontal tab char.
+#define illegalChar      0xFFFD          //  UTF-32 illegal char.
+#define linefeedChar     0x0A            //  ASCII linefeed char.
+#define maxChar          0x7FFFFFFF      //  Maximum possible char.
+#define minusChar        0x2212          //  UTF-32 minus sign.
+#define noBreakBlank     0xA0            //  UTF-32 nonbreaking blank.
+#define returnChar       0x0D            //  ASCII carriage return char.
+#define unknownWidthChar 0x25A1          //  UTF-32 white square.
+#define uparrowChar      "\xE2\x86\x91"  //  UTF-8 uparrow.
+#define verticalChar     0x0B            // ASCII vertical tab char.
 
 //  Count and length constants.
 
-#define bitsPerInt       32                 // Bits in an INT.
-#define boldCount        74                 // Number of "bold" names.
-#define charIndexBits    21                 // Bits in a file char index.
-#define heapSize         1048576            // Bytes in a HEAP.
-#define hexDigitsPerInt  8                  // Hex digits in an INT.
-#define intsPerSet       8                  // For 256-element SETs.
-#define lineNumberLength 5                  // Digits in a line number.
-#define maxBufferLength  80                 // Maximum length of BUFFER.
-#define maxHunkSize      CHAR_MAX           // Size of largest allocated HUNK.
-#define maxFileCount     1024               // Number of distinct loaded files.
-#define maxInt           INT_MAX            // Maximum C INT value.
-#define maxLineLength    1024               // Longest line allowed in SOURCE.
-#define maxLineNumber    99999              // LINE NUMBER LENGTH nines.
-#define maxPathLength    PATH_MAX           // Maximum length of a pathname.
-#define maxRadix         36                 // Maximum integer token radix.
-#define maxSnipLength    16                 // Maximum chars in a SNIP.
-#define minRadix         2                  // Minimum integer token radix.
-#define namesLength      997                // Size of NAMES, a "big" prime.
+#define bitsPerInt       32        //  Bits in an INT.
+#define boldCount        74        //  Number of "bold" names.
+#define charIndexBits    21        //  Bits in a file char index.
+#define heapSize         1048576   //  Bytes in a HEAP.
+#define hexDigitsPerInt  8         //  Hex digits in an INT.
+#define intsPerSet       8         //  For 256-element SETs.
+#define lineNumberLength 5         //  Digits in a line number.
+#define maxBufferLength  80        //  Maximum length of BUFFER.
+#define maxHunkSize      CHAR_MAX  //  Size of largest allocated HUNK.
+#define maxFileCount     1024      //  Number of distinct loaded files.
+#define maxInt           INT_MAX   //  Maximum C INT value.
+#define maxLineLength    1024      //  Longest line allowed in SOURCE.
+#define maxLineNumber    99999     //  LINE NUMBER LENGTH nines.
+#define maxPathLength    PATH_MAX  //  Maximum length of a pathname.
+#define maxRadix         36        //  Maximum integer token radix.
+#define maxSnipLength    16        //  Maximum chars in a SNIP.
+#define minRadix         2         //  Minimum integer token radix.
+#define namesLength      997       //  Size of NAMES, a "big" prime.
 
 //  Miscellaneous abbreviations and constants.
 
-#define attribute        __attribute__      // Because it's ugly.
-#define cHeader          ".h"               // C header file extension.
-#define cSource          ".c"               // C source file extension.
-#define compiler         "gcc -g -w "       // How to compile C code.
-#define F                false              // Abbreviation for FALSE.
-#define false            0                  // A fake FALSE value.
-#define fileBytes        st_size            // Because it's ugly.
-#define hexDigits        "0123456789ABCDEF" // Hexadecimal digits.
-#define hexRealsAllowed  true               // Hex real constants supported?
-#define hunkAlign        alignof(double)    // Alignment of HUNKs in a HEAP.
-#define me               "Orson"            // This program's name.
-#define nameDelimiter    "_o"               // Used to write C names.
-#define nil              NULL               // The null pointer.
-#define orsonPrelude     ".op"              // Orson prelude file extension.
-#define orsonSource      ".os"              // Orson source file extension.
-#define outRange         ERANGE             // Because it's ugly.
-#define T                true               // Abbreviation for TRUE.
-#define targetFile       "Out"              // File to receive C code.
-#define toss             r(tossed)          // Points to an ignored pointer.
-#define true             1                  // A fake TRUE value.
-#define vaArg            va_arg             // Because it's ugly.
-#define vaEnd            va_end             // Because it's ugly.
-#define vaList           va_list            // Because it's ugly.
-#define vaStart          va_start           // Because it's ugly.
-#define versionName      "Burbot"           // Name of this version.
-#define versionNumber    "0.14.1."          // Number of this version.
+#define attribute        __attribute__       //  Because it's ugly.
+#define cHeader          ".h"                //  C header file extension.
+#define cSource          ".c"                //  C source file extension.
+#define compiler         "gcc -g -w "        //  How to compile C code.
+#define F                false               //  Abbreviation for FALSE.
+#define false            0                   //  A fake FALSE value.
+#define fileBytes        st_size             //  Because it's ugly.
+#define hexDigits        "0123456789ABCDEF"  //  Hexadecimal digits.
+#define hexRealsAllowed  true                //  Hex real constants supported?
+#define hunkAlign        alignof(double)     //  Alignment of HUNKs in a HEAP.
+#define me               "Orson"             //  This program's name.
+#define nameDelimiter    "_o"                //  Used to write C names.
+#define nil              NULL                //  The null pointer.
+#define orsonPrelude     ".op"               //  Orson prelude file extension.
+#define orsonSource      ".os"               //  Orson source file extension.
+#define outRange         ERANGE              //  Because it's ugly.
+#define T                true                //  Abbreviation for TRUE.
+#define targetFile       "Out"               //  File to receive C code.
+#define toss             r(tossed)           //  Points to an ignored pointer.
+#define true             1                   //  A fake TRUE value.
+#define vaArg            va_arg              //  Because it's ugly.
+#define vaEnd            va_end              //  Because it's ugly.
+#define vaList           va_list             //  Because it's ugly.
+#define vaStart          va_start            //  Because it's ugly.
+#define versionName      "Burbot"            //  Name of this version.
+#define versionNumber    "0.14.1."           //  Number of this version.
 
 //  Compositions of CAR and CDR slot accessor macros. Some are never used. They
 //  may appear on either side of "=".
 
-#define car(term)               (term)->car
-#define cdr(term)               (term)->cdr
-#define caar(term)              car(car(term))
-#define cadr(term)              car(cdr(term))
-#define cdar(term)              cdr(car(term))
-#define cddr(term)              cdr(cdr(term))
-#define caaar(term)             car(car(car(term)))
-#define caadr(term)             car(car(cdr(term)))
-#define cadar(term)             car(cdr(car(term)))
-#define caddr(term)             car(cdr(cdr(term)))
-#define cdaar(term)             cdr(car(car(term)))
-#define cdadr(term)             cdr(car(cdr(term)))
-#define cddar(term)             cdr(cdr(car(term)))
-#define cdddr(term)             cdr(cdr(cdr(term)))
-#define caaaar(term)            car(car(car(car(term))))
-#define caaadr(term)            car(car(car(cdr(term))))
-#define caadar(term)            car(car(cdr(car(term))))
-#define caaddr(term)            car(car(cdr(cdr(term))))
-#define cadaar(term)            car(cdr(car(car(term))))
-#define cadadr(term)            car(cdr(car(cdr(term))))
-#define caddar(term)            car(cdr(cdr(car(term))))
-#define cadddr(term)            car(cdr(cdr(cdr(term))))
-#define cdaaar(term)            cdr(car(car(car(term))))
-#define cdaadr(term)            cdr(car(car(cdr(term))))
-#define cdadar(term)            cdr(car(cdr(car(term))))
-#define cdaddr(term)            cdr(car(cdr(cdr(term))))
-#define cddaar(term)            cdr(cdr(car(car(term))))
-#define cddadr(term)            cdr(cdr(car(cdr(term))))
-#define cdddar(term)            cdr(cdr(cdr(car(term))))
-#define cddddr(term)            cdr(cdr(cdr(cdr(term))))
+#define car(term)    (term)->car
+#define cdr(term)    (term)->cdr
+#define caar(term)   car(car(term))
+#define cadr(term)   car(cdr(term))
+#define cdar(term)   cdr(car(term))
+#define cddr(term)   cdr(cdr(term))
+#define caaar(term)  car(car(car(term)))
+#define caadr(term)  car(car(cdr(term)))
+#define cadar(term)  car(cdr(car(term)))
+#define caddr(term)  car(cdr(cdr(term)))
+#define cdaar(term)  cdr(car(car(term)))
+#define cdadr(term)  cdr(car(cdr(term)))
+#define cddar(term)  cdr(cdr(car(term)))
+#define cdddr(term)  cdr(cdr(cdr(term)))
+#define caaaar(term) car(car(car(car(term))))
+#define caaadr(term) car(car(car(cdr(term))))
+#define caadar(term) car(car(cdr(car(term))))
+#define caaddr(term) car(car(cdr(cdr(term))))
+#define cadaar(term) car(cdr(car(car(term))))
+#define cadadr(term) car(cdr(car(cdr(term))))
+#define caddar(term) car(cdr(cdr(car(term))))
+#define cadddr(term) car(cdr(cdr(cdr(term))))
+#define cdaaar(term) cdr(car(car(car(term))))
+#define cdaadr(term) cdr(car(car(cdr(term))))
+#define cdadar(term) cdr(car(cdr(car(term))))
+#define cdaddr(term) cdr(car(cdr(cdr(term))))
+#define cddaar(term) cdr(cdr(car(car(term))))
+#define cddadr(term) cdr(cdr(car(cdr(term))))
+#define cdddar(term) cdr(cdr(cdr(car(term))))
+#define cddddr(term) cdr(cdr(cdr(cdr(term))))
 
 //  Other slot accessor macros. They may appear on either side of "=".
 
-#define bytes(term)             ((term)->bytes)
-#define chars(term)             ((term)->chars)
-#define count(term)             ((term)->count)
-#define degree(term)            ((term)->degree)
-#define end(term)               ((term)->end)
-#define errs(term)              ((term)->errs)
-#define first(term)             ((term)->first)
-#define hunks(term)             ((term)->hunks)
-#define indent(term)            ((term)->indent)
-#define index(term)             ((term)->index)
-#define info(term)              ((term)->info)
-#define key(term)               ((term)->key)
-#define lastHunk(term)          ((term)->lastHunk)
-#define layer(term)             ((term)->layer)
-#define left(term)              ((term)->left)
-#define leftLayer(term)         ((term)->leftLayer)
-#define leftType(term)          ((term)->leftType)
-#define length(term)            ((term)->length)
-#define link(term)              ((term)->link)
-#define marked(term)            ((term)->marked)
-#define next(term)              ((term)->next)
-#define number(term)            ((term)->number)
-#define object(term)            ((term)->object)
-#define path(term)              ((term)->path)
-#define refs(term)              ((term)->refs)
-#define right(term)             ((term)->right)
-#define rightLayer(term)        ((term)->rightLayer)
-#define rightType(term)         ((term)->rightType)
-#define self(term)              ((term)->self)
-#define size(term)              ((term)->size)
-#define space(term)             ((term)->space)
-#define start(term)             ((term)->start)
-#define state(term)             ((term)->state)
-#define stream(term)            ((term)->stream)
-#define string(term)            ((term)->string)
-#define tag(term)               ((term)->tag)
-#define temp(term)              ((term)->temp)
-#define test(term)              ((term)->test)
-#define token(term)             ((term)->token)
-#define type(term)              ((term)->type)
-#define value(term)             ((term)->value)
+#define bytes(term)      ((term)->bytes)
+#define chars(term)      ((term)->chars)
+#define count(term)      ((term)->count)
+#define degree(term)     ((term)->degree)
+#define end(term)        ((term)->end)
+#define errs(term)       ((term)->errs)
+#define first(term)      ((term)->first)
+#define hunks(term)      ((term)->hunks)
+#define indent(term)     ((term)->indent)
+#define index(term)      ((term)->index)
+#define info(term)       ((term)->info)
+#define key(term)        ((term)->key)
+#define lastHunk(term)   ((term)->lastHunk)
+#define layer(term)      ((term)->layer)
+#define left(term)       ((term)->left)
+#define leftLayer(term)  ((term)->leftLayer)
+#define leftType(term)   ((term)->leftType)
+#define length(term)     ((term)->length)
+#define link(term)       ((term)->link)
+#define marked(term)     ((term)->marked)
+#define next(term)       ((term)->next)
+#define number(term)     ((term)->number)
+#define object(term)     ((term)->object)
+#define path(term)       ((term)->path)
+#define refs(term)       ((term)->refs)
+#define right(term)      ((term)->right)
+#define rightLayer(term) ((term)->rightLayer)
+#define rightType(term)  ((term)->rightType)
+#define self(term)       ((term)->self)
+#define size(term)       ((term)->size)
+#define space(term)      ((term)->space)
+#define start(term)      ((term)->start)
+#define state(term)      ((term)->state)
+#define stream(term)     ((term)->stream)
+#define string(term)     ((term)->string)
+#define tag(term)        ((term)->tag)
+#define temp(term)       ((term)->temp)
+#define test(term)       ((term)->test)
+#define token(term)      ((term)->token)
+#define type(term)       ((term)->type)
+#define value(term)      ((term)->value)
 
 //  Pointer dereference and enreference macros. D may be on either side of "=".
 
-#define d(term)                 *(term)
-#define r(term)                 &(term)
+#define d(term) *(term)
+#define r(term) &(term)
 
 //  Type cast macros. Some are never used.
 
-#define toChar(term)            ((char) (term))
-#define toChar0(term)           ((char0Type) (term))
-#define toChar1(term)           ((char1Type) (term))
-#define toInt(term)             ((int) (term))
-#define toInt0(term)            ((int0Type) (term))
-#define toInt1(term)            ((int1Type) (term))
-#define toInt2(term)            ((int2Type) (term))
-#define toReal0(term)           ((real0Type) (term))
-#define toReal1(term)           ((real1Type) (term))
-#define toRefBinder(term)       ((refBinder) (term))
-#define toRefCell(term)         ((refCell) (term))
-#define toRefChar(term)         ((refChar) (term))
-#define toRefCharacter(term)    ((refCharacter) (term))
-#define toRefHook(term)         ((refHook) (term))
-#define toRefFrame(term)        ((refFrame) (term))
-#define toRefInteger(term)      ((refInteger) (term))
-#define toRefJoker(term)        ((refJoker) (term))
-#define toRefHunk(term)         ((refHunk) (term))
-#define toRefName(term)         ((refName) (term))
-#define toRefNode(term)         ((refNode) (term))
-#define toRefObject(term)       ((refPair) (term))
-#define toRefReal(term)         ((refReal) (term))
-#define toRefSnip(term)         ((refSnip) (term))
-#define toRefString(term)       ((refString) (term))
-#define toRefStub(term)         ((refStub) (term))
-#define toRefVoid(term)         ((refVoid) (term))
+#define toChar(term)         ((char) (term))
+#define toChar0(term)        ((char0Type) (term))
+#define toChar1(term)        ((char1Type) (term))
+#define toInt(term)          ((int) (term))
+#define toInt0(term)         ((int0Type) (term))
+#define toInt1(term)         ((int1Type) (term))
+#define toInt2(term)         ((int2Type) (term))
+#define toReal0(term)        ((real0Type) (term))
+#define toReal1(term)        ((real1Type) (term))
+#define toRefBinder(term)    ((refBinder) (term))
+#define toRefCell(term)      ((refCell) (term))
+#define toRefChar(term)      ((refChar) (term))
+#define toRefCharacter(term) ((refCharacter) (term))
+#define toRefHook(term)      ((refHook) (term))
+#define toRefFrame(term)     ((refFrame) (term))
+#define toRefInteger(term)   ((refInteger) (term))
+#define toRefJoker(term)     ((refJoker) (term))
+#define toRefHunk(term)      ((refHunk) (term))
+#define toRefName(term)      ((refName) (term))
+#define toRefNode(term)      ((refNode) (term))
+#define toRefObject(term)    ((refPair) (term))
+#define toRefReal(term)      ((refReal) (term))
+#define toRefSnip(term)      ((refSnip) (term))
+#define toRefString(term)    ((refString) (term))
+#define toRefStub(term)      ((refStub) (term))
+#define toRefVoid(term)      ((refVoid) (term))
 
 //  Type recognizer macros. Some are never used. IS TRIPLE assumes we know TERM
 //  is at least a PAIR.
 
-#define isCell(term)            (tag(term) == cellTag)
-#define isCharacter(term)       (tag(term) == characterTag)
-#define isEvenBinder(term)      (tag(term) == evenBinderTag)
-#define isHook(term)            (tag(term) == hookTag)
-#define isHunk(term)            (tag(term) == hunkTag)
-#define isInteger(term)         (tag(term) == integerTag)
-#define isJoker(term)           (tag(term) == jokerTag)
-#define isLeftBinder(term)      (tag(term) == leftBinderTag)
-#define isMatch(term)           (tag(term) == matchTag)
-#define isName(term)            (tag(term) == nameTag)
-#define isPair(term)            (tag(term) == pairTag)
-#define isReal(term)            (tag(term) == realTag)
-#define isRightBinder(term)     (tag(term) == rightBinderTag)
-#define isSnip(term)            (tag(term) == snipTag)
-#define isString(term)          (tag(term) == stringTag)
-#define isTriple(term)          (degree(term) == tripleDegree)
+#define isCell(term)        (tag(term) == cellTag)
+#define isCharacter(term)   (tag(term) == characterTag)
+#define isEvenBinder(term)  (tag(term) == evenBinderTag)
+#define isHook(term)        (tag(term) == hookTag)
+#define isHunk(term)        (tag(term) == hunkTag)
+#define isInteger(term)     (tag(term) == integerTag)
+#define isJoker(term)       (tag(term) == jokerTag)
+#define isLeftBinder(term)  (tag(term) == leftBinderTag)
+#define isMatch(term)       (tag(term) == matchTag)
+#define isName(term)        (tag(term) == nameTag)
+#define isPair(term)        (tag(term) == pairTag)
+#define isReal(term)        (tag(term) == realTag)
+#define isRightBinder(term) (tag(term) == rightBinderTag)
+#define isSnip(term)        (tag(term) == snipTag)
+#define isString(term)      (tag(term) == stringTag)
+#define isTriple(term)      (degree(term) == tripleDegree)
 
 //  Type transfer macros.
 
-#define jokerTo(term)           string(toRefJoker(term))
-#define nameTo(term)            string(toRefName(term))
-#define toCharacter(term)       self(toRefCharacter(term))
-#define toHook(term)            self(toRefHook(term))
-#define toInteger(term)         self(toRefInteger(term))
-#define toReal(term)            self(toRefReal(term))
-#define toSet(term)             self(toRefJoker(term))
+#define jokerTo(term)     string(toRefJoker(term))
+#define nameTo(term)      string(toRefName(term))
+#define toCharacter(term) self(toRefCharacter(term))
+#define toHook(term)      self(toRefHook(term))
+#define toInteger(term)   self(toRefInteger(term))
+#define toReal(term)      self(toRefReal(term))
+#define toSet(term)       self(toRefJoker(term))
 
 //  Value recognizer macros. They're applied only to variables, so they can use
 //  their parameters more than once.
@@ -295,119 +295,119 @@
 //  These macros are applied either to constants or to variables, so it doesn't
 //  matter if they use their parameters more than once.
 
-#define alignof(term)           __alignof__(term)
-#define hunked(size)            ((size) + rounder((size), (hunkAlign)))
-#define max(left, right)        ((left) > (right) ? (left) : (right))
-#define min(left, right)        ((left) < (right) ? (left) : (right))
-#define ranges(term)            (sizeof(term) / sizeof(range))
-#define rounder(size, align)    (- (size) & ((align) - 1))
+#define alignof(term)        __alignof__(term)
+#define hunked(size)         ((size) + rounder((size), (hunkAlign)))
+#define max(left, right)     ((left) > (right) ? (left) : (right))
+#define min(left, right)     ((left) < (right) ? (left) : (right))
+#define ranges(term)         (sizeof(term) / sizeof(range))
+#define rounder(size, align) (- (size) & ((align) - 1))
 
 //  Macros for the GC frame stack. (See FRAME below, and ORSON/HUNK.)
 
-#define pop()                   frames = link(frames)
-#define push(frame, count)      pushFrame(toRefFrame(r(frame)), (count))
+#define pop()              frames = link(frames)
+#define push(frame, count) pushFrame(toRefFrame(r(frame)), (count))
 
 //  Macros for calling functions that have funny arguments. (See ORSON/MAKE and
 //  ORSON/PRELUDE.)
 
-#define makeJoker(terms...)     makePrefix(jokerHook, makingJoker(terms, 0))
-#define makeSet(terms...)       makingSet(terms, 0)
-#define makeType(type)          makingType(#type, alignof(type), sizeof(type))
+#define makeJoker(terms...) makePrefix(jokerHook, makingJoker(terms, 0))
+#define makeSet(terms...)   makingSet(terms, 0)
+#define makeType(type)      makingType(#type, alignof(type), sizeof(type))
 
 //  ERR. Syntax errors and transformation errors. (See ORSON/ERROR.)
 
 enum
 { minErr,
-  apostropheErr,      //  ax    Apostrophe expected.
-  apostrophesErr,     //  aax   Two apostrophes expected.
-  assertErr,          //  taf   Transformation assertion failed.
-  assignmentErr,      //  asx   Assignment expected.
-  callErr,            //  uc    Unexpected call.
-  chaInjErr,          //  ciex  'cha' or 'inj' expression expected.
-  charErr,            //  chx   Character expected.
-  closeBraceErr,      //  cbcx  Close brace expected.
-  closeBracketErr,    //  cbkx  Close bracket expected.
-  closeParenErr,      //  cpx   Close parenthesis expected.
-  colonDashErr,       //  cdx   Colon dash expected.
-  colonErr,           //  cox   Colon expected.
-  constantErr,        //  cex   Constant expression expected.
-  divideByZeroErr,    //  dbz   Division by zero.
-  doErr,              //  dx    'do' expected.
-  elementErr,         //  uel   Unexpected element in list.
-  errNumberErr,       //  enx   Error number expected.
-  exeErr,             //  eex   'exe' expression expected.
-  fileCloseErr,       //  ccf   Cannot close file.
-  fileOpenErr,        //  cof   Cannot open file.
-  fileSuffixErr,      //  mufs  Missing or unknown file suffix.
-  fileTooBigErr,      //  ftl   File too large.
-  fojErr,             //  fex   'foj' expression expected.
-  formTypeErr,        //  fx    form expected.
-  formsTooDeepErr,    //  frtd  Form recursion too deep.
-  haltErr,            //  ch    Compilation halted.
-  hexDigitErr,        //  hdx   Hexadecimal digit expected.
-  hookErr,            //  hx    Hook expected.
-  illegalCharErr,     //  ic    Illegal character.
-  illegalNumberErr,   //  in    Illegal number.
-  illegalRadixErr,    //  rdx   Radix digit expected.
-  illegalTokenErr,    //  is    Illegal symbol.
-  injErr,             //  iex   'inj' expression expected.
-  internalErr,        //  ie    Internal error.
-  jokerErr,           //  jtx   Joker type expected.
-  labelTypeErr,       //  lhut  Case label has unexpected type.
-  limitErr,           //  ile   Internal limit exceeded.
-  lineTooLongErr,     //  sltl  Source line too long.
-  loadOrProgErr,      //  lpx   'load' or 'prog' expected.
-  memberTypeErr,      //  mftx  Member form type expected.
-  metErr,             //  meex  'met' expression expected.
-  methodErr,          //  mhut  Method has unexpected type.
-  misplacedHookErr,   //  mh    Misplaced hook.
-  mutErr,             //  mux   'mut' expression expected.
-  nameErr,            //  nx    Name expected.
-  negInjErr,          //  nix   Negative 'inj' expression expected.
-  noBaseTypeErr,      //  thnb  Type has no base type.
-  noneErr,            //  nna   'none' not allowed here.
-  nonForwardErr,      //  uftx  Unforwarded pointer type expected.
-  nonJokerErr,        //  njtx  Non joker type expected.
-  nonNegInjErr,       //  nnix  Nonnegative inj expression expected.
-  nonNilErr,          //  nnpx  Non 'nil' pointer expected.
-  nonNullTypeErr,     //  ntnx  Non 'null' pointer type expected.
-  nonPosInjErr,       //  npix  Nonpositive 'inj' expression expected.
-  nonZeroInjErr,      //  nzix  Nonzero 'inj' expression expected.
-  noSuchKeyErr,       //  kne   Key not in environment.
-  noSuchParamErr,     //  nspn  No such parameter name.
-  notBindableErr,     //  gnub  Generic name cannot be bound.
-  notInsideFormErr,   //  nif   Not inside form.
-  objectErr,          //  uo    Unexpected object.
-  ofErr,              //  ox    'of' expected.
-  openParenErr,       //  opx   Open parenthesis expected.
-  outOfMemoryErr,     //  me    Memory exhausted.
-  posInjErr,          //  pie   Positive 'inj' expression expected.
-  quoteErr,           //  qx    Quote expected.
-  rangeErr,           //  oor   Out of range.
-  repeatedLabelErr,   //  rcl   Repeated case label.
-  repeatedNameErr,    //  rn    Repeated name.
-  semicolonErr,       //  slex  Semicolon or line end expected.
-  shadowedGenErr,     //  sgn   Shadowed generic name.
-  slashableErr,       //  scx   Slashable character expected.
-  subsumedFormErr,    //  sf    Subsumed form.
-  termErr,            //  tex   Term expected.
-  thenErr,            //  thx   'then' expected.
-  tokenErr,           //  us    Unexpected symbol.
-  tooFewElemsErr,     //  tfe   Too few elements in list.
-  tooManyElemsErr,    //  tme   Too many elements in list.
-  tooManyKeysErr,     //  tmke  Too many keys in environment.
-  typeErr,            //  ehut  Expression has unexpected type.
-  typeExeErr,         //  teex  'type exe' expression expected.
-  typeMutErr,         //  tmex  'type mut' expression expected.
-  typeObjErr,         //  toex  'type obj' expression expected.
-  typeSizeErr,        //  tstl  Type size too large.
-  typeTypeObjErr,     //  ttox  'type type obj' expression expected.
-  unboundErr,         //  nhnb  Name has no binding.
-  undeclaredErr,      //  nnd   Name was never declared.
-  unknownCallErr,     //  cuo   Called unknown object.
-  unknownObjectErr,   //  tuo   Transformed unknown object.
-  versionErr,         //  vdnm  Version does not match.
-  zeroInjErr,         //  zix   Zero 'inj' expression expected.
+  apostropheErr,     //  ax    Apostrophe expected.
+  apostrophesErr,    //  aax   Two apostrophes expected.
+  assertErr,         //  taf   Transformation assertion failed.
+  assignmentErr,     //  asx   Assignment expected.
+  callErr,           //  uc    Unexpected call.
+  chaInjErr,         //  ciex  'cha' or 'inj' expression expected.
+  charErr,           //  chx   Character expected.
+  closeBraceErr,     //  cbcx  Close brace expected.
+  closeBracketErr,   //  cbkx  Close bracket expected.
+  closeParenErr,     //  cpx   Close parenthesis expected.
+  colonDashErr,      //  cdx   Colon dash expected.
+  colonErr,          //  cox   Colon expected.
+  constantErr,       //  cex   Constant expression expected.
+  divideByZeroErr,   //  dbz   Division by zero.
+  doErr,             //  dx    'do' expected.
+  elementErr,        //  uel   Unexpected element in list.
+  errNumberErr,      //  enx   Error number expected.
+  exeErr,            //  eex   'exe' expression expected.
+  fileCloseErr,      //  ccf   Cannot close file.
+  fileOpenErr,       //  cof   Cannot open file.
+  fileSuffixErr,     //  mufs  Missing or unknown file suffix.
+  fileTooBigErr,     //  ftl   File too large.
+  fojErr,            //  fex   'foj' expression expected.
+  formTypeErr,       //  fx    form expected.
+  formsTooDeepErr,   //  frtd  Form recursion too deep.
+  haltErr,           //  ch    Compilation halted.
+  hexDigitErr,       //  hdx   Hexadecimal digit expected.
+  hookErr,           //  hx    Hook expected.
+  illegalCharErr,    //  ic    Illegal character.
+  illegalNumberErr,  //  in    Illegal number.
+  illegalRadixErr,   //  rdx   Radix digit expected.
+  illegalTokenErr,   //  is    Illegal symbol.
+  injErr,            //  iex   'inj' expression expected.
+  internalErr,       //  ie    Internal error.
+  jokerErr,          //  jtx   Joker type expected.
+  labelTypeErr,      //  lhut  Case label has unexpected type.
+  limitErr,          //  ile   Internal limit exceeded.
+  lineTooLongErr,    //  sltl  Source line too long.
+  loadOrProgErr,     //  lpx   'load' or 'prog' expected.
+  memberTypeErr,     //  mftx  Member form type expected.
+  metErr,            //  meex  'met' expression expected.
+  methodErr,         //  mhut  Method has unexpected type.
+  misplacedHookErr,  //  mh    Misplaced hook.
+  mutErr,            //  mux   'mut' expression expected.
+  nameErr,           //  nx    Name expected.
+  negInjErr,         //  nix   Negative 'inj' expression expected.
+  noBaseTypeErr,     //  thnb  Type has no base type.
+  noneErr,           //  nna   'none' not allowed here.
+  nonForwardErr,     //  uftx  Unforwarded pointer type expected.
+  nonJokerErr,       //  njtx  Non joker type expected.
+  nonNegInjErr,      //  nnix  Nonnegative inj expression expected.
+  nonNilErr,         //  nnpx  Non 'nil' pointer expected.
+  nonNullTypeErr,    //  ntnx  Non 'null' pointer type expected.
+  nonPosInjErr,      //  npix  Nonpositive 'inj' expression expected.
+  nonZeroInjErr,     //  nzix  Nonzero 'inj' expression expected.
+  noSuchKeyErr,      //  kne   Key not in environment.
+  noSuchParamErr,    //  nspn  No such parameter name.
+  notBindableErr,    //  gnub  Generic name cannot be bound.
+  notInsideFormErr,  //  nif   Not inside form.
+  objectErr,         //  uo    Unexpected object.
+  ofErr,             //  ox    'of' expected.
+  openParenErr,      //  opx   Open parenthesis expected.
+  outOfMemoryErr,    //  me    Memory exhausted.
+  posInjErr,         //  pie   Positive 'inj' expression expected.
+  quoteErr,          //  qx    Quote expected.
+  rangeErr,          //  oor   Out of range.
+  repeatedLabelErr,  //  rcl   Repeated case label.
+  repeatedNameErr,   //  rn    Repeated name.
+  semicolonErr,      //  slex  Semicolon or line end expected.
+  shadowedGenErr,    //  sgn   Shadowed generic name.
+  slashableErr,      //  scx   Slashable character expected.
+  subsumedFormErr,   //  sf    Subsumed form.
+  termErr,           //  tex   Term expected.
+  thenErr,           //  thx   'then' expected.
+  tokenErr,          //  us    Unexpected symbol.
+  tooFewElemsErr,    //  tfe   Too few elements in list.
+  tooManyElemsErr,   //  tme   Too many elements in list.
+  tooManyKeysErr,    //  tmke  Too many keys in environment.
+  typeErr,           //  ehut  Expression has unexpected type.
+  typeExeErr,        //  teex  'type exe' expression expected.
+  typeMutErr,        //  tmex  'type mut' expression expected.
+  typeObjErr,        //  toex  'type obj' expression expected.
+  typeSizeErr,       //  tstl  Type size too large.
+  typeTypeObjErr,    //  ttox  'type type obj' expression expected.
+  unboundErr,        //  nhnb  Name has no binding.
+  undeclaredErr,     //  nnd   Name was never declared.
+  unknownCallErr,    //  cuo   Called unknown object.
+  unknownObjectErr,  //  tuo   Transformed unknown object.
+  versionErr,        //  vdnm  Version does not match.
+  zeroInjErr,        //  zix   Zero 'inj' expression expected.
   maxErr };
 
 //  HOOK. Entry points into TRANSFORM (see ORSON/TRANSFORM). Most HOOKs help to
@@ -421,214 +421,214 @@ enum
 
 enum
 { minHook,
-  altHook,            //  Make a FORM closure with two or more members.
-  altsHook,           //  Type of a FORM closure with two or more members.
-  andHook,            //  McCarthy AND.
-  applyHook,          //  Apply a FORM or a PROC.
-  arrayHook,          //  Array type constructor.
-  arraysHook,         //  Array joker constructor.
-  atHook,             //  Safely return a ROW pointer to an object.
-  caseHook,           //  CASE-OF clause.
-  cellHook,           //  CELL type constructor.
-  cellGetHook,        //  Get the value of a CELL.
-  cellMakeHook,       //  Make a new CELL.
-  cellSetHook,        //  Change the value of a CELL.
-  char0Hook,          //  8-bit signed char type.
-  char1Hook,          //  32-bit signed char type.
-  charCastHook,       //  Convert a char to an integer.
-  charConHook,        //  Test if a char is a constant.
-  charEqHook,         //  Character equality test.
-  charGeHook,         //  Character greater than or equal test.
-  charGtHook,         //  Character greater than test.
-  charLeHook,         //  Character less than or equal test.
-  charLtHook,         //  Character less than test.
-  charNeHook,         //  Character inequality test.
-  closeHook,          //  FORM and PROC closure.
-  debugHook,          //  Print objects for debugging.
-  envDelHook,         //  Delete a key from the OS environment.
-  envGetHook,         //  Get the value of a key in the OS environment.
-  envHasHook,         //  Test if a key exists in the OS environment.
-  envSetHook,         //  Set the value of a key in the OS environment.
-  errHook,            //  Assert that an error occurred in a form call.
-  formHook,           //  FORM type constructor.
-  formConcHook,       //  ALT without subsumption errors.
-  formMakeHook,       //  Make a FORM closure.
-  genHook,            //  Quantifier for FORM types.
-  haltHook,           //  Halt compilation.
-  ifHook,             //  IF-THEN-ELSE clause.
-  int0Hook,           //  8-bit integer type.
-  int1Hook,           //  16-bit integer type.
-  int2Hook,           //  32-bit integer type.
-  intAddHook,         //  Integer addition.
-  intAddSetHook,      //  Update an integer variable using addition.
-  intAndHook,         //  Integer bitwise AND.
-  intAndSetHook,      //  Update an integer variable using bitwise AND.
-  intCastHook,        //  Convert an integer to a char, an integer, or a real.
-  intConHook,         //  Test if an integer is a constant.
-  intDivHook,         //  Integer division.
-  intDivSetHook,      //  Update an integer variable using division.
-  intEqHook,          //  Integer equality test.
-  intErrHook,         //  Test if an integer constant is a user error code.
-  intForHook,         //  Iterate over a range of constant integers.
-  intGeHook,          //  Integer greater than or equal test.
-  intGtHook,          //  Integer greater than test.
-  intLeHook,          //  Integer less than or equal test.
-  intLshHook,         //  Integer bitwise left shift.
-  intLshSetHook,      //  Update an integer variable using bitwise left shift.
-  intLtHook,          //  Integer less than test.
-  intModHook,         //  Integer modulus.
-  intMulHook,         //  Integer multiplication.
-  intMulSetHook,      //  Update an integer variable using multiplication.
-  intNeHook,          //  Integer inequality test.
-  intNegHook,         //  Integer negation.
-  intNotHook,         //  Integer bitwise NOT.
-  intOrHook,          //  Integer bitwise OR.
-  intOrSetHook,       //  Update an integer variable using bitwise OR.
-  intRshHook,         //  Integer bitwise right shift.
-  intRshSetHook,      //  Update an integer variable using bitwise right shift.
-  intSubHook,         //  Integer subtraction.
-  intSubSetHook,      //  Update an integer variable using subtraction.
-  intXorHook,         //  Integer bitwise XOR.
-  intXorSetHook,      //  Update an integer variable using bitwise XOR.
-  jokerHook,          //  Joker type constructor.
-  lastHook,           //  A subsequence: return the value of its last term.
-  listHook,           //  List type.
-  listCarHook,        //  First element of a list.
-  listCdrHook,        //  All but the first element of a list.
-  listConcHook,       //  Nondestructively concatenate lists.
-  listConsHook,       //  Add an element to the front of a list.
-  listErrHook,        //  Assert that an error occurred in a list.
-  listFlatHook,       //  Flatten a list.
-  listForHook,        //  Iterate over the nonempty tails of a list.
-  listGoatHook,       //  Return a list of scapegoats.
-  listLenHook,        //  Length of a list.
-  listMakeHook,       //  Make a new list from its elements.
-  listMemHook,        //  Search a list for a given type.
-  listNullHook,       //  Test if a list is empty.
-  listSortHook,       //  Sort a list.
-  listSubHook,        //  Get a sublist from a list.
-  listTailHook,       //  Return a given tail of a list.
-  loadHook,           //  Load a source file.
-  nilHook,            //  A pointer that points nowhere.
-  noneHook,           //  The default label in a CASE clause.
-  notHook,            //  Boolean negation.
-  nullHook,           //  The type of NIL.
-  orHook,             //  McCarthy OR.
-  pastHook,           //  Return past binding of a WITH name.
-  procHook,           //  PROCedure type constructor.
-  procMakeHook,       //  Make a PROC closure.
-  progHook,           //  An Orson PROGram.
-  real0Hook,          //  Small real type.
-  real1Hook,          //  Large real type.
-  realAddHook,        //  Real addition.
-  realAddSetHook,     //  Update a real variable using addition.
-  realCastHook,       //  Convert a real to an integer or a real.
-  realConHook,        //  Test if a real is a constant.
-  realDivHook,        //  Real division.
-  realDivSetHook,     //  Update a real variable using division.
-  realEqHook,         //  Real equality test.
-  realGeHook,         //  Real greater than or equal test.
-  realGtHook,         //  Real greater than test.
-  realLeHook,         //  Real less than or equal test.
-  realLtHook,         //  Real less than test.
-  realMulHook,        //  Real multiplication.
-  realMulSetHook,     //  Update a real variable using multiplication.
-  realNeHook,         //  Real inequality test.
-  realNegHook,        //  Real negation.
-  realSubHook,        //  Real subtraction.
-  realSubSetHook,     //  Update a real variable using subtraction.
-  referHook,          //  REF pointer type constructor.
-  rowHook,            //  ROW pointer type constructor.
-  rowAddHook,         //  ROW pointer addition.
-  rowAddSetHook,      //  Update a ROW pointer variable using addition.
-  rowCastHook,        //  Convert a pointer to a different type of pointer.
-  rowDistHook,        //  Distance between pointers.
-  rowEqHook,          //  Pointer equality test.
-  rowGeHook,          //  Pointer greater than or equal test.
-  rowGtHook,          //  Pointer greater than test.
-  rowLeHook,          //  Pointer less than or equal test.
-  rowLtHook,          //  Pointer less than test.
-  rowNeHook,          //  Pointer not equal test.
-  rowNilHook,         //  Test if a pointer is the constant NIL.
-  rowSubHook,         //  ROW pointer subtraction.
-  rowSubSetHook,      //  Update a ROW pointer variable using subtraction.
-  rowToHook,          //  Return the object pointed to by a ROW pointer.
-  skipHook,           //  The unique value of type VOID.
-  skoHook,            //  An arbitrary SKOlem subtype of a type.
-  slotHook,           //  Markable slot in a GC frame.
-  strApplyHook,       //  Apply a C function whose name is a string.
-  strCharHook,        //  Get a char from a constant string.
-  strCompHook,        //  Lexicographically compare constant strings.
-  strConHook,         //  Test if a string is a constant.
-  strConcHook,        //  Concatenate constant strings.
-  strExceptHook,      //  Like STR APPLY but it interrupts control flow.
-  strLen0Hook,        //  Number of CHAR0s in a constant string.
-  strLen1Hook,        //  Number of CHAR1s in a constant string.
-  strPostHook,        //  Add a constant char at end of a constant string.
-  strPreHook,         //  Add a constant char at start of a constant string.
-  strSlotHook,        //  Return a slot in a C struct.
-  strSubHook,         //  Get a substring from a constant string.
-  strTypeHook,        //  Return a C type whose name is a string.
-  strValueHook,       //  Return the value of a C expression in a string.
-  strVerHook,         //  Test or return the Orson compiler's version string.
-  symHook,            //  Symbol type constructor.
-  symErrHook,         //  Assert that an error occurred in a form argument.
-  toRowHook,          //  Return a ROW pointer to an object.
-  toVarHook,          //  Assert that an object is a VAR argument of a PROC.
-  tupleHook,          //  TUPLE type constructor.
-  tuplesHook,         //  TUPLE joker constructor.
-  typeHook,           //  TYPE type constructor.
-  typeAlignHook,      //  Byte alignment of a type.
-  typeAltsHook,       //  ALTS without subsumption errors.
-  typeBaseHook,       //  Base type of a derived type.
-  typeConcHook,       //  Concatenate two TUPLE types.
-  typeCotypeHook,     //  Type coercion test.
-  typeHighHook,       //  Maximum value of a type.
-  typeJokedHook,      //  Test if a type contains jokers.
-  typeLenHook,        //  Length of an ARRAY type.
-  typeLowHook,        //  Minimum value of a type.
-  typeMarkHook,       //  Tell Orson to mark names of a given pointer type.
-  typeOffsetHook,     //  Offset of a slot in a TUPLE type.
-  typeSizeHook,       //  Byte size of a type.
-  typeSkoHook,        //  Skolem type test.
-  typeSubsumeHook,    //  Form type subsumption test.
-  typeSubtypeHook,    //  Type subtype test.
-  varHook,            //  VARiable type constructor.
-  varSetHook,         //  Variable assignment.
-  varToHook,          //  Assert that an object is a VAR parameter of a PROC.
-  voidHook,           //  VOID type, with no values except SKIP.
-  whileHook,          //  WHILE-DO clause.
-  withHook,           //  WITH-DO clause.
+  altHook,          //  Make a FORM closure with two or more members.
+  altsHook,         //  Type of a FORM closure with two or more members.
+  andHook,          //  McCarthy AND.
+  applyHook,        //  Apply a FORM or a PROC.
+  arrayHook,        //  Array type constructor.
+  arraysHook,       //  Array joker constructor.
+  atHook,           //  Safely return a ROW pointer to an object.
+  caseHook,         //  CASE-OF clause.
+  cellHook,         //  CELL type constructor.
+  cellGetHook,      //  Get the value of a CELL.
+  cellMakeHook,     //  Make a new CELL.
+  cellSetHook,      //  Change the value of a CELL.
+  char0Hook,        //  8-bit signed char type.
+  char1Hook,        //  32-bit signed char type.
+  charCastHook,     //  Convert a char to an integer.
+  charConHook,      //  Test if a char is a constant.
+  charEqHook,       //  Character equality test.
+  charGeHook,       //  Character greater than or equal test.
+  charGtHook,       //  Character greater than test.
+  charLeHook,       //  Character less than or equal test.
+  charLtHook,       //  Character less than test.
+  charNeHook,       //  Character inequality test.
+  closeHook,        //  FORM and PROC closure.
+  debugHook,        //  Print objects for debugging.
+  envDelHook,       //  Delete a key from the OS environment.
+  envGetHook,       //  Get the value of a key in the OS environment.
+  envHasHook,       //  Test if a key exists in the OS environment.
+  envSetHook,       //  Set the value of a key in the OS environment.
+  errHook,          //  Assert that an error occurred in a form call.
+  formHook,         //  FORM type constructor.
+  formConcHook,     //  ALT without subsumption errors.
+  formMakeHook,     //  Make a FORM closure.
+  genHook,          //  Quantifier for FORM types.
+  haltHook,         //  Halt compilation.
+  ifHook,           //  IF-THEN-ELSE clause.
+  int0Hook,         //  8-bit integer type.
+  int1Hook,         //  16-bit integer type.
+  int2Hook,         //  32-bit integer type.
+  intAddHook,       //  Integer addition.
+  intAddSetHook,    //  Update an integer variable using addition.
+  intAndHook,       //  Integer bitwise AND.
+  intAndSetHook,    //  Update an integer variable using bitwise AND.
+  intCastHook,      //  Convert an integer to a char, an integer, or a real.
+  intConHook,       //  Test if an integer is a constant.
+  intDivHook,       //  Integer division.
+  intDivSetHook,    //  Update an integer variable using division.
+  intEqHook,        //  Integer equality test.
+  intErrHook,       //  Test if an integer constant is a user error code.
+  intForHook,       //  Iterate over a range of constant integers.
+  intGeHook,        //  Integer greater than or equal test.
+  intGtHook,        //  Integer greater than test.
+  intLeHook,        //  Integer less than or equal test.
+  intLshHook,       //  Integer bitwise left shift.
+  intLshSetHook,    //  Update an integer variable using bitwise left shift.
+  intLtHook,        //  Integer less than test.
+  intModHook,       //  Integer modulus.
+  intMulHook,       //  Integer multiplication.
+  intMulSetHook,    //  Update an integer variable using multiplication.
+  intNeHook,        //  Integer inequality test.
+  intNegHook,       //  Integer negation.
+  intNotHook,       //  Integer bitwise NOT.
+  intOrHook,        //  Integer bitwise OR.
+  intOrSetHook,     //  Update an integer variable using bitwise OR.
+  intRshHook,       //  Integer bitwise right shift.
+  intRshSetHook,    //  Update an integer variable using bitwise right shift.
+  intSubHook,       //  Integer subtraction.
+  intSubSetHook,    //  Update an integer variable using subtraction.
+  intXorHook,       //  Integer bitwise XOR.
+  intXorSetHook,    //  Update an integer variable using bitwise XOR.
+  jokerHook,        //  Joker type constructor.
+  lastHook,         //  A subsequence: return the value of its last term.
+  listHook,         //  List type.
+  listCarHook,      //  First element of a list.
+  listCdrHook,      //  All but the first element of a list.
+  listConcHook,     //  Nondestructively concatenate lists.
+  listConsHook,     //  Add an element to the front of a list.
+  listErrHook,      //  Assert that an error occurred in a list.
+  listFlatHook,     //  Flatten a list.
+  listForHook,      //  Iterate over the nonempty tails of a list.
+  listGoatHook,     //  Return a list of scapegoats.
+  listLenHook,      //  Length of a list.
+  listMakeHook,     //  Make a new list from its elements.
+  listMemHook,      //  Search a list for a given type.
+  listNullHook,     //  Test if a list is empty.
+  listSortHook,     //  Sort a list.
+  listSubHook,      //  Get a sublist from a list.
+  listTailHook,     //  Return a given tail of a list.
+  loadHook,         //  Load a source file.
+  nilHook,          //  A pointer that points nowhere.
+  noneHook,         //  The default label in a CASE clause.
+  notHook,          //  Boolean negation.
+  nullHook,         //  The type of NIL.
+  orHook,           //  McCarthy OR.
+  pastHook,         //  Return past binding of a WITH name.
+  procHook,         //  PROCedure type constructor.
+  procMakeHook,     //  Make a PROC closure.
+  progHook,         //  An Orson PROGram.
+  real0Hook,        //  Small real type.
+  real1Hook,        //  Large real type.
+  realAddHook,      //  Real addition.
+  realAddSetHook,   //  Update a real variable using addition.
+  realCastHook,     //  Convert a real to an integer or a real.
+  realConHook,      //  Test if a real is a constant.
+  realDivHook,      //  Real division.
+  realDivSetHook,   //  Update a real variable using division.
+  realEqHook,       //  Real equality test.
+  realGeHook,       //  Real greater than or equal test.
+  realGtHook,       //  Real greater than test.
+  realLeHook,       //  Real less than or equal test.
+  realLtHook,       //  Real less than test.
+  realMulHook,      //  Real multiplication.
+  realMulSetHook,   //  Update a real variable using multiplication.
+  realNeHook,       //  Real inequality test.
+  realNegHook,      //  Real negation.
+  realSubHook,      //  Real subtraction.
+  realSubSetHook,   //  Update a real variable using subtraction.
+  referHook,        //  REF pointer type constructor.
+  rowHook,          //  ROW pointer type constructor.
+  rowAddHook,       //  ROW pointer addition.
+  rowAddSetHook,    //  Update a ROW pointer variable using addition.
+  rowCastHook,      //  Convert a pointer to a different type of pointer.
+  rowDistHook,      //  Distance between pointers.
+  rowEqHook,        //  Pointer equality test.
+  rowGeHook,        //  Pointer greater than or equal test.
+  rowGtHook,        //  Pointer greater than test.
+  rowLeHook,        //  Pointer less than or equal test.
+  rowLtHook,        //  Pointer less than test.
+  rowNeHook,        //  Pointer not equal test.
+  rowNilHook,       //  Test if a pointer is the constant NIL.
+  rowSubHook,       //  ROW pointer subtraction.
+  rowSubSetHook,    //  Update a ROW pointer variable using subtraction.
+  rowToHook,        //  Return the object pointed to by a ROW pointer.
+  skipHook,         //  The unique value of type VOID.
+  skoHook,          //  An arbitrary SKOlem subtype of a type.
+  slotHook,         //  Markable slot in a GC frame.
+  strApplyHook,     //  Apply a C function whose name is a string.
+  strCharHook,      //  Get a char from a constant string.
+  strCompHook,      //  Lexicographically compare constant strings.
+  strConHook,       //  Test if a string is a constant.
+  strConcHook,      //  Concatenate constant strings.
+  strExceptHook,    //  Like STR APPLY but it interrupts control flow.
+  strLen0Hook,      //  Number of CHAR0s in a constant string.
+  strLen1Hook,      //  Number of CHAR1s in a constant string.
+  strPostHook,      //  Add a constant char at end of a constant string.
+  strPreHook,       //  Add a constant char at start of a constant string.
+  strSlotHook,      //  Return a slot in a C struct.
+  strSubHook,       //  Get a substring from a constant string.
+  strTypeHook,      //  Return a C type whose name is a string.
+  strValueHook,     //  Return the value of a C expression in a string.
+  strVerHook,       //  Test or return the Orson compiler's version string.
+  symHook,          //  Symbol type constructor.
+  symErrHook,       //  Assert that an error occurred in a form argument.
+  toRowHook,        //  Return a ROW pointer to an object.
+  toVarHook,        //  Assert that an object is a VAR argument of a PROC.
+  tupleHook,        //  TUPLE type constructor.
+  tuplesHook,       //  TUPLE joker constructor.
+  typeHook,         //  TYPE type constructor.
+  typeAlignHook,    //  Byte alignment of a type.
+  typeAltsHook,     //  ALTS without subsumption errors.
+  typeBaseHook,     //  Base type of a derived type.
+  typeConcHook,     //  Concatenate two TUPLE types.
+  typeCotypeHook,   //  Type coercion test.
+  typeHighHook,     //  Maximum value of a type.
+  typeJokedHook,    //  Test if a type contains jokers.
+  typeLenHook,      //  Length of an ARRAY type.
+  typeLowHook,      //  Minimum value of a type.
+  typeMarkHook,     //  Tell Orson to mark names of a given pointer type.
+  typeOffsetHook,   //  Offset of a slot in a TUPLE type.
+  typeSizeHook,     //  Byte size of a type.
+  typeSkoHook,      //  Skolem type test.
+  typeSubsumeHook,  //  Form type subsumption test.
+  typeSubtypeHook,  //  Type subtype test.
+  varHook,          //  VARiable type constructor.
+  varSetHook,       //  Variable assignment.
+  varToHook,        //  Assert that an object is a VAR parameter of a PROC.
+  voidHook,         //  VOID type, with no values except SKIP.
+  whileHook,        //  WHILE-DO clause.
+  withHook,         //  WITH-DO clause.
   maxHook };
 
 //  INFO. Special values of the INFO slots in PAIRs.
 
 enum
-{ equateInfo,         //  A layer that binds names from equates.
-  plainInfo,          //  A layer that maps key objects to value objects.
-  skolemInfo };       //  A later that binds GEN names to Skolem types.
+{ equateInfo,    //  A layer that binds names from equates.
+  plainInfo,     //  A layer that maps key objects to value objects.
+  skolemInfo };  //  A layer that binds GEN names to Skolem types.
 
 //  TAG. These identify object types. They must fit in a CHAR.
 
 enum
-{ cellTag,            //  A CELL object.
-  characterTag,       //  A CHARACTER object.
-  evenBinderTag,      //  A balanced BINDER in an AVL tree.
-  fakeTag,            //  A HUNK used as a sentinel.
-  hookTag,            //  A HOOK object.
-  hunkTag,            //  An untyped block of memory.
-  integerTag,         //  An integer constant.
-  jokerTag,           //  A set of types.
-  leftBinderTag,      //  An unbalanced BINDER in an AVL tree.
-  markedTag,          //  Marks circular linked structures.
-  matchTag,           //  A type checker subgoal.
-  nameTag,            //  A name, what others might call an "identifier".
-  nodeTag,            //  A block of memory being marked by the GC.
-  pairTag,            //  A list node. Like a Lisp CONS.
-  realTag,            //  A real constant.
-  rightBinderTag,     //  An unbalanced BINDER in an AVL tree.
-  snipTag,            //  Part of a STRING.
-  stringTag };        //  A constant character string.
+{ cellTag,         //  A CELL object.
+  characterTag,    //  A CHARACTER object.
+  evenBinderTag,   //  A balanced BINDER in an AVL tree.
+  fakeTag,         //  A HUNK used as a sentinel.
+  hookTag,         //  A HOOK object.
+  hunkTag,         //  An untyped block of memory.
+  integerTag,      //  An integer constant.
+  jokerTag,        //  A set of types.
+  leftBinderTag,   //  An unbalanced BINDER in an AVL tree.
+  markedTag,       //  Marks circular linked structures.
+  matchTag,        //  A type checker subgoal.
+  nameTag,         //  A name, what others might call an "identifier".
+  nodeTag,         //  A block of memory being marked by the GC.
+  pairTag,         //  A list node. Like a Lisp CONS.
+  realTag,         //  A real constant.
+  rightBinderTag,  //  An unbalanced BINDER in an AVL tree.
+  snipTag,         //  Part of a STRING.
+  stringTag };     //  A constant character string.
 
 //  TOKEN. Lexical tokens. (See ORSON/LOAD.)
 
@@ -684,42 +684,42 @@ enum
   sumPrefixToken,     //  An adding or prefix operator.
   maxToken };
 
-//  Orson's types as C types.
+//  Orson's types as C types. (See ORSON/SIZE.)
 
-typedef signed char   char0Type;         //  Orson's CHAR0 type.
-typedef int           char1Type;         //  Orson's CHAR1 type.
-typedef signed char   int0Type;          //  Orson's INT0 type.
-typedef short         int1Type;          //  Orson's INT1 type.
-typedef int           int2Type;          //  Orson's INT2 type.
-typedef void          *pointerType;      //  Orson's pointer types.
-typedef int           (*procType)();     //  Orson's PROC types.
-typedef float         real0Type;         //  Orson's REAL0 type.
-typedef double        real1Type;         //  Orson's REAL1 type.
-typedef char          voidType;          //  Orson's VOID type.
+typedef signed char char0Type;      //  Orson's CHAR0 type.
+typedef int         char1Type;      //  Orson's CHAR1 type.
+typedef signed char int0Type;       //  Orson's INT0 type.
+typedef short       int1Type;       //  Orson's INT1 type.
+typedef int         int2Type;       //  Orson's INT2 type.
+typedef void        *pointerType;   //  Orson's pointer types.
+typedef int         (*procType)();  //  Orson's PROC types.
+typedef float       real0Type;      //  Orson's REAL0 type.
+typedef double      real1Type;      //  Orson's REAL1 type.
+typedef char        voidType;       //  Orson's VOID type.
 
-//  C's names for Orson's simple types.
+//  C's names for Orson's simple types. (See ORSON/DECLARE.)
 
-#define char0String   "signed char"      //  CHAR0 TYPE as a string.
-#define char1String   "int"              //  CHAR1 TYPE as a string.
-#define int0String    "signed char"      //  INT0 TYPE as a string.
-#define int1String    "short"            //  INT1 TYPE as a string.
-#define int2String    "int"              //  INT2 TYPE as a string.
-#define real0String   "float"            //  REAL0 TYPE as a string.
-#define real1String   "double"           //  REAL1 TYPE as a string.
-#define voidString    "char"             //  VOID TYPE as a string.
+#define char0String "signed char"  //  CHAR0 TYPE as a string.
+#define char1String "int"          //  CHAR1 TYPE as a string.
+#define int0String  "signed char"  //  INT0 TYPE as a string.
+#define int1String  "short"        //  INT1 TYPE as a string.
+#define int2String  "int"          //  INT2 TYPE as a string.
+#define real0String "float"        //  REAL0 TYPE as a string.
+#define real1String "double"       //  REAL1 TYPE as a string.
+#define voidString  "char"         //  VOID TYPE as a string.
 
 //  Extreme values of Orson's simple types.
 
-#define maxInt0       127                //  Maximum INT0 value.
-#define maxInt1       32767              //  Maximum INT1 value.
-#define maxInt2       0x7FFFFFFF         //  Maximum INT2 value.
-#define maxReal0      FLT_MAX            //  Maximum positive REAL0 value.
-#define maxReal1      DBL_MAX            //  Maximum positive REAL1 value.
-#define minInt0       -128               //  Minimum INT0 value.
-#define minInt1       -32768             //  Minimum INT1 value.
-#define minInt2       0x80000000         //  Minimum INT2 value.
-#define minReal0      FLT_MIN            //  Minimum positive REAL0 value.
-#define minReal1      DBL_MIN            //  Minimum positive REAL1 value.
+#define maxInt0  127         //  Maximum INT0 value.
+#define maxInt1  32767       //  Maximum INT1 value.
+#define maxInt2  0x7FFFFFFF  //  Maximum INT2 value.
+#define maxReal0 FLT_MAX     //  Maximum positive REAL0 value.
+#define maxReal1 DBL_MAX     //  Maximum positive REAL1 value.
+#define minInt0  -128        //  Minimum INT0 value.
+#define minInt1  -32768      //  Minimum INT1 value.
+#define minInt2  0x80000000  //  Minimum INT2 value.
+#define minReal0 FLT_MIN     //  Minimum positive REAL0 value.
+#define minReal1 DBL_MIN     //  Minimum positive REAL1 value.
 
 //  Other C types.
 
@@ -785,7 +785,7 @@ struct characterStruct
 //
 //  FILEs are linked into a linear chain through their NEXT slots. There can be
 //  at most MAX FILE COUNT nodes in the chain to keep from overflowing the FILE
-//  field. We never check COUNT fields for overflow, so all our files must have
+//  field. We never check INDEX fields for overflow, so all our files must have
 //  fewer than (1 << CHAR INDEX BITS) chars. (See ORSON/ERROR and ORSON/FILE.)
 
 #define fileSize sizeof(file)

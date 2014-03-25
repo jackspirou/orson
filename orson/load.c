@@ -281,8 +281,8 @@ void initLoad()
 //  Bold names. These must be made in alphabetical order.  We include C and C++
 //  keywords, even if they're not Orson keywords, so we won't use them as names
 //  when we translate to C. We also include certain C and C++ non-keywords, for
-//  the same reason. If you want to modify the list of bold names, you may also
-//  need to change BOLD COUNT (see ORSON/GLOBAL).
+//  the same reason. If you want to modify the list of bold names, then you may
+//  also need to change BOLD COUNT (see ORSON/GLOBAL).
 
   makeBold("also",      nil,                          boldAlsoToken);
   makeBold("alt",       nil,                          boldAltToken);

@@ -350,7 +350,7 @@ void writeErrorLines()
 
 //  Here we're not in ASCII mode, so some chars may occupy two or more columns.
 //  Write the erroneous line. Chars with negative widths are written as UNKNOWN
-//  WIDTH CHARs. Those with zero width are written after NO BREAK BLANKS. Write
+//  WIDTH CHARs. Those with zero width are written after NO BREAK BLANKs. Write
 //  one or more following lines that point at columns where errors appear.
 
       else

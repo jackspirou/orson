@@ -18,7 +18,7 @@
 //
 
 //  Orson juggles three different char representations: ASCII (the 7-bit subset
-//  of ISO-8859-1), UTF-8, and UTF-32. Here's how we do that.
+//  of ISO-8859-1), UTF-8, and UTF-32. Here's how it does that.
 //
 //  1. Orson does NOT depend on the current "locale" because we think it should
 //  work the same way everywhere. It never calls SETLOCALE.

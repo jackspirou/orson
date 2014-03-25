@@ -105,8 +105,8 @@ void enqueue(refRefObject front, refRefObject rear, refObject term)
   pop(); }
 
 //  FAIL. Assert than an error has occurred. We write FORMAT to STDERR and halt
-//  ORSON. If this is the result of a bug, then we mention the C function where
-//  the the bug was detected, and we end with "!".
+//  ORSON.  If this is the result of a bug, then FORMAT mentions the C function
+//  where the bug was detected, and it ends with "!".
 
 void fail(refChar format, ...)
 { vaList arguments;
