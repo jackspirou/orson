@@ -1,7 +1,7 @@
 !
 !  OX/MAIN. Main program.
 !
-!  Copyright © 2012 James B. Moen.
+!  Copyright © 2014 James B. Moen.
 !
 !  This  program is free  software: you  can redistribute  it and/or  modify it
 !  under the terms  of the GNU General Public License as  published by the Free
@@ -31,21 +31,21 @@
 
      readFile :−
       (form (string path) void:
-       (for bool ok, string path in canonical(path)
+       (for bool ok, string path' in canonical(path)
         do (if ok
-            then (if ¬ isEnd(path, orsonPrelude) ∧ ¬ isEnd(path, orsonSource)
-                  then fail(''Unexpected suffix in '%s'.'': path))
-                 (if ¬ open(source, path, ''r'')
-                  then fail(''Cannot open "%s".'': path))
+            then (if ¬ isEnd(path', orsonPrelude) ∧ ¬ isEnd(path', orsonSource)
+                  then fail(''Unexpected suffix in '%s'.'': path'))
+                 (if ¬ open(source, path', ''r'')
+                  then fail(''Cannot open "%s".'': path'))
                  sourceNumber := 0
-                 sourcePath := path
+                 sourcePath := path'
                  state := 0
                  nextChar()
                  nextToken()
                  nextProgram()
                  write(eop)
                  (if ¬ close(source)
-                  then fail(''Cannot close '%s'.'': path))
+                  then fail(''Cannot close '%s'.'': path'))
             else fail(''Cannot open '%s'.'': path))))
 
 !  SET HOW MANY. Set NUMBER to DIGITS from the option CH.
