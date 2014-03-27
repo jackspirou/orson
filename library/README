@@ -1,7 +1,7 @@
                                AN ORSON LIBRARY
 
                                  James B. Moen
-                               January 20, 2014
+                                 March 27, 2014
 
 The Orson source files in this  directory implement an Orson library. It is not
 intended to be  a standard library, but rather a  collection of methods (mostly
@@ -48,7 +48,7 @@ files (like width.os) use code written in GNU C.
     fls.os        Fixed length stacks.
     formif.os     Simulate transformation-time ifs using forms.
     headtail.os   Traverse arrays using pointers.
-    krig.os       Knuth’s random int generator.
+    krig.os       Knuth’s random INT generator.
     library.os    Get a string of library directory paths.
     list.os       Operations on lists.
     lslc.os       Linear singly linked chains.
@@ -59,12 +59,12 @@ files (like width.os) use code written in GNU C.
     multi.os      Multi-dimensional arrays.
     path.os       Operations on Unix pathnames.
     plain.os      Operations on Orson plain names.
-    pmrig.os      Park-Miller Random int Generator.
+    pmrig.os      Park-Miller Random INT Generator.
     prelude.op    A standard prelude for Orson (version Burbot).
     prime.os      Test if an integer constant is prime.
-    primes.os     Generate a series of prime ints.
+    primes.os     Generate a series of prime INTs.
     quicksort.os  Quicksort the elements of an array.
-    roman.os      Convert small positive ints to Roman numerals.
+    roman.os      Convert small positive INTs to Roman numerals.
     seed.os       Initialize a random number generator.
     select.os     Simulate a case clause whose labels are strings.
     sequence.op   Iterators that transform to sequences.
@@ -83,12 +83,13 @@ files (like width.os) use code written in GNU C.
     vls.os        Variable length stacks.
     width.os      Determine columns to write simple objects.
     withify.os    Transform a list of terms into a with clause.
+    zillion.os    Translate INTs to English.
 
 Some  library files  use  GNU C  types that  are  created by  calling the  form
 c's. When c's creates a GNU C type,  it must be given the alignment and size of
 that type, since  Orson cannot determine these for  itself. Unfortunately, type
 alignments and sizes  can vary from one system to another,  and those used here
-may not  be correct for  your system. Orson  is distributed with a  program gas
+may not  be correct for  your system. Orson  is distributed with a  program GAS
 that can  show the alignment  and size of  any named GNU  C type. If  there are
 problems, you should use it to check type alignments and sizes.
 

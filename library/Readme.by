@@ -4,7 +4,7 @@
  {b An Orson Library}
 
  James B. Moen
- January 20, 2014}
+ March 27, 2014}
 
 {narrow
  {justify
@@ -309,7 +309,11 @@
   {row
    {left {goto {t withify.os}}}
    {left \ \ \ }
-   {left Transform a list of terms into a {i with} clause.}}}}
+   {left Transform a list of terms into a {i with} clause.}}
+  {row
+   {left {goto {t zillion.os}}}
+   {left \ \ \ }
+   {left Translate {i int}s to English.}}}}
 
 {justify
   Some library files use {c Gnu} C types that are created by calling the form
