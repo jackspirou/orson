@@ -26,67 +26,67 @@ You should have received a copy of the GNU General Public License along with Ors
 
 The following directories contain the Orson compiler and its example programs. Follow the links for more information.
 
-apps/
+Various small applications.
 
-    Various small applications.
+    apps/
 
-bracy/
+Simple document compiler that produces HTML files.
 
-    Simple document compiler that produces HTML files.
+    bracy/
 
-eg/
+Generate example strings from context-free grammars.
 
-    Generate example strings from context-free grammars.
+    eg/
 
-library/
+Orson library.
 
-    Orson library.
+    library/
 
-licenses/  
+GNU General Public Licenses.  
 
-    GNU General Public Licenses.
+    licenses/
 
-orson/
+Orson compiler.
 
-    Orson compiler.
+    orson/
 
-ox/
+Cross-reference generator for Orson source programs.
 
-    Cross-reference generator for Orson source programs.
+    ox/
 
-scam/
+Interpreter for a toy Scheme-like language.
 
-    Interpreter for a toy Scheme-like language.
+    scam/
 
-tlh/
+Make two-level perfect hash functions for string keys.
 
-    Make two-level perfect hash functions for string keys.
+    tlh/
 
 These files contain documentation and other supporting material.
 
-LICENSE
+Short statement about licensing.
 
-    Short statement about licensing.
+    LICENSE
 
-README
+Short text version of Readme.html.
 
-    Short text version of Readme.html.
+    README
 
-Readme.by
+Bracy source for Readme.html.
 
-    Bracy source for Readme.html.
+    Readme.by
 
-Readme.html
+What you’re reading now.
 
-    What you’re reading now.
+    Readme.html
 
-Test
+Compile Orson source files for debugging.
 
-    Compile Orson source files for debugging.
+    Test
 
-tech/
+Orson technical reports.
 
-    Orson technical reports.
+    tech/
 
 Orson’s example programs and documentation contain special characters. Without proper rendering support, you may see question marks, boxes, or other symbols in place of these characters.
 
